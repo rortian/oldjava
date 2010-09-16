@@ -1,0 +1,127 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc3.html">Prev</a> | <a href="innerclasses.doc5.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="13534"></a>
+<h1> How do inner classes affect the idea of <code><b>this</b></code> in Java code?
+</h1>
+<a name="15577"></a>
+Recall that the code of a top-level class <var>T</var> can make use of the <em>current instance</em>, 
+either directly by means of the keyword <code>this</code>, or indirectly, by naming one of 
+the instance members of <var>T</var>.  The idea of a current instance has been extended, 
+so that inner classes have more than one current instance.  This allows the code 
+of an inner class <var>C</var> to execute relative to an enclosing instance of its outer class, 
+as well as the current instance of <var>C</var>.
+<p><a name="15589"></a>
+In our first example of adapter classes, the <code>Enumerator</code> code had two current 
+instances, the enclosing <code>FixedStack</code> and the <code>Enumerator</code> object itself.  More 
+generally, within the entire body of an inner class <var>C</var>, there is a current instance 
+for <var>C</var>, another current instance for every inner class enclosing <var>C</var>, and finally a 
+current instance for the innermost enclosing top-level class.  (A <code>static</code> class is 
+a top-level class, not an inner class.  Therefore, our enumeration of current 
+instances stops at the first <code>static</code> keyword.)
+<p><a name="19951"></a>
+Top-level classes do not have multiple current instances.  Within the non-
+<code>static</code> code of a top-level class <var>T</var>, there is one current instance of type <var>T</var>.  
+Within the <code>static</code> code of a top-level class <var>T</var>, there are no current instances.  
+This has always been true of top-level classes which are package members, and 
+is also true of top-level classes which are <code>static</code> members of other top-level 
+classes.  It is as if all package members have been implicitly <code>static</code> all along.
+<p><a name="15608"></a>
+In all classes, each current instance can be named explicitly or can play an 
+implicit part when its members are used.  Any current instance can be referred 
+to by explicitly qualifying the keyword <code>this</code> as if it were a name:  
+<code>FixedStack.this</code>, <code>Enumerator.this</code>, etc.  (This notation is always 
+effective, since the language prohibits an inner class from having the same 
+name as any of its enclosing classes.)  As always, the innermost current 
+instance can be named with the unqualified keyword <code>this</code>.
+<p><a name="13538"></a>
+Remember that an instance variable reference <var>m</var> has the same meaning as a 
+field reference expression <code>this.</code><var>m</var>, so the current instance is implicitly used.   
+In a given piece of code, all members of all current classes are in scope and 
+usable (except for name hiding by intervening scopes).  The simple name of a 
+member is implicitly qualified by the current instance in whose class the name 
+was found.  (All <code>static</code> members of enclosing classes are always usable.)
+<p><a name="15629"></a>
+In particular, Java code can directly use all methods of all current instances.  
+Class scoping does not influence overloading:  If the inner class has one <code>print</code> 
+method, the simple method name <code>print</code> refers to that method, not any of the 
+ten <code>print</code> methods in the enclosing class.
+<p><a name="15634"></a>
+<h2>		 Enclosing classes and instantiation
+</h2>
+<a name="15628"></a>
+It is sometimes useful to speak of an <em>enclosing instance</em> of an inner class <var>C</var>.  This 
+is defined as any current instance within <var>C</var>, other than the instance of <var>C</var> itself.  
+Every instance of <var>C</var> is permanently associated with its enclosing instances.
+<p><a name="13541"></a>
+When a constructor is invoked, the new object must be supplied with an 
+enclosing instance, which will become a current instance for all the code 
+executed by the new object.  (If there are layers of enclosing instances, the 
+innermost is required, and it in turn determines all the others.)  The enclosing 
+instance may be specified explicitly, by qualifying the keyword <code>new</code>: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="15682"></a>class Automobile {
+    <a name="15684"></a>    class Wheel {
+    <a name="15686"></a>        String hubcapType;
+    <a name="15687"></a>        float radius;
+    <a name="15685"></a>    }
+    <a name="15697"></a>
+    <a name="15743"></a>    Wheel leftWheel = this. new Wheel();
+    <a name="15728"></a>    Wheel rightWheel = this. new Wheel();
+    <a name="15734"></a>    Wheel extra;
+    <a name="15742"></a>
+    <a name="15729"></a>    static void thirdWheel(Automobile car) {
+    <a name="15735"></a>        if (car.extra == null) {
+    <a name="15736"></a>            car.extra = car. new Wheel();
+    <a name="15739"></a>        }
+    <a name="15730"></a>        return car.extra;
+    <a name="15731"></a>    }
+    <a name="15698"></a>}
+    <a name="15714"></a>
+    <a name="15715"></a>class WireRimWheel extends Automobile.Wheel {
+    <a name="15717"></a>    WireRimWheel(Automobile car, float wireGauge) {
+    <a name="15725"></a>        car. super();
+    <a name="15724"></a>    }
+    <a name="15716"></a>}
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="15679"></a>
+A subclass of an inner class <var>C</var> must pass an enclosing instance to <var>C</var>'s 
+constructor.  This may be done, as just shown, by explicitly qualifying the 
+keyword <code>super</code>.  By default, a current instance of the caller becomes the 
+enclosing instance of a new inner object.  In an earlier example, the expression 
+<code>new Enumerator()</code> is equivalent to the explicitly qualified <code>this.new 
+Enumerator()</code>.  This default is almost always correct, but some applications 
+(such as source code generators) may need to override it from time to time.
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc3.html">Prev</a> | <a href="innerclasses.doc5.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

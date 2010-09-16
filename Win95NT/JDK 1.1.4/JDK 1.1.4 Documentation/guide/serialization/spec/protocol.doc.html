@@ -1,0 +1,303 @@
+<html><head><title>Object Serialization Stream Protocol
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="version.doc.html">[Prev]</a> <a href="security.doc.html">[Next]</a>
+<hr><br>
+ 
+<h1><a name="8101">
+Object Serialization Stream Protocol
+
+</a></h1>
+<hr><p>
+<p>
+<p><h3><a name="8121">
+Topics:
+</a></h3><ul><li><a href="protocol.doc.html#8130">Overview</a>
+<li><a href="protocol.doc.html#8299">Stream Elements</a>
+<li><a href="protocol.doc.html#5849">Grammar for the Stream Format</a>
+<li><a href="protocol.doc.html#9884">Example</a>
+</ul><h1><a name="8130">
+Overview
+</a></h1>The stream format is designed to satisfy the following goals:
+<p><ul><li>Be compact and structured for efficient reading.
+<li>Allow skipping through the stream using only the knowledge of the 
+structure and format of the stream. Do not require any per class code to be 
+invoked.
+<li>Require only stream access to the data.
+</ul><h1><a name="8299">
+Stream Elements
+</a></h1>A basic structure is needed to represent objects in a stream. Each attribute of 
+the object needs to be represented: its classes, its fields, and data written and 
+later read by class-specific methods. The representation of objects in the stream 
+can be described with a grammar. There are special representations for null 
+objects, new objects, classes, arrays, strings, and back references to any object 
+already in the stream. Each object written to the stream is assigned a handle 
+that is used to refer back to the object. Handles are assigned sequentially 
+starting from zero. The handles restart at zero when the stream is reset.
+<p>A class object is represented by:
+<p><ul><li>Its ObjectStreamClass object.
+</ul>An ObjectStreamClass object is represented by:
+<p><ul><li>The Stream Unique Identifier (SUID) of compatible classes.
+<li>A flag indicating if the class had writeObject/readObject methods.
+<li>The number of nonstatic and nontransient fields.
+<li>The array of fields of the class that are serialized by the default mechanism. 
+For arrays and object fields, the type of the field is included as a string.
+<li>Optional block-data records or objects written by the annotateClass method.
+<li>The ObjectStreamClass of its supertype (null if the superclass is not 
+serializable).
+</ul>Strings are represented by their UTF encoding. Note, the current specification 
+and implementation of the modified UTF is restricts the total length of the 
+encoded string to 65535 characters.
+<p>Arrays are represented by:
+<p><ul><li>Their ObjectStreamClass object.
+<li>The number of elements.
+<li>The sequence of values. The type of the values is implicit in the type of the 
+array. for example the values of a byte array are of type byte.
+</ul>New objects in the stream are represented by:
+<p><ul><li>The most derived class of the object.
+<li>Data for each serializable class of the object, with the highest superclass 
+first. For each class the stream contains:
+<ul>
+<li>The default serialized fields (those fields not marked static or transient as 
+described in the corresponding ObjectStreamClass).
+<li>If the class has <code>writeObject</code>/<code>readObject</code> methods, there may be 
+optional objects and/or block-data records of primitive types written by 
+the <code>writeObject</code> method followed by an endBlockData code.
+</ul>
+</ul>All primitive data written by classes is buffered and wrapped in block-data 
+records whether the data is written to the stream within a <code>writeObject</code> 
+method or written directly to the stream from outside a <code>writeObject</code> method. 
+This data may only be read by the corresponding <code>readObject</code> methods or 
+directly from the stream. Objects written by <code>writeObject</code> terminate any 
+previous block-data record and are written as regular objects, or null or back 
+references as appropriate. The block-data records allow error recovery to 
+discard any optional data. When called from within a class, the stream can 
+discard any data or objects until the endBlockData.
+<p>
+<p><h1><a name="5849">
+Grammar for the Stream Format
+</a></h1>
+<p>The table below contains the grammar. Nonterminal symbols are shown in 
+italics. Terminal symbols in a fixed width font. Definitions of nonterminals are 
+followed by a ":". The definition is followed by one or more alternatives, each 
+on a separate line. The following table describes the notation: 
+<Table Border="3">
+<caption></caption>
+<tr><th>Notation
+<th>Meaning
+
+<tr><td><em>(datatype</em>)	
+<td>This token has the data type specified, 
+such as byte.
+
+<tr><td>token[n]
+<td>	A predefined number of occurrences of 
+the token, that is an array.
+
+<tr><td><strong>x0001</strong>	
+<td>A literal value expressed in hexadecimal. 
+The number of hex digits reflects the size 
+of the value.
+
+<tr><td>&lt;xxx&gt;
+<td>		A value read from the stream used to 
+indicate the length of an array.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+<p><h2><a name="9298">
+Rules of the Grammar
+</a></h2>A Serialized stream is represented by any stream satisfying the <em>stream</em> rule.
+<p><dl><pre><em>stream:
+	magic version contents
+</em></pre><pre><em>contents:
+	content
+	contents content
+</em></pre><pre><em>content:
+	object
+	blockdata
+</em></pre><pre><em>object:
+	newObject
+	newClass
+	newArray
+	newString
+	newClassDesc
+	prevObject
+	nullReference
+	exception
+	TC_RESET
+</em></pre><pre><em>newClass:
+	<strong>TC_CLASS</strong> classDesc newHandle
+</em></pre><pre><em>classDesc:
+	newClassDesc
+	nullReference
+	(ClassDesc)prevObject	// an object required to be of type ClassDesc
+</em></pre><pre><em>superClassDesc:
+	classDesc
+</em></pre><pre><em>newClassDesc:
+	<strong>TC_CLASSDESC</strong> className serialVersionUID	newHandle classDescInfo
+</em></pre><pre><em>classDescInfo:
+	classDescFlags fields classAnnotation superClassDesc 
+</em></pre><pre><em>className:
+	(utf)
+</em></pre><pre><em>serialVersionUID:
+	(long)
+</em></pre><pre><em>classDescFlags:
+	(byte)	// Defined in Terminal Symbols and Constants
+</em></pre><pre><em>fields:
+	(short)&lt;count&gt;  fieldDesc[count]	
+</em></pre><pre><em>fieldDesc:
+	primitiveDesc
+	objectDesc
+</em></pre><pre><em>primitiveDesc:
+	prim_typecode fieldName
+</em></pre><pre><em>objectDesc:
+	obj_typecode fieldName className
+</em></pre><pre><em>fieldName:
+	(utf)
+</em></pre><pre><em>className:
+	(String)object		// String containing the field's type
+</em></pre><pre><em>classAnnotation:
+	endBlockData
+	contents endBlockData	// contents written by annotateClass
+</em></pre><pre><em>prim_typecode:
+	<strong>`B'</strong> 	// byte
+	<strong>`C'</strong> 	// char
+	<strong>`D'</strong> 	// double
+	<strong>`F'</strong> 	// float
+	<strong>`I'</strong> 	// integer
+	<strong>`J'</strong> 	// long
+	<strong>`S' </strong>	// short
+	<strong>`Z' </strong>	// boolean
+</em></pre><pre><em>obj_typecode:
+	<strong>`[`</strong>	// array
+	<strong>`L'</strong> 	// object
+</em></pre><pre><em>newArray:
+	<strong>TC_ARRAY</strong> classDesc newHandle (int)&lt;size&gt; values[size]
+</em></pre><pre><em>newObject:
+	<strong>TC_OBJECT</strong> classDesc newHandle classdata[]	// data for each class
+</em></pre><pre><em>classdata:
+	nowrclass	// SC_WRRD_METHOD &amp; !classDescFlags
+	wrclass objectAnnotation	// SC_WRRD_METHOD &amp; classDescFlags 
+</em></pre><pre><em>nowrclass:
+	values	// fields in order of class descriptor
+</em></pre><pre><em>wrclass:
+	nowrclass
+</em></pre><pre><em>objectAnnotation:
+	endBlockData
+	contents endBlockData	// contents written by writeObject
+</em></pre><pre><em>blockdata:
+	<strong>TC_BLOCKDATA</strong> (byte)&lt;size&gt; (byte)[size]
+</em></pre><pre><em>blockdatalong:
+	<strong>TC_BLOCKDATALONG</strong> (int)&lt;size&gt; (byte)[size]
+</em></pre><pre><em>endBlockData	:
+	<strong>TC_ENDBLOCKDATA
+</strong></em></pre><pre><em>newString:
+	<strong>TC_STRING</strong> newHandle (utf)
+</em></pre><pre><em>prevObject	:
+	<strong>TC_REFERENCE</strong> (int)handle
+</em></pre><pre><em>nullReference	:
+	<strong>TC_NULL
+</strong></em></pre><pre><em>exception:
+<strong>	TC_EXCEPTION reset </strong>(Throwable)object	 reset 
+</em></pre><pre><em>resetContext:	
+	<strong>TC_RESET
+</strong></em></pre><pre><em>magic:	
+	<strong>STREAM_MAGIC
+</strong></em></pre><pre><em>version	:
+	<strong>STREAM_VERSION
+</strong></em></pre><pre><em>values:		// The size and types are described by the
+		// classDesc for the current object
+</em></pre><pre><em>newHandle:		// The next number in sequence is assigned
+			// to the object being serialized or deserialized
+</em></pre></dl><h2><a name="9303">
+Terminal Symbols and Constants
+</a></h2>The following symbols in java.io.ObjectStreamConstants define the terminal 
+and constant values expected in a stream.
+<p><dl><pre>	final static short STREAM_MAGIC = (short)0xaced;
+	final static short STREAM_VERSION = 5;
+	final static byte TC_NULL = (byte)0x70;
+	final static byte TC_REFERENCE = (byte)0x71;
+	final static byte TC_CLASSDESC = (byte)0x72;
+	final static byte TC_OBJECT = (byte)0x73;
+	final static byte TC_STRING = (byte)0x74;
+	final static byte TC_ARRAY = (byte)0x75;
+	final static byte TC_CLASS = (byte)0x76;
+	final static byte TC_BLOCKDATA = (byte)0x77;
+	final static byte TC_ENDBLOCKDATA = (byte)0x78;
+	final static byte TC_RESET = (byte)0x79;
+	final static byte TC_BLOCKDATALONG = (byte)0x7A;
+	final static byte TC_EXCEPTION = (byte)0x7B;
+</pre></dl>The flag byte classDescFlags may include values of
+<p><dl><pre>	final static byte SC_WRITE_METHOD = 0x01;
+	final static byte SC_SERIALIZABLE = 0x02;
+	final static byte SC_EXTERNALIZABLE = 0x04;
+</pre></dl>The flag SC_WRITE_METHOD is set if the class writing the stream had a 
+writeObject method that may have written additional data to the stream. In 
+this case a TC_ENDBLOCKDATA marker is always expected to terminate the 
+data for that class.
+<p>The flag SC_SERIALIZABLE is set if the class that wrote the stream extended 
+<code>java.io.Serializable</code> but not java.io.Externalizable, the class reading the 
+stream must also extend Serializable and the default serialization mechanism is 
+to be used.
+<p>The flag SC_EXTERNALIZABLE is set if the class that wrote the stream 
+extended <code>java.io.Externalizable</code>, the class reading the data must also 
+extend Externalizable and the data will be read using it's writeExternal and 
+readExternal methods.
+<p><h1><a name="9884">
+Example
+</a></h1>Consider the case of an original class and two instances in a linked list:
+<p><dl><pre>class List implements java.io.Serializable {
+	int value;
+	List next;
+	public static void main(String[] args) {
+		try {
+			List list1 = new List();
+			List list2 = new List();
+			list1.value = 17;
+			list1.next = list2;
+			list2.value = 19;
+			list2.next = null;
+
+			ByteArrayOutputStream o = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(o);
+			out.writeObject(list1);
+			out.writeObject(list2);
+			out.flush();
+			...
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+}
+</pre></dl>The resulting stream contains:
+<p><dl><pre>00: ac ed 00 05 73 72 00 04 4c 69 73 74 69 c8 8a 15 &gt;....sr..Listi...&lt;
+</pre><pre>10: 40 16 ae 68 02 00 02 49 00 05 76 61 6c 75 65 4c &gt;Z......I..valueL&lt;
+</pre><pre>20: 00 04 6e 65 78 74 74 00 06 4c 4c 69 73 74 3b 78 &gt;..nextt..LList;x&lt;
+</pre><pre>30: 70 00 00 00 11 73 71 00 7e 00 00 00 00 00 13 70 &gt;p....sq.~......p&lt;
+</pre><pre>40: 71 00 7e 00 03                                  &gt;q.~..&lt;
+</pre><pre>
+</pre></dl>
+<hr><br>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="version.doc.html">[Prev]</a> <a href="security.doc.html">[Next]</a>
+<hr><br>
+ 
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email rmi-support@javasoft.com -->
+<!-- -->
+<!-- Last updated: 02/04/97 19:22:12 -->
+
+</body>
+</html>

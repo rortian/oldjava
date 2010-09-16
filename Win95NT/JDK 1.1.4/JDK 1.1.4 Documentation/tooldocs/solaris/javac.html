@@ -1,0 +1,229 @@
+<html>
+<head>
+<title>javac - The Java Compiler</title>
+</head>
+<BODY BGCOLOR="#FFFFFF">
+
+<h1>javac - The Java Compiler</h1>
+<blockquote>
+<b>javac</b> compiles Java programs.
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+<blockquote>
+<pre>
+javac [ <a href="javac.html#Options">options</a> ] filename.java ...
+javac_g [ <a href="javac.html#Options">options</a> ] filename.java ...
+</pre>
+</blockquote>
+
+<h2>DESCRIPTION</h2>
+<blockquote>
+The <b>javac</b> command compiles Java source code into Java bytecodes.
+You then use the Java interpreter - the <a href="java.html"><b>java</b></a>
+command - to interprete the Java bytecodes.
+
+<p>
+Java source code must be contained in files whose filenames end with the
+<code>.java</code> extension.
+The file name must be constructed from the class name,
+as <i>classname</i><code>.java</code>,
+if the class is public or is referenced from another source file.
+
+<p>
+For every class defined in each source file compiled by <b>javac</b>,
+the compiler stores the resulting bytecodes in a <em>class file</em>
+with a name of the form <i>classname</i><code>.class</code>.
+Unless you specify the <b>-d</b> option, the compiler places each class file
+in the same directory as the corresponding source file.
+
+<p>
+When the compiler must refer to your own classes you need to specify their 
+location.
+Use the <b>-classpath</b> option or <b>CLASSPATH</b> environment variable to 
+do this.
+The class path is a sequence of directories (or zip files) which
+<b>javac</b> searches for classes not already defined in any of the
+files specified directly as command arguments.
+The compiler looks in the class path for both a source file and a class file,
+recompiling the source (and regenerating the class file) if it is newer.
+
+<p>
+Set the property <code>javac.pipe.output</code> to <code>true</code> to send 
+output messages to <code>System.out</code>. Set <code>javac.pipe.output</code> 
+to <code>false</code>, that is, do not set it, to send output messages to 
+<code>System.err</code>.
+<p>
+<b>javac_g</b> is a non-optimized version of <b>javac</b> suitable for
+use with debuggers like <a href=jdb.html><b>jdb</b></a>.
+</blockquote>
+
+<a name=Options>
+<h2>OPTIONS</h2>
+</a>
+<blockquote>
+
+<dl>
+
+<dt><b>-classpath</b><i> path</i>
+<dd>
+Specifies the path <b>javac</b> uses to look up classes needed to run
+<b>javac</b> or being referenced by other classes you are compiling.
+Overrides the default or the <b>CLASSPATH</b> environment variable if
+it is set.  Directories are separated by colons.  It is often useful
+for the directory containing the source files to be on the class path.
+You should always include the system classes at the end of the path.
+For example:
+<pre>
+   javac -classpath .:/home/avh/classes:/usr/local/java/classes ...
+</pre>
+
+<p>
+
+<dt><b>-d</b><i> directory</i>
+<dd>
+Specifies the root directory of the class file hierarchy. In other
+words, this is essentially a destination directory for your compiled
+classes.  For example, doing:
+<pre>
+   javac -d /home/avh/classes MyProgram.java
+</pre>
+
+causes the compiled class files for the classes in the
+<code>MyProgram.java</code> source file to be saved in the directory
+<code>/home/avh/classes</code>.
+
+<p>
+Note that the <b>-d</b> and <b>-classpath</b> options have independent
+effects.  The compiler reads only from the class path, and writes only
+to the destination directory.
+It is often useful for the destination directory to be on the class path.
+If the <b>-d</b> option is not specified, the source files should be
+stored in a directory hierarchy which reflects the package structure,
+so that the resulting class files can be easily located.
+<p>
+
+<dt><b>-encoding</b><i> encoding name</i>
+<dd>
+Specify the source file encoding name, such as <code>EUCJIS/SJIS</code>. If 
+this option is not specified, then the platform default converter is used.
+
+<p>
+
+<dt><b>-g</b>
+<dd>
+Enables generation of debugging tables. Debugging tables contain 
+information about line numbers and local variables - information used
+by Java debugging tools. By default, only line numbers are generated, unless
+optimization (<b>-O</b>) is turned on.
+<p>
+
+<dt><b>-deprecation</b>
+<dd>
+Enables deprecation warnings. The compiler will emit a warning for
+each use of a deprecated member or class (unless the deprecated
+member or class is also being compiled or recompiled). A class or
+member is deprecated if it contains a documentation comment with the
+tag <tt>@deprecated</tt>. 
+<p>
+
+<dt><b>-nowarn</b>
+<dd>
+Turns off warnings. If used the compiler does not print out any warnings.
+<p>
+
+<dt><b>-O</b>
+<dd>
+Optimizes compiled code by inlining static, final and private methods. 
+Note that your classes may get larger in size.
+<p>
+
+<dt><b>-verbose</b>
+<dd>
+Causes the compiler and linker to print out messages about what source 
+files are being compiled and what class files are being loaded.
+<p>
+
+<dt><b>-depend</b>
+<dd>
+Causes recompilation of class files on which
+the source files given as command line arguments recursively depend.
+Without this option, only files that are directly depended on and
+missing or out-of-date will be recompiled.  Recompilation does not
+extend to missing or out-of-date files only depended on by already
+up-to-date class files.
+<p>
+
+<dt><b>-J</b><i>javaoption</i>
+<dd>
+Passes through the string <i>javaoption</i> as a single argument to the
+Java interpreter which runs the compiler.  The argument should not
+contain spaces.  Multiple argument words must all begin with the prefix
+<b>-J</b>, which is stripped.  This is useful for adjusting the
+compiler's execution environment or memory usage.
+
+</dl>
+</blockquote>
+
+<h2>EXAMPLES</h2>
+<blockquote>
+Each package name has a corresponding directory name. 
+In the following examples, the source files are located at 
+<code>/home/ws/src/java/awt/*.java</code>.
+ 
+<h3>Compiling One or More Packages</h3>
+
+To compile a package, the source files (<code>*.java</code>) for that package 
+must be located in a directory having the same name as the package.
+If a package name is made up of several identifiers (separated by
+dots), each identifier represents a different directory.
+Thus, all java.awt classes must reside in a directory named java/awt/.
+<p>
+
+First, change to the parent directory of the top-most package. Then 
+run javac, supplying one or more package names.
+<pre>
+  % cd /home/ws/src/
+  % javac java.awt java.awt.event
+</pre>
+Compiles the public classes in packages <code>java.awt</code> and
+<code>java.awt.event</code>.
+
+<h3>Compiling One or More Classes</h3>
+
+Change to the directory holding the class.  Then run javac, supplying
+one or more class names.
+<pre>
+  % cd /home/ws/src/java/awt/
+  % javac Button.java Canvas.java
+</pre>
+Compiles the two classes.
+</blockquote>
+
+<h2>ENVIRONMENT VARIABLES</h2>
+<blockquote>
+
+<dl>
+
+<dt><b>CLASSPATH</b>
+<dd>
+Used to provide the system a path to user-defined classes. Directories are
+separated by colons, for example,
+<pre>
+.:/home/avh/classes:/usr/local/java/classes
+</pre>
+
+</dl>
+</blockquote>
+
+<h2>SEE ALSO</h2>
+<blockquote>
+<a href="java.html">java</a>,
+<a href="jdb.html">jdb</a>,
+<a href="javah.html">javah</a>,
+<a href="javap.html">javap</a>,
+<a href="javadoc.html">javadoc</a>,
+<a href="classpath.html">CLASSPATH</a>
+</blockquote>
+</body>
+</html>

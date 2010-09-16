@@ -1,0 +1,101 @@
+<html><head><title>Introduction	
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmiTOC.doc.html">[Prev]</a> <a href="rmi-objmodel.doc.html">[Next]</a>
+<hr><br>
+ 
+<a name="60">
+<h1>Introduction	
+</h1>
+</a>
+<hr><p><a name="64">
+
+<p>
+</a><h3><a name="419">
+Topics:
+</a></h3><ul><li><a href="rmi-intro.doc.html#718">Overview</a>
+<li><a href="rmi-intro.doc.html#215">System Goals</a>
+</ul><h1><a name="718">
+Overview
+</a></h1>Distributed systems require that computations running in different address 
+spaces, potentially on different hosts, be able to communicate. For a basic 
+communication mechanism, the Java language supports sockets, which are 
+flexible and sufficient for general communication. However, sockets require the 
+client and server to engage in applications-level protocols to encode and 
+decode messages for exchange, and the design of such protocols is 
+cumbersome and can be error-prone. 
+<p>An alternative to sockets is Remote Procedure Call (RPC), which abstracts the 
+communication interface to the level of a procedure call. Instead of working 
+directly with sockets, the programmer has the illusion of calling a local 
+procedure, when in fact the arguments of the call are packaged up and shipped 
+off to the remote target of the call. RPC systems encode arguments and return 
+values using an external data representation, such as XDR.
+<p>RPC, however, does not translate well into distributed object systems, where 
+communication between program-level <em>objects</em> residing in different address 
+spaces is needed. In order to match the semantics of object invocation, 
+distributed object systems require <em>remote method invocation</em> or RMI. In such 
+systems, a local surrogate (stub) object manages the invocation on a remote 
+object.
+<p>The Java remote method invocation system described in this specification has 
+been specifically designed to operate in the Java environment. While other RMI 
+systems can be adapted to handle Java objects, these systems fall short of 
+seamless integration with the Java system due to their interoperability 
+requirement with other languages. For example, CORBA presumes a 
+heterogeneous, multilanguage environment and thus must have a language-
+neutral object model. In contrast, the Java language's RMI system assumes the 
+homogeneous environment of the Java Virtual Machine, and the system can 
+therefore take advantage of the Java object model whenever possible.
+<p><h1><a name="215">
+System Goals
+</a></h1>The goals for supporting distributed objects in the Java language are:
+<p><ul><li>Support seamless remote invocation on objects in different virtual machines.
+<li>Support callbacks from servers to applets.
+<li>Integrate the distributed object model into the Java language in a natural 
+way while retaining most of the Java language's object semantics.
+<li>Make differences between the distributed object model and local Java object 
+model apparent.
+<li>Make writing reliable distributed applications as simple as possible.
+<li>Preserve the safety provided by the Java runtime environment.
+</ul>Underlying all these goals is a general requirement that the RMI model be both 
+simple (easy to use) and natural (fits well in the language).
+<p>In addition, the RMI system should allow extensions such as garbage collection 
+of remote objects, server replication, and the activation of persistent objects to 
+service an invocation. These extensions should be transparent to the client and 
+add minimal implementation requirements on the part of the servers that use 
+them. To support these extensions, the system should also support:
+<p><ul><li>Several invocation mechanisms; for example simple invocation to a single 
+object or invocation to an object replicated at multiple locations. The system 
+should also be extensible to other invocation paradigms.
+<li>Various reference semantics for remote objects; for example live 
+(nonpersistent) references, persistent references, and lazy activation. 
+<li>The safe Java environment provided by security managers and class loaders.
+<li>Distributed garbage collection of active objects.
+<li>Capability of supporting multiple transports.
+</ul>The first two chapters in this specification describe the distributed object model 
+for the Java language and the system architecture. The remaining chapters 
+describe the RMI client and server visible APIs which are part of JDK 1.1.
+<p>
+<hr><br>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmiTOC.doc.html">[Prev]</a> <a href="rmi-objmodel.doc.html">[Next]</a>
+<hr><br>
+ 
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email  -->
+<!-- -->
+<!-- Last updated: 03/18/97 12:59:12 -->
+
+</body>
+</html>

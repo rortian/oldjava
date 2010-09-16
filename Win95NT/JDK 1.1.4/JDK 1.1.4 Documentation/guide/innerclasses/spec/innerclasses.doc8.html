@@ -1,0 +1,124 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc7.html">Prev</a> | <a href="innerclasses.doc9.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="10676"></a>
+<h1> How does the Java Language Specification change for inner classes?
+</h1>
+<a name="11665"></a>
+There are few significant changes, since the new features primarily relax 
+restrictions in the existing language, and work out new implications for the old 
+design.  The key change is that types can now have types as members.  (But 
+type names can't contain instance expressions.)  The basic definitions of scope, 
+name scoping, member naming, and member access control are unchanged.
+<p><a name="11666"></a>
+Here are the extensions to the class body and block syntax:
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="17672"></a><var>ClassMemberDeclaration, InterfaceMemberDeclaration:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ClassDeclaration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InterfaceDeclaration
+</var><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="17540"></a><var>BlockStatement:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ClassDeclaration
+</var><br><br><a name="17561"></a>
+A type which is a type member is inherited by subtypes, and may be hidden in 
+them by type declarations of the same name.  (Types are never "virtual.")  
+Members which are types may be declared <code>private</code> or <code>protected</code>.<code>
+</code><p><a name="17642"></a>
+A non-<code>static</code> member class, or a class defined by a block or expression, is an 
+<em>inner</em> class.  All other classes are <em>top-level</em>.  Inner classes may not declare 
+<code>static</code> members, <code>static</code> initializers, or member interfaces.  Package 
+members are never <code>static</code>.  But a class which is a member of a top-level class 
+may be declared <code>static</code>, thereby declaring it also to be a top-level class.  
+Interfaces are always <code>static</code>, as are their non-method members.
+<p><a name="17673"></a>
+A class may not have the same simple name as any of its enclosing classes.
+<p><a name="17562"></a>
+The keyword <code>this</code> can be qualified, to select one of possibly several current 
+instances.  (Inner classes have two or more current instances.)
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="11606"></a><var>PrimaryNoNewArray:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ClassName </var><code>.</code> <code>this
+</code><br><br><a name="13677"></a>
+The syntax for class instance creation extended to support anonymous classes 
+and enclosing instances:
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="13704"></a><var>ClassInstanceCreationExpression:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</var>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>new</code> <var>TypeName </var>(<var> ArgumentList</var><sub><i>opt</i></sub> <code>)</code> <var>ClassBody</var><sub><i>opt<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</i></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<var>Primary</var> <code>.</code> <code>new</code> <var>Identifier</var> <code>(</code> <var>ArgumentList</var><sub><i>opt </i></sub><code>)</code> <var>ClassBody</var><sub><i>opt
+</i></sub><br><br><a name="13698"></a>
+A <code>new</code> expression may define an anonymous class by specifying its body.  
+Independently, the type of a <code>new</code> expression may specified as the simple name 
+of an inner class, if an instance of the immediately enclosing class is given as a 
+qualifying expression before the keyword <code>new</code>.  The qualifying instance 
+becomes the enclosing instance of the new object.  A corresponding 
+qualification of <code>super</code> allows a subclass constructor to specify an enclosing 
+instance for a superclass which is an inner:
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="17718"></a><var>ExplicitConstructorInvocation:  ...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</var>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<var> Primary</var> <code>.</code> <code>super</code> <code>(</code> <var>ArgumentList</var><sub><i>Opt</i></sub> <code>)</code> <code>;
+</code><br><br><a name="11544"></a>
+If an inner class is constructed by an unqualified <code>new</code> or <code>super</code> expression, the 
+enclosing instance will be the (innermost) current instance of the required type.
+<p><a name="17902"></a>
+Some of the detailed descriptions of name binding in the 1.0 Java Language 
+Specification require amendment to reflect the new regularity in lexical 
+scoping.  For example, a simple variable name refers to the innermost lexically 
+apparent definition, whether that definition comes from a class or a block.  The 
+same is true for simple type names.  The grammar for a qualifier name (i.e., an 
+<var>AmbiguousName</var>) is extended to reflect the possibility of class names qualifying 
+other type names.  The initial simple name in a qualified type name is taken to 
+be a class name if a class of that name is in scope; otherwise it is taken to be a 
+package name, as in Java 1.0.
+<p><a name="17934"></a>
+Any inherited member <var>m</var> of a subclass <var>C</var> is in scope within the body of <var>C</var>, 
+including any inner classes within <var>C</var>.  If <var>C</var> itself is an inner class, there may be 
+definitions of the same kind (variable, method, or type) for <var>m</var> in enclosing 
+scopes.   (The scopes may be blocks, classes, or packages.)  In all such cases, the 
+inherited member <var>m</var> hides the other definitions of <var>m</var>.  Additionally, unless the 
+hidden definition is a package member, the simple name <var>m</var> is illegal; the 
+programmer must write <var>C</var><code>.this.</code><var>m</var>.
+<p><a name="18352"></a>
+Nested classes of all sorts (top-level or inner) can be imported by either kind of 
+<code>import</code> statement.  Class names in <code>import</code> statements must be fully package 
+qualified, and be resolvable without reference to inheritance relations.  As in 
+Java 1.0, it is illegal for a class and a package of the same name to co-exist.
+<p><a name="20001"></a>
+A <code>break</code> or <code>continue</code> statement must refer to a label within the immediately 
+enclosing method or initializer block.  There are no non-local jumps.
+<p><a name="20004"></a>
+The checking of definite assignment includes classes defined by blocks and 
+expressions, and extends to occurrences of variables within those classes.  Any 
+local variable used but not defined in an inner class must be declared <code>final</code>, 
+and must be definitely assigned before the body of the inner class.
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc7.html">Prev</a> | <a href="innerclasses.doc9.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

@@ -1,0 +1,115 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc2.html">Prev</a> | <a href="innerclasses.doc4.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="12534"></a>
+<h1> Why does Java  need inner classes?
+</h1>
+<a name="15178"></a>
+From the very beginnings of Java, its designers have recognized the need for a 
+construct like a "method pointer," which (in all its various forms) amounts to a 
+handle on an individual block of code which can be used without reference to 
+the object or class containing the code.  In languages (like C or Lisp) where 
+functions are free standing, independent of objects, function pointers serve this 
+role.  For example, these pointers often serve to connect a "callback" or "event" 
+in one module to a piece of code in another.   In a more object oriented style, 
+Smalltalk has "blocks," which are chunks of code that behave like little objects.  
+As with C or Lisp function pointers, Smalltalk blocks can be used to organize 
+complex control flow patterns, such as iteration over collections.
+<p><a name="10771"></a>
+In Java, the same complex control flow patterns, including event management 
+and iteration, are expressed by classes and interfaces.  Java uses interfaces with 
+one method where other languages might use separate "function types."  The 
+Java programmer creates the equivalent of a callback or a Smalltalk block by 
+wrapping the desired code in an adapter class which implements the required 
+interface.  With inner classes, the notation for adapters is about as simple as 
+that of Smalltalk blocks, or of inner functions in other languages.  However, 
+since classes are richer than functions (because they have multiple entry 
+points), Java adapter objects are more powerful and more structured than 
+function pointers.
+<p><a name="13388"></a>
+So, whereas C, Lisp, and Smalltalk programmers use variations of "method 
+pointers" to encapsulate chunks of code, Java programmers use objects.  Where 
+other languages have specialized function types and notations to encapsulate 
+behavior as functions, Java has only class and interface types.  In Java, "the 
+class is the quantum of behavior."  One benefit of this approach is simplicity 
+and stability for the Java Virtual Machine, which needs no special support for 
+inner classes or function pointers.
+<p><a name="13591"></a>
+Without inner classes, Java programmers can create callbacks and iterators by 
+means of adapter classes defined at top-level, but the notation is so clumsy as 
+to be impractical.  By means of inner classes, Java programmers can write 
+concise adapter classes which are coded precisely where they are needed, and 
+operate directly on the internal variables and methods of a class or a block.
+<p><a name="18278"></a>
+Thus, inner classes make adapter classes practical as a coding style.  In the 
+future, inner classes will also be more efficient than equivalent top-level 
+adapter classes, because of increased opportunities for optimization, especially 
+of (externally) inaccessible classes.
+<p><a name="13592"></a>
+<h2>		 Why anonymous classes?
+</h2>
+<a name="19915"></a>
+An anonymous class is an abbreviated notation for creating a simple local 
+object "in-line" within any expression, simply by wrapping the desired code in 
+a "<code>new</code>" expression.
+<p><a name="19913"></a>
+As noted previously, not every inner class should be anonymous, but very 
+simple "one-shot" local objects are such a common case that they merit some 
+syntactic sugar.
+<p><a name="18323"></a>
+Anonymous classes are useful for writing small encapsulated "callbacks," such 
+as enumerations, iterators, visitors, etc.  They are also helpful for adding 
+behavior to objects which already have names, such as AWT components (to 
+which anonymous event handlers are added), and threads.  In both cases, an 
+intervening class name can detract from the clarity of the code.
+<p><a name="18348"></a>
+Several other languages from which Java derives inspiration, such as Smalltalk 
+and Beta, offer similar shorthands for anonyous objects or functions.
+<p><a name="15242"></a>
+<h2>		 What about dynamic typing and computed selectors ("<code><b>perform</b></code>")?
+</h2>
+<a name="12746"></a>
+In order to support the construction of robust and secure systems, Java is 
+statically typed.  In other languages, callbacks sometimes take a form which is 
+untyped, or dynamically typed.  C callbacks usually work with an untyped 
+"client data" address, while Smalltalk classes sometimes plug into each other 
+by means of symbolic method references computed at run time, which are 
+passed to an interpretive "<code>perform</code>" method. 
+<p><a name="19929"></a>
+The closest equivalent to a C <code>void*</code> pointer in Java is a reference of type 
+<code>Object</code>.  As in C, it is possible to program in Java with such "untyped" 
+references.  A generic "argument" field in an event descriptor might be an 
+undifferentiated <code>Object</code>, as is the element type of <code>java.util.Vector</code>.  
+Coding with untyped references is sometimes a workable technique, despite 
+the execution costs of dynamic type checking, but the lack of static declarations 
+can make programs hard to understand and maintain.
+<p><a name="12747"></a>
+Also, some applications for "method pointer" constructs, such as application 
+builders or the Java Beans component framework, have needed the ability to 
+invoke a method of a computed name on an arbitrary object.  This capability is 
+provided by the Java Core Reflection API, <code>java.lang.reflect</code>, a new Java 
+1.1 API.
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc2.html">Prev</a> | <a href="innerclasses.doc4.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

@@ -1,0 +1,155 @@
+<html><head><title>Registry Interfaces
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-server.doc.html">[Prev]</a> <a href="rmi-stubs.doc.html">[Next]</a>
+<hr><br>
+ 
+<a name="60">
+<h1>Registry Interfaces
+</h1>
+</a>
+<hr><p><a name="64">
+
+<p>
+</a>The RMI system uses the <code>java.rmi.registry.Registry</code> interface and the 
+<code>java.rmi.registry.LocateRegistry</code> class to provide a well-known 
+bootstrap service for retrieving and registering objects by simple names. Any 
+server process can support its own registry or a single registry can be used for 
+a host.
+<p>A <em>registry</em> is a remote object that maps names to remote objects. A registry can 
+be used in a virtual machine with other server classes or standalone.
+<p>The methods of <code>LocateRegistry</code> are used to get a registry operating on a 
+particular host or host and port.
+<p><h3><a name="6513">
+Topics:
+</a></h3><ul><li><a href="rmi-registry.doc.html#186">The Registry Interface</a>
+<li><a href="rmi-registry.doc.html#6378">The LocateRegistry Class</a>
+<li><a href="rmi-registry.doc.html#6564">The RegistryHandler Interface</a>
+</ul><h1><a name="186">
+The Registry Interface
+</a></h1>The <code>java.rmi.registry.Registry</code> remote interface provides methods for 
+lookup, binding, rebinding, unbinding, and listing the contents of a registry. 
+The <code>java.rmi.Naming</code> class uses the <code>registry</code> remote interface to provide 
+URL-based naming.
+<p><dl><a name="4655"><pre>package java.rmi.registry;
+
+public interface Registry extends java.rmi.Remote
+{
+</pre></a><a name="6587"><pre>	public static final int REGISTRY_PORT = 1099;
+
+	public java.rmi.Remote lookup(String name)
+		throws java.rmi.RemoteException,
+		java.rmi.NotBoundException, java.rmi.AccessException;
+
+	public void bind(String name, java.rmi.Remote obj)
+		throws java.rmi.RemoteException,
+		java.rmi.AlreadyBoundException, java.rmi.AccessException;
+
+	public void rebind(String name, java.rmi.Remote obj)
+		throws java.rmi.RemoteException, java.rmi.AccessException;
+
+	public void unbind(String name)
+		throws java.rmi.RemoteException,
+		java.rmi.NotBoundException, java.rmi.AccessException;
+
+	public String[] list()
+		throws java.rmi.RemoteException, java.rmi.AccessException;
+}
+</pre></a></dl>The <code>REGISTRY_PORT</code> is the default port of the registry.
+<p>The <code>lookup</code> method returns the remote object bound to the specified name. The 
+remote object implements a set of remote interfaces. Clients can cast the remote 
+object to the expected remote interface. (This cast can fail in the usual ways 
+that casts can fail in the Java language.)
+<p>The <code>bind</code> method associates the name with the remote object, obj. If the name is 
+already bound to an object the <code>AlreadyBoundExcepton</code> is thrown.
+<p>The <code>rebind</code> method associates the name with the remote object, obj. Any 
+previous binding of the name is discarded.
+<p>The <code>unbind</code> method removes the binding between the name and the remote 
+object, obj. If the name is not already bound to an object the 
+<code>NotBoundException</code> is thrown.
+<p>The <code>list</code> method returns an array of <code>Strings</code> containing a snapshot of the 
+names bound in the registry. The return value contains a snapshot of the 
+contents of the registry.
+<p>Clients can access the registry either by using the <code>LocateRegistry</code> and 
+<code>Registry</code> interfaces or by using the methods of the URL-based 
+<code>java.rmi.Naming</code> class. The registry supports <code>bind</code>, <code>unbind</code>, and <code>rebind</code> 
+only from clients on the same host as the server; a lookup can be done from 
+any host.
+<p><h1><a name="6378">
+The LocateRegistry Class
+</a></h1>The class <code>java.rmi.registry.LocateRegistry</code> contains static methods 
+that return a reference to a registry on the current host, current host at 
+specified port, a specified host or at a particular port on a specified host. What 
+is returned is the remote stub for the registry with the specified host and port 
+information. No remote operations need be performed to obtain a reference 
+(stub) for any registry on any host.
+<p><dl><a name="3295"><pre>package java.rmi.registry;
+public final class LocateRegistry {
+	public static Registry getRegistry()
+		throws java.rmi.RemoteException;
+
+	public static Registry getRegistry(int port)
+		throws java.rmi.RemoteException;
+
+	public static Registry getRegistry(String host)
+		throws java.rmi.RemoteException,
+		java.rmi.UnknownHostException;
+
+	public static Registry getRegistry(String host, int port)
+		throws java.rmi.RemoteException,
+		java.rmi.UnknownHostException;
+
+	public static Registry createRegistry(int port)
+		throws java.rmi.RemoteException;
+}
+</pre></a></dl>The <code>createRegistry</code> method creates and exports a registry on the local host 
+on the specified port. The registry implements a simple flat naming syntax that 
+binds the name of a remote object (a string) to a remote object reference. The 
+name and remote object bindings are not remembered across server restarts.
+<p><em>Starting a registry with the <code>createRegistry</code> method does not keep 
+the server process alive.
+</em><p><h1><a name="6564">
+The RegistryHandler Interface
+</a></h1>The interface <code>RegistryHandler</code> is used to interface to the private 
+implementation.
+<p><dl><a name="6566"><pre>package java.rmi.registry;
+
+public interface RegistryHandler {
+
+	Registry registryStub(String host, int port)
+		throws java.rmi.RemoteException, 
+		java.rmi.UnknownHostException;
+
+	Registry registryImpl(int port) 
+		throws java.rmi.RemoteException;
+}
+</pre></a></dl>The method <code>registryStub</code> returns a stub for contacting a remote registry on 
+the specified host and port.
+<p>The method <code>registryImpl</code> constructs and exports a registry on the specified 
+port. The port must be nonzero.
+<p>
+<p>
+<hr><br>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-server.doc.html">[Prev]</a> <a href="rmi-stubs.doc.html">[Next]</a>
+<hr><br>
+ 
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email  -->
+<!-- -->
+<!-- Last updated: 03/18/97 13:00:03 -->
+
+</body>
+</html>

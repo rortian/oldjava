@@ -1,0 +1,166 @@
+<html>
+<head>
+<title>rmic - The Java RMI Stub Compiler</title>
+</head>
+<BODY BGCOLOR="#FFFFFF">
+
+<h1>rmic - The Java RMI Stub Compiler</h1>
+<blockquote>
+<b>rmic</b> generates stubs and skeletons for remote objects.
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+<blockquote>
+<pre>
+rmic [ <a href="rmic.html#Options">options</a> ] <i>package-qualified-class-name(s)</i>
+</pre>
+</blockquote>
+
+<h2>DESCRIPTION</h2>
+<blockquote>
+The <b>rmic</b> compiler generates stub and skeleton class files for
+remote objects from the names of compiled Java classes that contain
+remote object implementations (a remote object is one that implements
+the interface <code>java.rmi.Remote</code>). The classes named in the
+<b>rmic</b> command must be classes that have been compiled
+successfully with the <b>javac</b> command and must be fully package
+qualified. For example, running <b>rmic</b> on the class file name
+<code>HelloImpl</code> as shown here:
+<pre>
+rmic hello.HelloImpl
+</pre>
+<p>
+creates the <code>HelloImpl_Skel.class</code> and <code>HelloImpl_Stub.class</code> files.
+<p>
+A skeleton for a remote object is a server-side entity that contains a method which dispatches calls to the actual remote object implementation.
+<p>
+A stub is a proxy for a remote object which is responsible for forwarding
+method invocations on remote objects to the server where the actual remote object implementation resides. A client's reference to a 
+remote object, therefore, is actually a reference to a local stub.
+<p>
+The stub implements only the remote interfaces, not any local
+interfaces that the remote object also implements. Because the
+stub implements exactly the same set of remote interfaces as the remote
+object itself, a client can use the Java language's built-in operators
+for casting and type checking.
+<p>
+</blockquote>
+
+<a name=Options>
+<h2>OPTIONS</h2>
+</a>
+<blockquote>
+
+<dl>
+
+<dt><b>-classpath path</b>
+<dd>
+Specifies the path <b>rmic</b> uses to look up classes.
+This option overrides the default or the CLASSPATH environment
+variable if it is set. Directories are separated by semi-colons. Thus the general 
+format for <i>path</i> is:
+<blockquote>
+<pre>
+.;&lt;your_path&gt;
+</pre>
+</blockquote>
+For example:
+<blockquote>
+<pre>
+.;C:\usr\local\java\classes
+</pre>
+</blockquote>
+<p>
+<dt><b>-d directory</b>
+<dd>
+     Specifies the root directory of the class hierarchy. You can use this
+     option to specify a destination directory for the stub and skeleton 
+     files. For example, the command 
+<blockquote><pre>
+% rmic -d C:\java\classes foo.MyClass
+</pre></blockquote>
+     would place the stub and skeleton classes derived from MyClass into
+     the directory <tt>C:\java\classes\foo</tt>.  If the <tt>-d</tt> option 
+     is not used, the package hierarchy of the target class is ignored, and 
+     stub and skeleton files are placed in the current directory.
+<p>
+
+<dt><b>-depend</b>
+<dd>
+Makes the compiler consider recompiling classes which are
+referenced from other classes.  Normally, it only recompiles missing or
+out-of-date classes that are referred to from source code.
+<p>
+
+<dt><b>-g</b>
+<dd>
+Enables generation of debugging tables. Debugging tables contain 
+information about line numbers and local variables - information used
+by Java debugging tools. By default, only line numbers are generated, unless
+optimization (<i>-O</i>) is turned on.
+<p>
+
+
+<dt><b>-keepgenerated</b>
+<dd>
+Retains the generated <code>.java</code> source files for the stubs and
+skeletons and writes them to the same directory as the
+<code>.class</code> files, using the <i>-d</i> option if specified.
+<p>
+
+<dt><b>-nowarn</b>
+<dd>
+Turns off warnings. If used the compiler does not print out any warnings.
+<p>
+
+<dt><b>-O</b>
+<dd>
+Optimizes compiled code by inlining static, final and private methods. 
+Note that your classes may get larger in size.
+<p>
+
+
+<dt><b>-show</b>
+<dd>
+Shows the GUI (graphical user interface) for the <b>rmic</b>
+compiler.  Enter one or more package qualified class names
+(separated by spaces) and press either the Enter key or the Show button
+to create stubs and skeletons.
+<p>
+
+
+<dt><b>-verbose</b>
+<dd>
+Causes the compiler and linker to print out messages about what classes 
+are being compiled and what class files are being loaded.
+<p>
+
+</dl>
+</blockquote>
+
+<h2>ENVIRONMENT VARIABLES</h2>
+<blockquote>
+
+<dl>
+
+<dt><b>CLASSPATH</b>
+<dd>
+Used to provide the system a path to user-defined classes. Directories are
+separated by colons on UNIX and Macintosh and by semicolons on Win95.
+For example,
+<blockquote>
+<pre>
+.;C:\usr\local\java\classes
+</pre>
+</blockquote>
+
+</dl>
+</blockquote>
+
+<h2>SEE ALSO</h2>
+<blockquote>
+<a href="javac.html">javac</a>,
+<a href="classpath.html">CLASSPATH</a>
+</blockquote>
+</body>
+</html>

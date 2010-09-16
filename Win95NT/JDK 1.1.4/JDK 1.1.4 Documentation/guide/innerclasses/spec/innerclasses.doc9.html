@@ -1,0 +1,186 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc8.html">Prev</a> | <a href="innerclasses.doc10.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="20006"></a>
+<h1> Other changes in the Java 1.1 language
+</h1>
+<a name="16013"></a>
+The Java 1.1 language includes four additional extensions which fill small 
+holes in the language, and make certain kinds of APIs easier to use.
+<p><a name="16014"></a>
+<h2>		 Instance initializers
+</h2>
+<a name="16020"></a>
+The static initializer syntax is extended to support instance initialization also:
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="16021"></a><var>ClassBodyDeclaration:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Block
+</var><br><br><a name="17853"></a>
+Initialization code introduced without the <code>static</code> keyword is executed by 
+every constructor, just after the superclass constructor is called, in textual order 
+along with any instance variable initializations.
+<p><a name="16015"></a>
+An instance initializer may not return, nor throw a checked exception, unless 
+that exception is explicitly declared in the <code>throws</code> clause of each constructor.  
+An instance initializer in an anonymous class can throw any exceptions.
+<p><a name="16044"></a>
+Instance initializers are useful when instance variables (including blank finals) 
+must be initialized by code which must catch exceptions, or perform other 
+kinds of control flow which cannot be expressed in a single initializer 
+expression.  Instance initializers are required if an anonymous class is to 
+initialize itself, since an anonymous class cannot declare any constructors.
+<p><a name="16067"></a>
+<h2>		 Anonymous array expressions
+</h2>
+<a name="16065"></a>
+The array allocation syntax is extended to support initialization of the elements 
+of anonymous arrays.  Just as a named array can be initialized by a brace-
+enclosed list of element expressions, an array creation expression can now be 
+followed by such a brace-enclosed list.  In both cases, the array type is not 
+allowed to include any dimension expressions; the dimension is computed by 
+counting the number of element expressions.  Here is the new syntax:
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="16169"></a><var>ArrayCreationExpression:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</var>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>new</code> <var>Type Dims ArrayInitializer
+</var><br><br><a name="16174"></a>
+The equivalence of the following two statements illustrates the new syntax: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="16428"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T v[] = {a};
+    <a name="16429"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T v[] = new T[] {a}; 
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="16198"></a>
+<h2>		 Class literals
+</h2>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="16196"></a><var>PrimaryNoNewArray:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Type</var> <code>.</code> <code>class<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>void</code> <code>.</code> <code>class
+</code><br><br><a name="16205"></a>
+A <em>class literal</em> is an expression consisting of the name of a class, interface, array, 
+or primitive type followed by a `<code>.</code>' and the token <code>class</code>.  It evaluates to an 
+object of type <code>Class</code>, the class object for the named type (or for void).
+<p><a name="16206"></a>
+For reference types, a class literal is equivalent to a call to <code>Class.forName</code> 
+with the appropriate string, except that it does not raise any checked 
+exceptions.  (Its efficiency is likely to be comparable to that of a field access, 
+rather than a method call.)  The class literal of a reference type can raise 
+<code>NoClassDefFoundError</code>, in much the same way that a class variable 
+reference can raise that error if the variable's class is not available.
+<p><a name="16489"></a>
+The class literal of a primitive type or void is equivalent to a static variable 
+reference to a pre-installed primitive type descriptor, according to this table: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="20373"></a>    boolean.class   ==   Boolean.TYPE
+    <a name="20374"></a>    char.class      ==   Character.TYPE
+    <a name="20375"></a>    byte.class      ==   Byte.TYPE
+    <a name="16495"></a>    short.class     ==   Short.TYPE
+    <a name="16496"></a>    int.class       ==   Integer.TYPE
+    <a name="16497"></a>    long.class      ==   Long.TYPE
+    <a name="20410"></a>    float.class     ==   Float.TYPE
+    <a name="20411"></a>    double.class    ==   Double.TYPE
+    <a name="20412"></a>    void.class      ==   Void.TYPE
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="16520"></a>
+Java APIs which require class objects as method arguments are much easier to 
+use when the class literal syntax is available.  Note that the compiler is 
+responsible for taking into account the ambient <code>package</code> and <code>import</code> 
+statements when processing the <var>TypeName</var> of a class literal.
+<p><a name="16529"></a>
+The older usage of <code>Class.forName</code> requires the programmer to figure out the 
+desired package prefix and write it in a class name string.  The difficulty of 
+getting the string spelled right becomes greater in the presence of inner classes, 
+since their names (as processed by <code>Class.forName</code>) are encoded with `<code>$</code>' 
+characters instead of dots.
+<p><a name="20025"></a>
+Note that a class literal never contains an expression, only a type name.
+<p><a name="20017"></a>
+<h2>		 Blank finals and final local variables
+</h2>
+<a name="20172"></a>
+A <em>blank final</em> is <code>final</code> variable declaration (of any kind) which lacks an 
+initializer.  A blank final must be assigned an initial value, at most once.
+<p><a name="20173"></a>
+The definite assignment rules are extended to record variables which are 
+"definitely unassigned," and an assignment to a blank final is prohibited 
+unless the final is definitely unassigned before the assignment statement.  
+Subsequently, it is definitely assigned, and, being a <code>final</code>, it cannot be re-
+assigned along the same execution path.
+<p><a name="20174"></a>
+The definite unassignment rules take into account back-branches of loops, so 
+that a variable occurrence in a loop body may not be definitely unassigned if 
+the loop makes an assignment which can reach the occurrence via a back-
+branch.  The definite assignment checks work as if the first iteration of the loop 
+had been unrolled into an <code>if</code> statement.
+<p><a name="20192"></a>
+A blank final class variable must be definitely assigned by a <code>static</code> initializer 
+(in the same class).  This is the only context where class variables are checked 
+for definite assignment.
+<p><a name="20175"></a>
+A blank final instance variable must be definitely assigned by a non-<code>static</code> 
+initializer, or else by every constructor.  These are the only contexts in which 
+definite assignment checking is done on instance variables.  Within these 
+contexts, an assignment to <code>this.</code><var>V</var> is recognized as performing an assignment 
+to the name <var>V</var> for purposes of definite assignment checking.
+<p><a name="20193"></a>
+Local variables and parameters of all sorts can now be declared <code>final</code>:
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="20042"></a><var>LocalVariableDeclaration:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Modifiers</var><sub><i>Opt</i></sub><var> Type VariableDeclarators
+</var><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="20059"></a><var>FormalParameter:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Modifiers</var><sub><i>Opt</i></sub><var> Type VariableDeclaratorId
+</var><br><br><a name="20060"></a>
+Such a variable is subject to the usual definite assignment rules governing local 
+variables.  In addition, it cannot be assigned to, except for initialization.
+<p><a name="20074"></a>
+A method parameter or catch formal parameter may be declared <code>final</code>.  This 
+has no effect on the method signature or the caught exception type.  Within the 
+body of the method or catch, the parameter may not be assigned to.
+<p><a name="20079"></a>
+The <code>final</code> declaration modifier may be used to make local variables and 
+parameters available to inner classes.
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc8.html">Prev</a> | <a href="innerclasses.doc10.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

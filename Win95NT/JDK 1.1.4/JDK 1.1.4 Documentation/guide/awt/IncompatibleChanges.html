@@ -1,0 +1,228 @@
+<html>
+<head>
+<title>
+Incompatible Changes in the 1.1 AWT API
+</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<h1>
+Incompatible Changes in the 1.1 AWT API
+</h1>
+
+As a rule, 
+code written for the 1.0, 1.0.1, and 1.0.2 releases
+can be compiled without change in the 1.1 release
+(although you might see some warnings about "deprecated" API).
+Also, code compiled under those earlier releases
+generally works (without recompilation)
+at least as well in a 1.1 runtime system as it did before.
+This document lists the AWT exceptions to these rules 
+-- the changes that might cause incompatible
+compilation or runtime behavior.
+For information about non-AWT JDK 1.1 compatibility, see
+<a href="http://java.sun.com/products/jdk/1.1/compatibility.html">JDK 1.1
+Compatibility with Previous JDK Releases.</a>
+
+<p>
+
+Here are the incompatible AWT changes:
+
+<ol>
+<li> On Windows 95/NT systems,
+     menus no longer allow keyboard alternatives, 
+     known as <em>mnemonics</em>.
+     Due to an implementation flaw,
+     you used to be able to specify mnemonics in Windows 95/NT
+     by putting an ampersand ("&") 
+     in the menu label.
+     For example, a menu item with the label "Save &As..."
+     defined "a" as the mnemonic 
+     and would result in "A" being underlined
+     in the displayed menu item --
+     but only on Windows 95/NT.
+     Now, menus with "&" in the label simply display the "&"
+     on Windows 95/NT,
+     as they always have on other platforms.
+     The reason the "&" hack no longer works
+     is that it depended on the AWT 
+     using the native menu system,
+     which it no longer does due to 
+     the need to support
+     modifiable fonts and
+     the display of non-Latin1 text.
+     We plan to add support for menu mnemonics in a future release.
+<p>
+<li> On Windows 95/NT systems,
+     canvases and panels might seem unable to get keyboard events.
+     The reason is that they no longer automatically get the focus,
+     which is required for receiving keyboard events.
+     To give a canvas or panel the focus,
+     use the <code>requestFocus</code> method.
+     For example, 
+     your implementation of the <code>mouseClicked</code> method
+     in the <code>MouseListener</code> for a custom component 
+     should invoke the <code>requestFocus</code> method
+     on the component.
+<p>
+<li> The following four 1.0.2 methods
+     in the <code>java.awt.peer</code> package
+     have been removed in 1.1:
+     <ul> 
+	<li><code>java.awt.peer.ComponentPeer:<br>
+	public abstract boolean handleEvent(java.awt.Event);
+	<br>
+	public abstract void nextFocus();</code>
+
+	<li><code>java.awt.peer.ScrollbarPeer:<br>
+	public abstract void setValue(int);</code>
+
+	<li><code>java.awt.peer.FramePeer:<br>
+	public abstract void setCursor(int);</code>
+     </ul>
+     <strong>Note:</strong>
+     API in the <code>java.awt.peer</code> package
+     is always subject to change
+     because the peer classes aren't intended 
+     to be called directly by developers.
+<p>
+<li> Trying to add a window to a container
+     now results in an <code>IllegalArgumentException</code>.
+<p>
+<li> The <code>Graphics</code> <code>drawPolygon</code> method
+     used to draw unclosed polygons if the end point
+     wasn't the same as the start point.
+     In 1.1, <code>drawPolygon</code> automatically closes the polygon.
+     If you want to draw an unclosed polygon,
+     you can use the new <code>drawPolyline</code> method instead.
+<p>
+<li> Constructors for the <code>Color</code> class now check
+     the range of the parameters passed in,
+     and throw an <code>IllegalArgumentException</code>
+     if out-of-range values are encountered.
+<p>
+<li> Passing a null frame to a <code>Dialog</code> constructor
+     now results in an <code>IllegalArgumentException</code>.
+<p>
+<li> The public abstract method <code>nextFocus</code>
+     has been removed from the 
+     <code>java.awt.peer.ComponentPeer</code>
+     interface.
+     This does not affect applications or applets,
+     since the peer interfaces are private interfaces
+     between the AWT and its implementations.
+<p>
+<li> Bug fixes in Win32 event handling might mean
+     that your components get more events than they used to.
+     Details are in the
+     <a href=#win32Events>Improvements in Win32 Event Handling</a>
+     section below.
+<p>
+<li> The synchronization model of the AWT
+     has been revised to reduce the potential of deadlock.
+     This might result in different behavior of existing programs.
+     Details are in the 
+     <a href=#sync>Details of the New Synchronization Model</a>
+     section below.
+</ol>
+<p>
+
+
+<h3>
+<a name=win32Events>
+Improvements in Win32 Event Handling
+</a>
+</h3>
+Many bugs were fixed in the event handling of the win32 implementation
+of the AWT.  In particular, focus events were previously not delivered
+to certain components (buttons, etc.) in 1.0.2, but are now properly
+delivered on win32 in 1.1.   If you have a <code>handleEvent</code> method
+which is not
+coded properly to handle these new events, you may see changes in the
+way your program runs.  For example, if you had the following fragment
+in the <code>handleEvent</code> method of a <code>Frame</code>:
+
+<blockquote>
+<pre>
+if (event.id == Event.GOT_FOCUS) {
+    // do something...
+}
+</pre>
+</blockquote>
+
+This block will now be called when components within the <code>Frame</code>
+(such as buttons) get the focus.  If the block isn't designed to handle 
+this case, then your program may not run as it did in 1.0.2.
+
+
+<h3>
+<a name=sync>
+Details of the New Synchronization Model
+</a>
+</h3>
+
+The synchronization model of the AWT has been revised to
+significantly reduce (but not eliminate) the potential of deadlock
+that existed in the 1.0.2 JDK.  This is not, strictly speaking, an
+incompatibility with previous releases, but it does have the potential
+to change the behavior of existing programs.  The AWT never was, and
+still isn't, guaranteed to be free of race conditions or deadlocks,
+given all the ways it can be invoked from and subclassed by client
+code.
+
+<p>
+
+In the new synchronization model, the structure and layout of
+components inside containers is guarded by a single AWT-wide lock,
+using an object called <code>Component.LOCK</code>, declared as follows in
+the <code>Component</code> class:
+  
+<p>
+<blockquote>
+<pre>
+public static final Object LOCK = new Object();
+</pre>
+</blockquote>
+<p>
+  
+For example, <code>Container.validate</code>,
+<code>Container.add</code>,
+and <code>Container.remove</code>
+all contain synchronized blocks
+that use <code>Component.LOCK</code>.
+
+<p>
+   
+Setter methods for individual component state, such as
+<code>Component.setEnabled</code> or <code>Button.setLabel</code>,
+are synchronized on the
+instance itself.  Getter methods are generally not synchronized, but
+they are semi-guarded by the copy-to-stack strategy:  a thread-local
+copy of shared data is made and then used in the method.
+
+<p>
+
+Code that uses the AWT should be carefully scrutinized for uniform locking
+order if it acquires locks of its own while overriding an AWT method
+invoked in a synchronized context.  For example, if you acquire your
+own locks in your layout code, you have to be aware that this code is
+being called with the <code>Component.LOCK</code> lock already held.
+If your code
+in another thread holds your lock
+and then tries to invoke <code>validate</code>,
+your program can deadlock.  When you identify cases like this, you
+should rewrite your code wherever possible to ensure a uniform locking
+order.  This order is usually client lock first,
+then <code>Component.LOCK</code>.
+
+<p>
+
+<hr>
+<font size=-1>
+<em>
+Feedback to <a href=mailto:kwalrath@eng.sun.com>Kathy Walrath</a>
+</em>
+</font>
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="statement.doc.html">Prev</a>  | <a href="preparedstatement.doc.html">Next</a>
+</font></td><td align=right><i>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="1002724"></a>
+<h1>5  - ResultSet</h1>
+<a name="1003579"></a>
+This overview is excerpted from <em>JDBC<font size=-1><sup>TM</sup></font> Database Access from Java<font size=-1><sup>TM</sup></font>:  A 
+Tutorial and Annotated Reference,</em> currently in progress at JavaSoft.  This book, 
+both a tutorial and the definitive reference manual for JDBC, will be published in 
+the spring of 1997 by Addison-Wesley Publishing Company as part of the Java 
+series.
+<p>
+<a name="1003581"></a>
+<h2>5.1	 &nbsp;&nbsp; Overview</h2>
+<a name="1002744"></a>
+A <code>ResultSet</code> contains all of the rows which satisfied the conditions in an SQL 
+statement, and it provides access to the data in those rows through a set of <code>get</code> methods that allow access to the various columns of the current row. The <code>ResultSet.next</code> method is used to move to the next row of the <code>ResultSet</code>, making the next 
+row become the current row.   
+<p><a name="1002745"></a>
+The general form of a result set is a table with column headings and the corresponding values returned by a query.  For example, if your query is <code>SELECT a, b, 
+c  FROM Table1</code>,  your result set will have the following form:
+<p>
+<a name="1002746"></a>
+
+<p>
+<pre><a name="1002747"></a>        a          b            c
+<a name="1002748"></a>        --------   ---------    -------- 
+<a name="1002749"></a>        12345      Cupertino    CA
+<a name="1002750"></a>        83472      Redmond      WA
+<a name="1002751"></a>        83492      Boston       MA
+</pre><a name="1002752"></a>
+
+<p>
+<a name="1002754"></a>
+
+<p>
+<a name="1003584"></a>
+The following code fragment is an example of executing an SQL statement 
+that will return a collection of rows, with column 1 as an <code>int</code>,  column 2 as a 
+<code>String</code>,  and column 3 as an array of bytes:
+<p>
+<pre><a name="1002755"></a>    
+<a name="1002756"></a>    java.sql.Statement stmt = conn.createStatement();
+<a name="1002757"></a>    ResultSet r = stmt.executeQuery("SELECT a, b, c FROM Table1");
+<a name="1002758"></a>    while (r.next()) 
+<a name="1002759"></a>    {
+<a name="1002760"></a>      // print the values for the current row.
+<a name="1002761"></a>      int i = r.getInt("a");
+<a name="1002762"></a>      String s = r.getString("b");
+<a name="1002763"></a>      float f = r.getFloat("c");
+<a name="1002764"></a>      System.out.println("ROW = " + i + " " + s + " " + f);
+<a name="1002765"></a>    }
+</pre>
+<a name="1002767"></a>
+<h3>5.1.1	 &nbsp; &nbsp; Rows and Cursors</h3>
+<a name="1003680"></a>
+A <code>ResultSet</code> maintains a cursor which points to its current row of data.  The cursor 
+moves down one row each time the method <code>next</code> is called.   Initially  it is positioned 
+before the first row, so that the first call to <code>next</code> puts the cursor on the first row, making it the current row.  <code>ResultSet</code> rows are retrieved in sequence from the top row 
+down as the cursor moves down one row with each successive call to <code>next</code>. 
+<p><a name="1002769"></a>
+A cursor remains valid until the <code>ResultSet</code> object or its parent <code>Statement</code> 
+object is closed.
+<p>
+<a name="1002770"></a>
+In SQL, the cursor for a result table is named.  If a database  allows positioned 
+updates or positioned deletes, the name of the cursor needs to be supplied as a 
+parameter to the update or delete command.  This cursor name can be obtained by 
+calling the method <code>getCursorName</code>. 
+<p>
+<a name="1002771"></a>
+Note that not all DBMSs support positioned update and delete.  The <code>DatabaseMetaData.supportsPositionedDelete</code> and <code>supportsPositionedUpdate</code> 
+methods can  be used to discover whether a particular connection supports these 
+operations.  When they are supported, the DBMS/driver must ensure that rows 
+selected are properly locked so that positioned updates do not result in update 
+anomalies or other concurrency problems.
+<p>
+
+<a name="1002772"></a>
+<h3>5.1.2	 &nbsp; &nbsp; Columns</h3>
+<a name="1003683"></a>
+The <code>getXXX</code> methods provide the means for retrieving column values from the current row.  Within each row, column values may be retrieved in any order, but for 
+maximum portability, one should retrieve values from left to right and  read column 
+values only once.  
+<p><a name="1002774"></a>
+Either the column name or the column number can be used to designate the 
+column from which to retrieve data. For example, if the second column of a 
+<code>ResultSet</code> object <code>rs</code> is named "title" and stores values as strings, either of the following will retrieve the value stored in that column:
+<p>
+<pre><a name="1002775"></a>    String s = rs.getString("title");
+<a name="1002776"></a>    String s = rs.getString(2);
+</pre><a name="1002777"></a>
+Note that columns are numbered from left to right starting with column 1.  
+Also, column names used as input to <code>getXXX</code> methods are case insensitive.  
+<p>
+<a name="1003692"></a>
+The option of using the column name was provided so that a user who specifies column names in a query can use those same names as the arguments to 
+<code>getXXX</code> methods.  If, on the other hand, the <code>select</code> statement does not specify column names (as in "<code>select * from table1</code>" or in cases where a column is 
+derived), column numbers should be used.  In such situations, there is no way for 
+the user to know for sure what the column names are.
+<p>
+<a name="1003695"></a>
+In some cases, it is possible for a SQL query to return a result set that has 
+more than one column with the same name.  If a column name is used as the 
+parameter to a <code>getXXX</code> method, <code>getXXX</code> will return the value of the first matching 
+column name.  Thus, if there are multiple columns with the same name, one 
+needs to use a column index to be sure that the correct column value is retrieved.  
+It may also be slightly more efficient to use column numbers.
+<p>
+<a name="1002780"></a>
+Information about the columns in a <code>ResultSet</code> is available by calling the  
+method <code>ResultSet.getMetaData</code>.   The <code>ResultSetMetaData</code> object returned gives 
+the number, types, and properties of its <code>ResultSet</code> object's columns. 
+<p>
+<a name="1002784"></a>
+If the name of a column is known, but not its index, the method <code>findColumn</code> 
+can be used to find the column number.  
+<p>
+
+<a name="1002785"></a>
+<h3>5.1.3	 &nbsp; &nbsp; Data Types and Conversions</h3>
+<a name="1002786"></a>
+For the <code>getXXX</code> methods, the JDBC driver attempts to convert the underlying 
+data to the specified Java type and then returns a suitable Java value.  For example, 
+if the <code>getXXX</code> method is <code>getString</code>, and the data type of the data in the underlying 
+database is <code>VARCHAR</code>, the JDBC driver will convert <code>VARCHAR</code> to Java <code>String</code>.  The 
+return value of <code>getString</code> will  be a Java <code>String</code> object.  
+<p>
+<a name="1002787"></a>
+The following table shows which JDBC types a <code>getXXX</code> method is <em>allowed</em> to 
+retrieve and which JDBC types (generic SQL types) are <em>recommended</em> for it to 
+retrieve.  A small <code>x</code> indicates a legal <code>getXXX</code> method for a particular data type; a 
+large <code>X</code> indicates the recommended <code>getXXX</code> method for a data type.  For example, 
+any <code>getXXX</code> method except <code>getBytes</code> or <code>getBinaryStream</code> can be used to retrieve 
+the value of a <code>LONGVARCHAR</code>, but <code>getAsciiStream</code> or <code>getUnicodeStream</code> are recommended, depending on which data type is being returned. The method <code>getObject</code> 
+will return any data type as a Java <code>Object</code> and is useful when the underlying data 
+type is a database-specific abstract type or when a generic application needs to be 
+able to accept any data type.
+<p>
+<a name="1003646"></a>
+ Use of ResultSet.getXXX methods to retrieve common JDBC data types.
+<p>
+<a name="1003647"></a>
+An "x" indicates that the <code>getXXX</code> method may legally be used to retrieve the given JDBC type. 
+<p>
+<a name="1003648"></a>
+An "X" indicates that the <code>getXXX</code> method is <i>recommended</i> for retrieving the given JDBC type.<p>
+<Table Border="3">
+<strong></strong>
+<tr><th valign=top>&nbsp;
+<th valign=top><font size=-1>T<br>
+I<br>
+N<br>
+Y<br>
+I<br>
+N<br>
+T
+</font>
+<th valign=top><font size=-1>S<br>
+M<br>
+A<br>
+L<br>
+L<br>
+I<br>
+N<br>
+T
+</font>
+<th valign=top><font size=-1>I<br>
+N<br>
+T<br>
+E<br>
+G<br>
+E<br>
+R
+</font>
+<th valign=top><font size=-1>B<br>
+I<br>
+G<br>
+<br>
+N<br>
+T
+</font>
+<th valign=top><font size=-1>R<br>
+E<br>
+A<br>
+L
+</font>
+<th valign=top><font size=-1>F<br>
+L<br>
+O<br>
+A<br>
+T
+</font>
+<th valign=top><font size=-1>D<br>
+O<br>
+U<br>
+B<br>
+L<br>
+E
+</font>
+<th valign=top><font size=-1>D<br>
+E<br>
+C<br>
+I<br>
+M<br>
+A<br>
+L
+</font>
+<th valign=top><font size=-1>N<br>
+U<br>
+M<br>
+E<br>
+R<br>
+I<br>
+C
+</font>
+<th valign=top><font size=-1>B<br>
+I<br>
+T
+</font>
+<th valign=top><font size=-1>C<br>
+H<br>
+A<br>
+R
+</font>
+<th valign=top><font size=-1>V<br>
+A<br>
+R<br>
+C<br>
+H<br>
+A<br>
+R<br>
+
+</font>
+<th valign=top><font size=-1>L<br>
+O<br>
+N<br>
+G<br>
+V<br>
+A<br>
+R<br>
+C<br>
+H<br>
+A<br>
+R
+</font>
+<th valign=top><font size=-1>B<br>
+I<br>
+N<br>
+A<br>
+R<br>
+Y
+</font>
+<th valign=top><font size=-1>V<br>
+A<br>
+R<br>
+B<br>
+I<br>
+N<br>
+A<br>
+R<br>
+Y
+</font>
+<th valign=top><font size=-1>L<br>
+O<br>
+N<br>
+G<br>
+V<br>
+A<br>
+R<br>
+B<br>
+I<br>
+N<br>
+A<br>
+R<br>
+Y
+</font>
+<th valign=top><font size=-1>D<br>
+A<br>
+T<br>
+E
+</font>
+<th valign=top><font size=-1>T<br>
+I<br>
+M<br>
+E
+</font>
+<th valign=top><font size=-1>T<br>
+I<br>
+M<br>
+E<br>
+S<br>
+T<br>
+A<br>
+M<br>
+P
+</font>
+
+<tr><td>getByte
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getShort
+<td>x
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getInt
+<td>x
+<td>x
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getLong
+<td>x
+<td>x
+<td>x
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getFloat
+<td>x
+<td>x
+<td>x
+<td>x
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getDouble
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td><strong>X</strong>
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getBigDecimal
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td><strong>X</strong>
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getBoolean
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getString
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td><strong>X</strong>
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+
+<tr><td>getBytes
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td><strong>X</strong>
+<td><strong>X</strong>
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getDate
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td><strong>X</strong>
+<td>&nbsp;
+<td>x
+
+<tr><td>getTime
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td><strong>X</strong>
+<td>x
+
+<tr><td>getTimestamp
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>x
+<td>&nbsp;
+<td><strong>X</strong>
+
+<tr><td>getAsciiStream
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>x
+<td>x
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getUnicodeStream
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>x
+<td>x
+<td><strong>X</strong>
+<td>x
+<td>x
+<td>x
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getBinaryStream
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+<td>x
+<td>x
+<td><strong>X</strong>
+<td>&nbsp;
+<td>&nbsp;
+<td>&nbsp;
+
+<tr><td>getObject
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+<td>x
+
+
+</Table>
+
+<Table>
+<tr><td>
+</Table>
+
+<p>
+
+<a name="1003717"></a>
+<h3>5.1.4	 &nbsp; &nbsp; Using Streams for Very Large Row Values</h3>
+<a name="1003727"></a>
+<code>ResultSet</code> makes it possible to retrieve arbitrarily large <code>LONGVARBINARY</code> or <code>LONGVARCHAR</code> data. The methods <code>getBytes</code> and <code>getString</code> return data as one large chunk (up 
+to the limits imposed by the return value of <code>Statement.getMaxFieldSize</code>).  However,  it may be more convenient to retrieve very large data in smaller, fixed-size 
+chunks.  This is done by having the <code>ResultSet</code> class return <code>java.io.Input</code> streams 
+from which data can be read in chunks.  Note that these streams must be accessed 
+immediately because they will be closed automatically on the next <code>getXXX</code> call on 
+<code>ResultSet</code>.  (This behavior is imposed by underlying implementation constraints on 
+large blob access.)
+<p><a name="1003520"></a>
+The JDBC API has three separate methods for getting streams, each with a 
+different return value: 
+<p>
+
+<ul><a name="1003521"></a>
+<li> <code>getBinaryStream</code> returns a stream which simply provides the raw bytes from 
+the database without any conversion.  
+<br><br>
+<a name="1003522"></a>
+<li><code>getAsciiStream</code> returns a stream which provides one-byte ASCII characters.
+<br><br>
+<a name="1003523"></a>
+<li><code>getUnicodeStream</code> returns a stream which provides two-byte Unicode characters.
+<br><br>
+</ul><a name="1003524"></a>
+Note that this differs from Java streams, which  return untyped bytes and can 
+(for example) be used for both ASCII and Unicode characters.
+<p>
+<a name="1003525"></a>
+The following code gives an example of using <code>getAsciiStream</code>:
+<p>
+<pre><a name="1003526"></a>    java.sql.Statement stmt = con.createStatement();
+<a name="1003527"></a>    ResultSet r = stmt.executeQuery("SELECT x FROM Table2");
+<a name="1003528"></a>    // Now retrieve the column 1 results in 4 K chunks:
+<a name="1003529"></a>    byte buff = new byte[4096];
+<a name="1003530"></a>    while (r.next()) { 
+<a name="1003532"></a>      Java.io.InputStream fin = r.getAsciiStream(1);
+<a name="1003533"></a>      for (;;) {
+<a name="1003535"></a>        int size = fin.read(buff);
+<a name="1003536"></a>        if (size == -1) { // at end of stream
+<a name="1003537"></a>              break;
+<a name="1003538"></a>        }
+<a name="1003539"></a>        // Send the newly-filled buffer to some ASCII output stream:
+<a name="1003540"></a>        output.write(buff, 0, size);
+<a name="1003541"></a>      }
+<a name="1003542"></a>    }
+</pre>
+<a name="1003543"></a>
+<h3>5.1.5	 &nbsp; &nbsp; NULL Result Values</h3>
+<a name="1003544"></a>
+To determine if a given result value is <code>JDBC</code> <code>NULL</code>, one must first read the column and then use the <code>ResultSet.wasNull</code> method to discover if the read returned 
+a JDBC <code>NULL</code>. 
+<p>
+<a name="1003545"></a>
+When one has read a JDBC<code> NULL</code> using one of the <code>ResultSet.getXXX</code> methods,  the method <code>wasNull</code> will return one of the following:
+<p>
+
+<ul><a name="1003546"></a>
+<li>A Java <code>null</code> value for those <code>getXXX</code> methods that return Java objects (methods 
+such as <code>getString</code>,  <code>getBigDecimal</code>,  <code>getBytes</code>,  <code>getDate</code>,  <code>getTime</code>,  <code>getTimestamp</code>,  <code>getAsciiStream</code>, <code>getUnicodeStream</code>, <code>getBinaryStream</code>, <code>getObject</code>).
+<br><br>
+<a name="1003547"></a>
+<li>A zero value for <code>getByte</code>, <code>getShort</code>, <code>getInt</code>, <code>getLong</code>, <code>getFloat</code>, and <code>getDouble.
+</code><br><br>
+<a name="1003548"></a>
+<li>A <code>false</code> value for <code>getBoolean</code>.
+<br><br>
+</ul>
+<a name="1003549"></a>
+<h3>5.1.6	 &nbsp; &nbsp; Optional or Multiple Result Sets</h3>
+<a name="1003550"></a>
+Normally SQL statements are executed using either <code>executeQuery</code> (which 
+returns a single <code>ResultSet</code>) or <code>executeUpdate</code> (which can be used for any kind of 
+database modification statement and which returns a count of the rows updated).  
+However, under some circumstances an application may not know whether a 
+given statement will return a result set until the statement has executed. In addition, some stored procedures may return several different result sets and/or update 
+counts.
+<p>
+<a name="1003551"></a>
+To accommodate these situations, JDBC provides a mechanism so that an 
+application can execute a statement and then process an arbitrary collection of 
+result sets and update counts. This mechanism is based on first calling a fully general <code>execute</code> method, and then calling three other methods, <code>getResultSet</code>, <code>getUpdateCount</code>, and <code>getMoreResults</code>. These methods allow an application to explore 
+the statement results one at a time and to determine if a given result was a <code>ResultSet</code> or an update count.
+<p>
+<a name="1003552"></a>
+You do not need to do anything to close a <code>ResultSet</code>; it is automatically 
+closed by the <code>Statement</code> that generated it when that <code>Statement</code> is closed, is re-executed, or is used to retrieve the next result from a sequence of multiple results.
+<p>
+<a name="997732"></a>
+
+<p>
+
+
+<br>
+<hr>
+<font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="statement.doc.html">Prev</a>  | <a href="preparedstatement.doc.html">Next</a>
+</font>
+<hr>
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

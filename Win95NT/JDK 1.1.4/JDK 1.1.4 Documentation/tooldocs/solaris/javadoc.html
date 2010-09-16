@@ -1,0 +1,499 @@
+<html>
+<head>
+<title>javadoc-The Java API Documentation Generator</TITLE>
+</head>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1>javadoc - The Java API Documentation Generator</H1>
+<blockquote>
+Generates HTML pages of API documentation from Java source files.
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+<blockquote>
+<pre>
+<strong>javadoc</strong> [ <a href="javadoc.html#options">options</a> ] [ package | source.java ]*
+</pre>
+</blockquote>
+
+<h2>DESCRIPTION</h2>
+<blockquote>
+<b>javadoc</b> parses the declarations and documentation comments in 
+a set of Java source
+files and produces a set of HTML pages describing, by default, 
+the public and protected classes, interfaces, constructors, methods, 
+and fields.   As an argument to <b>javadoc</b> you pass 
+in either a series of Java package names or source files. 
+<p>
+<b>javadoc</b> generates one .html file for each .java file and
+each packages it encounters.  In addition, it produces a class hierarchy 
+(tree.html) and an index of those members (AllNames.html).
+<p>
+When <b>javadoc</b> parses the class and member delarations, it
+picks up their signatures for inclusion.  In addition, you can 
+add further documentation by including doc comments in the source
+code.
+</blockquote>
+
+<h3>Commenting the Source Code</h3>
+<blockquote>
+You can include documentation comments in the source code.
+A doc comment consists of the characters between the 
+<code>/**</code> that begins the comment and the 
+<code>*/</code> that ends it. The text is divided into one or more lines. 
+When javadoc parses a doc comment, leading * characters on each line
+are discarded; for lines other than the first, blanks and tabs 
+preceding the initial * characters are also discarded. These 
+comments may include HTML tags. Here is a doc comment:
+<p>
+<pre>
+/**
+ * This is a &lt;b&gt;doc&lt;/b&gt; comment.
+ */
+</pre>
+
+<p>
+The first sentence of each doc comment should be a summary sentence, 
+containing a concise but complete description of the declared entity. 
+This sentence ends at the first period that is followed by a blank, 
+tab, or line terminator, or at the first tag (as defined below).
+<b>javadoc</b> copies this first sentence to the member summary 
+at the top of the .html file.
+ <p>
+Documentation comments are only recognized when placed immediately before 
+class, interface, constructor, method, or field declarations.
+<p>
+When you embed HTML tags within a doc commen, you should not
+use heading tags such as &lt;h1&gt; and &lt;h2&gt;, because
+<b>javadoc</b> creates an entire structured document and these
+structural tags interfere with the formatting of the generated
+document.
+<p>
+For the specification on documentation comments, see Chapter 18, 
+Documentation Comments, in the <em>Java Language Specification</em>, 
+by James Gosling, Bill Joy, and Guy Steele.
+</blockquote>
+
+<a name="tags"></a>
+<h3>Tagged Paragraphs</h3>
+
+<blockquote>
+
+<b>javadoc</b> parses special tags that are recognized when they are embedded
+within a Java doc comment. These doc tags enable you to autogenerate a
+complete, well-formatted API from your source code. The tags start
+with an "at" sign (@).
+<p>
+Tags must start at the beginning of a line.  Keep tags with the same
+name together within a doc comment.  For example, put all @author
+tags together so that <b>javadoc</b> can tell where the list ends.
+<p>
+The tags fall into three categories:  Class/interface tags, field tags, 
+and constructor/method tags; each is itemized in the following sections.
+</blockquote>
+
+<a name="classtags"></a>
+<h3>Class and Interface Documentation Tags</h3>
+<blockquote>
+
+<dl>
+
+<dt><code>@author </code><var>name-text</var>
+<dd>Creates an "Author" entry. The text has no special internal structure.
+A doc comment may contain multiple <code>@author</code> tags.
+<p>
+
+<dt><code>@version </code><var>version-text</var>
+<dd>Adds a "Version" entry. The text has no special internal structure.
+A doc comment may contain at most one <code>@version</code> tag. Version 
+normally refers to the version of the software (such as the JDK)
+that contains this feature.
+<p>
+
+<dt><code>@see</code> <var>classname</var>
+<dd>Adds a hyperlinked "See Also" entry to the class.
+Some examples are:
+<pre>
+    @see java.lang.String
+    @see String
+    @see String#equals
+    @see java.lang.Object#wait(int)
+    @see Character#MAX_RADIX
+    @see &lt;a href="spec.html"&gt;Java Spec&lt;/a&gt;
+</pre>
+The character # separates the name of a class from the name of one of its 
+fields,
+methods, or constructors.
+One of several overloaded methods or constructors may be
+selected by including a parenthesized list of argument types after the method
+or constructor name.
+Whitespace in <code>@see</code>'s <var>classname</var> is significant.
+If there is more than one argument, there must be a single blank character
+between the arguments.
+For example:
+<pre>
+    @see java.io.File#File(java.io.File, java.lang.String)
+</pre>
+<p>
+A doc comment may contain more than one <code>@see</code> tag.
+<p>
+
+<dt><code>@since </code><var>since-text</var>
+<dd>Adds a "Since" entry. The text has no special internal structure.
+This tag means that this change or feature has existed since the release
+number of the software specified by the <var>since-text</var> (such as the JDK).
+<p>
+
+<dt><code>@deprecated</code> <var>deprecated-text</var>
+<dd>Adds a deprecated comment indicating that this API should no longer
+be used (even though it may continue to work).  The convention is to 
+describe the API that serves as a replacement.  For example: 
+<pre>    @deprecated  Replaced by setBounds(int, int, int, int).
+</pre>
+If the member is obsolete and there is no replacement, the argument 
+to <code>@deprecated</code> should be "No replacement". 
+<p>
+For more about this tag, see <a href="../../guide/misc/deprecation/index.html">Deprecation of APIs</a>.
+<p>
+
+</dl>
+
+<h4>An example of a class comment:</h4>
+<pre>
+/**
+ * A class representing a window on the screen.
+ * For example:
+ * &lt;pre&gt;
+ *    Window win = new Window(parent);
+ *    win.show();
+ * &lt;/pre&gt;
+ *
+ * @author  Sami Shaio
+ * @version &#37;I%, &#37;G%
+ * @see     java.awt.BaseWindow
+ * @see     java.awt.Button
+ */
+class Window extends BaseWindow {
+   ...
+}
+</pre>
+</blockquote>
+
+<a name="fieldtags"></a>
+<h3>Field Documentation Tags</h3>
+<blockquote>
+A field comment can contain only the <code>@see</code>, <code>@since</code> 
+and <code>@deprecated</code> tags (as described above).
+
+<h4>An example of a field comment:</h4>
+<pre>
+    /**
+     * The X-coordinate of the window.
+     *
+     * @see window#1
+     */
+    int x = 1263732;
+</pre>
+</blockquote>
+
+<a name="methodtags"></a>
+<h3>Constructor and Method Documentation Tags</h3>
+<blockquote>
+Can contain <code>@see</code> tags, as well as:
+
+<dl>
+<dt><code>@param </code><var>parameter-name</var><code> </code><var>description</var>
+<dd>Adds a parameter to the "Parameters" section. The description may
+be continued on the next line.
+<p>
+
+<dt><code>@return </code><var>description</var>
+<dd>Adds a "Returns" section, which contains the description of the return 
+value.
+<p>
+
+<dt><code>@exception </code><var>fully-qualified-class-name</var><code> </code><var>description</var>
+<dd>Adds a "Throws" section, which contains the name of the exception that may 
+be
+thrown by the method. The exception is linked to its class documentation.
+<p>
+
+<dt><code>@see</code> <var>classname</var>
+<dd>Adds a hyperlinked "See Also" entry to the method.  This tag is
+described above.
+<p>
+
+<dt><code>@since </code><var>since-text</var>
+<dd>See the description above.
+<p>
+
+<dt><code>@deprecated</code> <var>deprecated-text</var>
+<dd>See the description above. 
+<p>
+
+</dl>
+
+<h4>An example of a method doc comment:</h4>
+<pre>
+    /**
+     * Returns the character at the specified index. An index 
+     * ranges from &lt;code&gt;0&lt;/code&gt; to &lt;code&gt;length() - 1&lt;/code&gt;.
+     *
+     * @param     index  the index of the desired character.
+     * @return    the desired character.
+     * @exception StringIndexOutOfRangeException 
+     *              if the index is not in the range &lt;code&gt;0&lt;/code&gt; 
+     *              to &lt;code&gt;length()-1&lt;/code&gt;.
+     * @see       java.lang.Character#charValue()
+     */
+    public char charAt(int index) {
+       ...
+    }
+</pre>
+</blockquote>
+
+<a name="options">
+<h2>OPTIONS</h2>
+</a>
+<blockquote>
+
+<dl>
+
+<dt><b>-classpath &nbsp;</b><var>path</var>
+<dd>
+Specifies the path javadoc uses to look up the <code>.java</code> files. 
+Also specifies the directories from which <b>javadoc</b> is to load its own 
+<code>.class</code> 
+files. (Use <b><code>-sourcepath</b></code> to specify a source path 
+separately.)
+Each <i>path</i> element should be a directory that contains the
+topmost packages.
+Overrides the default or the CLASSPATH environment variable, if it is set. The  
+<i>path</i> can contain multiple paths by separating them with a colon.  For 
+example, the following sets two paths, the first of which is the current 
+directory (.):<P>
+
+<pre>
+<dd>javadoc -classpath .:/home/opus/javasrc
+</pre>
+<p>
+The <b><code>-classpath</b></code> option is not necessary if you call 
+<b>javadoc</b> wrapper script directly. Normally, if you specify 
+<b><code>classpath</b></code> it must precede <b><code>sourcepath</b></code>.
+However, the order of these two options does not matter if you are using the
+wrapper script. 
+<p>
+The value of <b><code>classpath</b></code> defaults to the current directory plus the 
+classes location.
+<p>
+
+<dt><b>-public</b>
+<dd>
+Shows only public classes and members.
+<p>
+
+<dt><b>-protected</b>
+<dd>
+Shows only protected and public classes and members. This is the default.
+<p>
+
+<dt><b>-package</b>
+<dd>
+Shows only package, protected, and public classes and members.
+<p>
+
+<dt><b>-private</b>
+<dd>
+Shows all classes and members.
+<p>
+
+<dt><b>-J</b><i>flag</i>
+<dd>
+Pass <i>flag</i> directly to the runtime system. For example, if you need to
+ensure that the system sets aside 32 megabytes of memory to hold the generated 
+documentation, then you would use this flag as follows:
+<pre>
+<dd>javadoc -J-mx32m -J-ms32m &lt;classes&gt; ...
+</pre>
+
+<p>
+
+<dt><b>-encoding</b> &nbsp; <i>name</i>
+<dd>
+Specify the source file encoding name, such as <code>EUCJIS/SJIS</code>. If 
+this option is not specified, the platform default converter is used.
+<p>
+
+<dt><b>-docencoding</b> &nbsp;<i>name</i>
+<dd>
+Specify output HTML file encoding name.
+<p>
+
+<dt><b>-version </b>
+<dd>
+Include @version tags, which are omitted by default.
+<p>
+
+<dt><b>-author </b>
+<dd>
+Include @author tags, which are omitted by default.
+<p>
+
+<dt><b>-noindex </b>
+<dd>
+Omit the package index, which is produced by default.
+<p>
+
+<dt><b>-notree </b>
+<dd>
+Omit the class/interface hierarchy, which is produced by default.
+<p>
+
+<dt><b>-d</b> &nbsp;<var>directory</var>
+<dd>
+Specifies the destination directory where <b>javadoc</b> stores the 
+generated HTML files. (The "d" means "destination.") The directory can be 
+absolute or relative to the current working directory.  
+For example, the following generates the documentation for the java.lang 
+package (using CLASSPATH to find it) and stores the results in the directory 
+specified by the <code>-d</code> option:
+
+<pre>
+<dd>javadoc -d /home/opus/public_html/doc java.lang
+</pre>
+
+<dt><b>-verbose</b>
+<dd>
+Without the <code>verbose</code> option, messages appear for loading the 
+source files, generating the documentation (one message per source file), 
+and sorting.  The <code>verbose</code> option causes the printing of 
+additional messages specifying the number of milliseconds to parse each java 
+source file.  
+<p>
+
+<dt><b>-sourcepath</b> &nbsp;<var>path</var>
+<dd>
+Specifies the search path for source files. Does not affect the loading of
+class files. The <code>sourcepath</code> you specify depends on whether you 
+specify packages or classes as arguments to the <b>javadoc</b> command. 
+<p>
+When generating documentation for packages, specify <code>sourcepath</code> as
+the directory in the source tree that contains the top-most parent package of 
+the packages you are documenting.  The default for <code>sourcepath</code>
+is the current <code>classpath</code> directory. For example, suppose you want 
+to document a package called <code>java.lang</code> whose source files are
+located at:
+<pre>
+<dd>/myapp/src/share/java/lang/*.java
+</pre>
+Because <code>java</code> is the top-most parent package, you would specify
+the <code>sourcepath</code> to be the directory that contains <code>java</code>:
+<pre>
+<dd>-sourcepath /myapp/src/share
+</pre>
+When generating documentation for discrete classes, specify <code>sourcepath</code> as the directory in the source tree that contains the classes you are
+documenting.  Note that this is different from the <code>sourcepath</code>
+you used when documenting packages. For example, suppose you want to 
+document a class named <code>java.lang.String</code> whose source file is
+located at:
+<pre>
+<dd>/myapp/src/share/java/lang/String.java
+</pre>
+Specify the <code>sourcepath</code> to be the directory that contains the 
+class <code>String.java</code>:
+<pre>
+<dd>-sourcepath /myapp/src/share/java/lang
+</pre>
+You can omit the <code>sourcepath</code> option if you first switch to the
+directory you would have specified.
+<p>
+
+<dt><b>-nodeprecated </b>
+<dd>
+Exclude paragraphs with the <b>@deprecated</b> tag.
+
+<p>
+
+<dt>NOTE: The <code>-doctype</code> option is no longer available.  Only 
+HTML documentation 
+can be produced.
+</dl>
+</blockquote>
+
+<a name="examples"></a>
+<h2>EXAMPLES</h2>
+<blockquote>
+Each package name has a corresponding directory name. 
+In the following examples, the source files are located at 
+<code>/home/ws/src/java/awt/*java</code>. The destination
+directory is <code>/home/ws/html</code>.
+
+<h3>Documenting One or More Packages</h3>
+
+To document a package, the source files (<code>*.java</code>) for that package 
+must be located in a directory having the same name as the package.
+If a package name is made up of several identifiers (separated by
+dots), each identifier represents a different directory.
+Thus, all java.awt classes must reside in a directory named java/awt/.
+<p>
+
+First, change to the parent directory of the top-most package
+(or supply the sourcepath option with that directory). Then 
+run javadoc, supplying one or more fully-specified package names. 
+For example, if
+you want to document the source files in the <code>java.awt</code> 
+package located at <code>/home/ws/src/java/awt/*.java</code> and 
+its subpackage <code>java.awt.event</code>:
+<pre>
+  % cd /home/ws/src/
+  % javadoc -d /home/ws/html java.awt java.awt.event
+</pre>
+This generates HTML-formatted documentation for the public classes 
+in packages <code>java.awt</code> and <code>java.awt.event</code> 
+and puts it in the specified destination directory 
+(<code>/home/ws/html</code>).
+
+<h3>Documenting One or More Classes</h3>
+
+Change to the directory containing the classes (or supply 
+the sourcepath option with that directory).
+Then run javadoc, supplying one or more class names.
+For example, to document classes at the same level as 
+<code>/home/ws/src/java/awt/Button.java</code>:
+<pre>
+  % cd /home/ws/src/java/awt
+  % javadoc -d /home/ws/html Button.java Canvas.java
+</pre>
+This generates HTML-formatted documentation for the two classes
+and puts it in the specified destination directory 
+(<code>/home/ws/html</code>).
+</blockquote>
+
+<h2>ENVIRONMENT</h2>
+<blockquote>
+
+<dl>
+
+<dt><code><b>CLASSPATH</b></code>
+<dd>Provides the system a path to the user-defined classes.
+<!--to be processed by javadoc.--> 
+Separate directories with a colon, for example,
+<pre>
+<dd>.:/home/avh/classes:/usr/local/java/classes
+</pre>
+</dl>
+</blockquote>
+
+<h2>SEE ALSO</h2>
+<blockquote>
+<a href="javac.html">javac</a>,  
+<a href="java.html">java</a>,
+<a href="jdb.html">jdb</a>,
+<a href="javah.html">javah</a>,  
+<a href="javap.html">javap</a>,
+<a href="classpath.html">CLASSPATH</a>,
+<a href="http://java.sun.com/products/jdk/javadoc/index.html">Javadoc Home Page</a>
+</blockquote>
+
+</body>
+</html>

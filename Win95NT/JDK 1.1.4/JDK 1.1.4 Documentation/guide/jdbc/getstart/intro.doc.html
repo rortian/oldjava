@@ -1,0 +1,442 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="copyright.doc.html">Prev</a>  | <a href="connection.doc.html">Next</a>
+</font></td><td align=right><i>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="997449"></a>
+<h1>1  - Introduction </h1>
+<a name="1005350"></a>
+This introduction is excerpted from <em>JDBC<font size=-1><sup>TM</sup></font> Database Access from Java<font size=-1><sup>TM</sup></font>:  A 
+Tutorial and Annotated Reference,</em> currently in progress at JavaSoft.  This book, 
+both a tutorial and the definitive reference manual for JDBC, will be published in 
+the spring of 1997 by Addison-Wesley Publishing Company as part of the Java 
+series.
+<p>
+<a name="1005262"></a>
+<h2>1.1	 &nbsp;&nbsp; What Is JDBC<font size=-1><sup>TM</sup></font>?</h2>
+<a name="1005725"></a>
+JDBC<font size=-1><sup>TM</sup></font> is a Java<font size=-1><sup>TM</sup></font> API for executing SQL statements.  (As a point of interest,  
+JDBC is a trademarked name and is not an acronym; nevertheless, JDBC is often  
+thought of as standing for "Java Database Connectivity".)  It consists of a set of 
+classes and interfaces written in the Java programming language.  JDBC provides a 
+standard API for tool/database developers and makes it possible to write database 
+applications using a pure Java API.  
+<p><a name="1005726"></a>
+Using JDBC, it is easy to send SQL statements to virtually any relational 
+database. In other words, with the JDBC API, it isn't necessary to write one program to access a Sybase database, another program to access an Oracle database, 
+another program to access an Informix database, and so on. One can write a single 
+program using the JDBC API, and the program will be able to send SQL statements to the appropriate database. And, with an application written in the Java 
+programming language, one also doesn't have to worry about writing different 
+applications to run on different platforms.  The combination of Java and JDBC 
+lets a programmer write it once and run it anywhere.
+<p>
+<a name="1005727"></a>
+ Java, being robust, secure, easy to use, easy to understand, and automatically 
+downloadable on a network, is an excellent language basis for database applications.  What is needed is a way for Java applications to talk to a variety of different 
+databases.  JDBC is the mechanism for doing this.
+<p>
+<a name="1005728"></a>
+JDBC extends what can be done in Java.  For example, with Java and the 
+JDBC API, it is possible to publish a web page containing an applet that uses  
+information obtained  from a remote database.  Or an enterprise can use JDBC to 
+connect all its employees (even if they are using a conglomeration of Windows, 
+Macintosh, and UNIX machines) to one or more internal  databases via an intranet.  With more and more programmers using the Java programming language, the 
+need for easy  database access from Java is  continuing to grow. 
+<p>
+<a name="1005729"></a>
+MIS managers like the combination of Java and JDBC because it makes disseminating information easy and economical.  Businesses can continue to use 
+their installed databases and access information easily even if it is stored on different database management systems.  Development time for new applications is 
+short.  Installation and version control are greatly simplified. A programmer can 
+write an application or an update once, put it on the server, and everybody has 
+access to the latest version.  And for businesses selling information services, Java 
+and JDBC offer a better way of getting out information updates to external customers.  
+<p>
+
+<a name="1005731"></a>
+<h3>1.1.1	 &nbsp; &nbsp; What Does JDBC Do?</h3>
+<a name="1005732"></a>
+Simply put,  JDBC  makes it possible  to do three things:
+<p><pre><a name="1005733"></a>    
+</pre><a name="1005734"></a>
+<li>establish a connection with a database 
+
+<a name="1005735"></a>
+<li>send  SQL statements
+
+<a name="1005736"></a>
+<li>process the results.
+
+<pre><a name="1005737"></a>    
+</pre><a name="1005738"></a>
+The following code fragment gives a basic example of these three steps:
+<p>
+<pre><a name="1005739"></a>    Connection con = DriverManager.getConnection (
+<a name="1005740"></a>                "jdbc:odbc:wombat", "login", "password");
+<a name="1005741"></a>    Statement stmt = con.createStatement();
+<a name="1005742"></a>    ResultSet rs = stmt.executeQuery("SELECT a, b, c FROM Table1");
+<a name="1005743"></a>    while (rs.next()) {
+<a name="1005744"></a>      int x = getInt("a");
+<a name="1005745"></a>      String s = getString("b");
+<a name="1005746"></a>      float f = getFloat("c");
+<a name="1005747"></a>      }
+</pre>
+<a name="1005749"></a>
+<h3>1.1.2	 &nbsp; &nbsp; JDBC Is a Low-level API and a Base for Higher-level APIs</h3>
+<a name="1005750"></a>
+JDBC is a "low-level" interface, which means that it is used to invoke (or "call") 
+SQL commands directly.  It works very well in this capacity and is easier to use than 
+other database connectivity APIs, but it was designed also to be a base upon which 
+to build higher-level interfaces and tools. A higher-level interface is  "user-friendly," 
+using a more understandable or more convenient API that is translated behind the 
+scenes into a  low-level interface such as JDBC. At the time of this writing, two 
+kinds of higher-level APIs are under development on top of JDBC:
+<p><ol>
+<a name="1005751"></a>
+<li>an embedded SQL for Java.  At least one vendor plans to build this.  DBMSs  
+implement SQL, a language designed specifically for use with databases.  
+JDBC requires that the SQL statements be passed as Strings to Java methods.  
+An embedded SQL preprocessor allows a programmer to instead mix SQL 
+statements directly with Java: for example, a Java variable can be used in a 
+SQL statement to receive or provide SQL values.  The embedded SQL preprocessor then translates this Java/SQL mix into Java with JDBC calls.
+
+
+<a name="1005752"></a>
+<li>a direct mapping of relational database tables to Java classes.  JavaSoft and 
+others have announced plans to implement this.  In this "object/relational" 
+mapping,  each row of the table becomes an instance of that class, and each column value corresponds to an attribute of that instance.  Programmers can then 
+operate directly on Java objects; the required SQL calls to fetch and store data 
+are automatically generated "beneath the covers."  More sophisticated mappings are also provided, for example, where rows of multiple tables are combined in a Java class.
+
+</ol>
+<a name="1005753"></a>
+As interest in JDBC has grown, more developers have been working on 
+JDBC-based tools to make building programs easier, as well. Programmers have 
+also been writing applications that make accessing a database easier for the end 
+user.  For example, an application might present a menu of database tasks from 
+which to choose.  After a task is selected, the application presents prompts and 
+blanks for filling in  information needed to carry out the selected task.   With the 
+requested input typed in, the application then automatically invokes the necessary 
+SQL commands. With the help of such an application, users can perform database 
+tasks even when they have little or no knowledge of SQL syntax.
+<p>
+
+<a name="1005754"></a>
+<h3>1.1.3	 &nbsp; &nbsp; JDBC versus ODBC and other APIs</h3>
+<a name="1005755"></a>
+At this point,  Microsoft's ODBC  (Open DataBase Connectivity)  API is probably 
+the most widely used programming interface for accessing relational databases.  It 
+offers the ability to connect to almost all databases on almost all platforms.  So why 
+not just use ODBC from Java?  
+<p><a name="1005756"></a>
+   The answer is that you <em>can</em> use ODBC from Java, but this is best done with 
+the help of JDBC in the form of the JDBC-ODBC Bridge, which we will cover 
+shortly.  The question now becomes, "Why do you need JDBC?" There are several 
+answers to this question:
+<p>
+<ol>
+<a name="1005757"></a>
+<li>ODBC is not appropriate for direct use from Java because it uses a C interface.  
+Calls from Java to native C code have a number of drawbacks in the security, 
+implementation, robustness, and automatic portability of applications.  
+
+
+<a name="1005758"></a>
+<li>A literal translation of the ODBC C API into a Java API would not be desirable.  For example,  Java has no pointers, and ODBC makes copious use of 
+them, including the notoriously error-prone generic pointer "void *". You can 
+think of JDBC as ODBC translated into an object-oriented interface that is natural for Java programmers.   
+
+<a name="1005759"></a>
+<li>ODBC is hard to learn.  It mixes simple and advanced features  together, and 
+it has complex options even for simple queries.   JDBC, on the other hand, was 
+designed to keep simple things simple while allowing more advanced capabilities where required. 
+
+<a name="1005760"></a>
+<li>A Java API like JDBC is needed in order to enable a "pure Java" solution. 
+When ODBC is used, the ODBC driver manager and drivers must be manually 
+installed on every client machine.  When the JDBC driver is written completely in Java, however, JDBC code is automatically installable, portable, and secure on all Java platforms from network computers to mainframes.
+
+</ol>
+<a name="1005761"></a>
+In summary, the JDBC API is a natural Java interface to the basic SQL 
+abstractions and concepts.  It builds on ODBC rather than starting from scratch, so 
+programmers familiar with ODBC will find it very easy to learn JDBC.  JDBC 
+retains the basic design features of ODBC; in fact, both  interfaces are based on 
+the X/Open SQL CLI (Call Level Interface).  The big difference is that JDBC  
+builds on and reinforces the style and virtues of Java, and, of course, it is easy to 
+use. 
+<p>
+<a name="1005762"></a>
+More recently, Microsoft has introduced new APIs beyond ODBC: RDO, 
+ADO, and OLE DB.  These designs move in the same direction as JDBC in many 
+ways, that is, in being an object-oriented database interface based on classes that 
+can be implemented on ODBC.  However, we did not see compelling functionality 
+in any of these interfaces to make them an alternative basis to ODBC, especially 
+with the ODBC driver market well-established.  Mostly they represent a thin 
+veneer on ODBC.  This is not to say that JDBC does not need to evolve from the 
+initial release; however, we feel that most new functionality belongs in higher-
+level APIs such as the object/relational mappings and embedded SQL mentioned 
+in the previous section.
+<p>
+
+<a name="1005767"></a>
+<h3>1.1.4	 &nbsp; &nbsp; Two-tier and Three-tier Models</h3>
+<a name="1005768"></a>
+The JDBC API supports both two-tier and three-tier models for database access.  
+<p><a name="1005769"></a>
+In the two-tier model, a Java applet or application talks directly to the database.  This requires a JDBC driver that can communicate with the particular database management system being accessed.  A user's SQL statements are delivered 
+to the database, and the results of those statements are sent back to the user.  The 
+database may be located on another machine to which the user is connected via a 
+network. This  is referred to as a <i>client/server</i> configuration, with the user's  
+machine as the client, and the machine housing the database as the server.  The 
+network can be an intranet, which, for example, connects employees within a corporation, or it can be the Internet.<br><br><img src="intro.doc.anc.gif"><br>
+<p>
+<a name="1005784"></a>
+
+<p>
+<a name="1005785"></a>
+In the three-tier model, commands are sent to a "middle tier" of services, 
+which then send SQL statements to the database.  The database processes the SQL 
+statements and sends the results  back to the middle tier, which then sends them to 
+the user.  MIS directors find the three-tier model very attractive because the middle tier makes it possible to maintain control over access and  the kinds of updates 
+that can be made to corporate data.  Another advantage is that when there is a middle tier, the user can employ an easy-to-use higher-level API which is translated 
+by the middle tier into the appropriate low-level calls.  Finally, in many cases the 
+three-tier architecture can provide performance advantages.<br><br><img src="intro.doc.anc1.gif"><br>
+<p>
+<a name="1005805"></a>
+Until now the middle tier has typically been written in  languages such as C or 
+C++,  which offer fast performance.  However, with the introduction of optimizing 
+compilers that translate Java bytecode into efficient machine-specific code, it is 
+becoming practical to implement the middle tier  in Java.  This is a big plus, making it possible to take advantage of Java's robustness, multithreading, and security 
+features.  JDBC is  important to allow database access from a Java middle tier.
+<p>
+
+<a name="1005806"></a>
+<h3>1.1.5	 &nbsp; &nbsp; SQL Conformance</h3>
+<a name="1005807"></a>
+Structured Query Language (SQL) is  the  standard language for accessing relational  
+databases.  One area of difficulty is that although most DBMSs (DataBase Management Systems) use a standard form of SQL for basic functionality, they do not conform to the more recently-defined standard SQL syntax or semantics for more 
+advanced functionality. For example, not all databases support stored procedures or 
+outer joins, and those that do are not consistent with each other. It is hoped that the 
+portion of SQL that is truly standard will expand to include more and more functionality. In the meantime, however, the JDBC API must support  SQL as it is. 
+<p><a name="1005808"></a>
+One way the JDBC API deals with this problem is to allow any query string to 
+be passed through to an underlying DBMS driver. This means that an application 
+is free to use as much SQL functionality as desired, but it runs the risk of receiving an error on some DBMSs. In fact, an application query need not even be SQL, 
+or it may be a specialized derivative of SQL designed for specific DBMSs (for 
+document or image queries, for example).
+<p>
+<a name="1005809"></a>
+A second way JDBC deals with problems of SQL conformance is to provide 
+ODBC-style escape clauses, which are discussed in section <a href="statement.doc.html#999828">4.1.5</a>, "SQL Escape 
+Syntax in Statement Objects."
+<p>
+<a name="1006033"></a>
+.  The escape syntax provides a standard JDBC syntax for several of the more 
+common areas of SQL divergence.  For example, there are escapes for date literals 
+and for stored procedure calls. 
+<p>
+<a name="1005813"></a>
+For complex applications, JDBC deals with SQL conformance in a third way.   
+It provides descriptive information about the DBMS by means of the <code>DatabaseMetaData</code> interface so that applications can adapt to the requirements and 
+capabilities of each DBMS. 
+<p>
+<a name="1005817"></a>
+Because the JDBC API will be used as a base API for developing higher-level 
+database access tools and APIs, it also has to address the problem of conformance  
+for anything built on it. The  designation "JDBC COMPLIANT<font size=-1><sup>TM</sup></font>" was created to 
+set a standard level of JDBC functionality on which users can rely.  In order to use  
+this designation, a driver must support at least ANSI SQL-2 Entry Level.   (ANSI 
+SQL-2 refers to the standards adopted by the American National Standards Institute in 1992.  Entry Level refers to a specific list of  SQL capabilities.)  Driver 
+developers can ascertain that their drivers meet these standards by using the test 
+suite available with the JDBC API.
+<p>
+<a name="1005818"></a>
+The "JDBC  COMPLIANT<font size=-1><sup>TM</sup></font>" designation indicates that a vendor's JDBC 
+implementation has passed the conformance tests provided by JavaSoft.  These 
+conformance tests check for the existence of all of the classes and methods 
+defined in the JDBC API, and check as much as possible that the SQL Entry Level 
+functionality is available.  Such tests are not exhaustive, of course, and JavaSoft is 
+not currently branding vendor implementations, but this compliance definition 
+provides some degree of confidence in a JDBC implementation.  With wider and 
+wider acceptance of the JDBC API by database vendors, connectivity vendors, 
+Internet service vendors, and application writers, JDBC is quickly becoming the 
+standard for Java database access.
+<p>
+
+<a name="1005819"></a>
+<h2>1.2	 &nbsp;&nbsp; JDBC Products</h2>
+<a name="1006126"></a>
+At the time of this writing, a number of JDBC-based products have already been 
+deployed or are under development.  Of course, the information in this section will 
+quickly become dated, so the reader should consult the JDBC web page for the latest information.  It can be found by navigating from the following URL:
+<p><pre><a name="1005822"></a>    http://java.sun.com/products/jdbc
+</pre>
+<a name="1005824"></a>
+<h3>1.2.1	 &nbsp; &nbsp; JavaSoft Framework</h3>
+<a name="1005825"></a>
+JavaSoft provides three JDBC product components as part of the Java Development  
+Kit (JDK):
+<p>
+<ul><a name="1005826"></a>
+<li>the JDBC driver manager,
+<br><br>
+<a name="1005827"></a>
+<li>the JDBC driver test suite, and
+<br><br>
+<a name="1005828"></a>
+<li>the JDBC-ODBC bridge.
+<br><br>
+</ul><a name="1005829"></a>
+The JDBC driver manager is the backbone of the JDBC architecture.  It actually is quite small and simple; its primary function is to connect Java applications 
+to the correct JDBC driver and then get out of the way.
+<p>
+<a name="1005830"></a>
+The JDBC driver test suite provides some confidence that JDBC drivers will 
+run your program.  Only drivers that pass the JDBC driver test suite can be designated JDBC COMPLIANT<font size=-1><sup>TM</sup></font>.
+<p>
+<a name="1005831"></a>
+The JDBC-ODBC bridge allows ODBC drivers to be used as JDBC drivers.  
+It was implemented as a way to get JDBC off the ground quickly, and long term 
+will provide a way to access some of the less popular DBMSs if JDBC drivers are 
+not implemented for them.<br><br><img src="intro.doc.anc2.gif"><br>
+<p>
+
+<a name="1005870"></a>
+<h3>1.2.2	 &nbsp; &nbsp; JDBC Driver Types</h3>
+<a name="1005871"></a>
+The JDBC drivers that we are aware of at this time fit into one of four categories:
+<p><ol>
+<a name="1005872"></a>
+<li><em>JDBC-ODBC bridge plus ODBC driver:</em> The JavaSoft bridge product provides 
+JDBC access via ODBC drivers. Note that ODBC binary code, and in many 
+cases database client code,  must be loaded on each client machine that uses 
+this driver.  As a result, this kind of driver is most appropriate on a corporate 
+network where client installations are not a major problem, or for application 
+server code written in Java in a three-tier architecture.
+
+
+<a name="1005873"></a>
+<li><em>Native-API partly-Java driver: </em>This kind of driver converts JDBC calls into 
+calls on the client API for Oracle, Sybase, Informix, DB2, or other DBMS. 
+Note that, like the bridge driver, this style of driver requires that some binary 
+code be loaded on each client machine.
+
+<a name="1005874"></a>
+<li><em>JDBC-Net pure Java driver: </em>This driver translates JDBC calls into a  DBMS-
+independent net protocol which is then translated to a DBMS protocol by a 
+server. This net server middleware is able to connect its pure Java clients to 
+many different databases. The specific protocol used depends on the vendor. 
+In general, this is the most flexible JDBC alternative. It is likely that all vendors of this solution will provide products suitable for Intranet use. In order for 
+these products to also support Internet access, they must handle the additional 
+requirements for security, access through firewalls, and so on, that the Web imposes. Several vendors are adding  JDBC drivers to their existing database 
+middleware products. 
+
+<a name="1005875"></a>
+<li><em>Native-protocol pure Java driver: </em>This kind of driver converts JDBC calls into 
+the network protcol used by DBMSs directly. This allows a direct call from the 
+client machine to the DBMS server and is a practical solution for Intranet access. Since many of these protocols are proprietary, the database vendors  
+themselves will be the primary source, and several database vendors have these 
+in progress.
+
+</ol>
+<a name="1005876"></a>
+Eventually, we expect that driver categories 3 and 4 will be the preferred way 
+to access databases from JDBC.  Driver categories 1 and 2 are interim solutions 
+where direct  pure Java drivers are not yet available.  There are possible variations 
+on categories 1 and 2 (not shown in the table below) that require a connector, but 
+these are generally less desirable solutions.  Categories 3 and 4 offer all the advantages of Java, including automatic installation (for example, downloading the 
+JDBC driver with an applet that uses it).
+<p>
+<a name="1005877"></a>
+The following chart shows the four categories and their properties:
+<p>
+<a name="1005909"></a>
+<p>
+<Table Border="3">
+<strong></strong>
+<tr><th valign=top>  DRIVER CATEGORY
+<th valign=top>     ALL JAVA?
+<th valign=top>NET PROTOCOL
+
+<tr><td>1 - JDBC-OCBC Bridge
+<td>               No
+<td>             Direct
+
+<tr><td>2 - Native API as basis
+<td>               No
+<td>             Direct
+
+<tr><td>3 - JDBC-Net
+<td>              Yes
+<td>  Requires Connector
+
+<tr><td>4 - Native protocol as basis
+<td>              Yes
+<td>             Direct
+
+
+</Table>
+
+<Table>
+<tr><td>
+</Table>
+
+<p>
+
+<a name="1005911"></a>
+<h3>1.2.3	 &nbsp; &nbsp; Obtaining JDBC Drivers</h3>
+<a name="1005912"></a>
+At the time of this writing, there are dozens of drivers in Category 1: ODBC drivers 
+that can be used with JavaSoft's bridge.  There are currently about a dozen Category 
+2 drivers built on top of native APIs for DBMSs.  There are a few Category 3 drivers.  Currently there are at least two Category 4 drivers, but by the end of 1997,  we 
+expect that there will be Category 4 drivers for all of the major DBMSs. 
+<p><a name="1005913"></a>
+To get the latest information on drivers, check the JDBC web page at <code>http://
+java.sun.com/products/jdbc</code>. The first vendors with Category 3 drivers 
+available were SCO, Open Horizon, Visigenic, and WebLogic.  JavaSoft and 
+Intersolv, a leading database connectivity vendor, worked together to produce the 
+JDBC-ODBC Bridge and the JDBC Driver Test Suite.
+<p>
+
+<a name="1005915"></a>
+<h3>1.2.4	 &nbsp; &nbsp; Other Products</h3>
+<a name="1005916"></a>
+Various JDBC application development tools are under way.  Watch the JavaSoft 
+pages for updates.
+<p><a name="1005917"></a>
+<em>
+</em><p>
+
+
+<br>
+<hr>
+<font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="copyright.doc.html">Prev</a>  | <a href="connection.doc.html">Next</a>
+</font>
+<hr>
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc.html">Prev</a> | <a href="innerclasses.doc2.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="10137"></a>
+<h1> What are top-level classes and inner classes?
+</h1>
+<a name="10138"></a>
+In previous releases, Java supported only <em>top-level classes</em>, which must be 
+members of packages.  In the 1.1 release, the Java 1.1 programmer can now 
+define <em>inner classes</em> as members of other classes, locally within a block of 
+statements, or (anonymously) within an expression.
+<p><a name="15410"></a>
+Here are some of the properties that make inner classes useful:
+<p><ul><a name="9570"></a>
+<li>The inner class's name is not usable outside its scope, except perhaps in a 
+qualified name.  This helps in structuring the classes within a package.
+
+<a name="9571"></a>
+<li>The code of an inner class can use simple names from enclosing scopes, 
+including both class and instance members of enclosing classes, and local 
+variables of enclosing blocks.
+
+</ul><a name="15491"></a>
+Inner classes result from the combination of block structure with class-based 
+programming, which was pioneered by the programming language Beta.  
+Using block structure with inner classes makes it easier for the Java 
+programmer to connect objects together, since classes can be defined closer to 
+the objects they need to manipulate, and can directly use the names they need.  
+With the removal of restrictions on the placement of classes, Java's scoping 
+rules become more regular, like those of classical block structured languages 
+such as Pascal and Scheme.
+<p><a name="19459"></a>
+In addition, the programmer can define a class as a <code>static</code> member of any 
+top-level class.  Classes which are <code>static</code> class members and classes which 
+are package members are both called top-level classes.  They differ from inner 
+classes in that a top-level class can make direct use only of its own instance 
+variables.  The ability to nest classes in this way allows any top-level class to 
+provide a package-like organization for a logically related group of secondary 
+top-level classes, all of which share full access to private members.
+<p><a name="20694"></a>
+Inner classes and nested top-level classes are implemented by the compiler, 
+and do not require any changes to the Java Virtual Machine.  They do not 
+break source or binary compatibility with existing Java programs.
+<p><a name="20695"></a>
+All of the new nested class constructs are specified via transformations to Java 
+1.0 code that does not use inner classes.  When a Java 1.1 compiler is producing 
+Java virtual machine bytecodes, these bytecodes must represent the results of 
+this (hypothetical) source-to-source transformation, so that binaries produced 
+by different Java 1.1 compilers will be compatible.  The bytecodes must also be 
+tagged with certain attributes to indicate the presence of any nested classes to 
+other Java 1.1 compilers.  This is discussed further below.
+<p><a name="9589"></a>
+<h2>		 Example: A simple adapter class
+</h2>
+<a name="12688"></a>
+Consider the design of an <em>adapter class</em>, which receives method invocations 
+using a specified interface type on behalf of another object not of that type.  
+Adapter classes are generally required in order to receive events from AWT 
+and Java Bean components.  In Java 1.1, an adapter class is most easily defined 
+as an inner class, placed inside the class which requires the adapter.
+<p><a name="14020"></a>
+Here is an incomplete class <code>FixedStack</code> which implements a stack, and is 
+willing to enumerate the elements of the stack, from the top down: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="14024"></a>public class FixedStack {
+    <a name="14025"></a>    Object array[];
+    <a name="14026"></a>    int top = 0;
+    <a name="14027"></a>    FixedStack(int fixedSizeLimit) {
+    <a name="14028"></a>        array = new Object[fixedSizeLimit];
+    <a name="14029"></a>    }
+    <a name="14030"></a>
+    <a name="14031"></a>    public void push(Object item) {
+    <a name="14032"></a>        array[top++] = item;
+    <a name="14033"></a>    }
+    <a name="14034"></a>    public boolean isEmpty() {
+    <a name="14035"></a>        return top == 0;
+    <a name="14036"></a>    }
+    <a name="14037"></a>    // other stack methods go here...
+    <a name="14038"></a>
+    <a name="14039"></a>    /** This adapter class is defined as part of its target class,
+    <a name="14040"></a>     *  It is placed alongside the variables it needs to access.
+    <a name="14064"></a>     */
+    <a name="14041"></a>    class Enumerator implements java.util.Enumeration {
+    <a name="14042"></a>        int count = top;
+    <a name="14043"></a>        public boolean hasMoreElements() {
+    <a name="14044"></a>            return count &gt; 0;
+    <a name="14045"></a>        }
+    <a name="14046"></a>        public Object nextElement() {
+    <a name="14047"></a>            if (count == 0)
+    <a name="14048"></a>                throw new NoSuchElementException("FixedStack");
+    <a name="14049"></a>            return array[--count];
+    <a name="14050"></a>        }
+    <a name="14051"></a>    }
+    <a name="14052"></a>    public java.util.Enumeration elements() {
+    <a name="14053"></a>        return new Enumerator();
+    <a name="14054"></a>    }
+    <a name="14055"></a>}
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="14056"></a>
+The interface <code>java.util.Enumeration</code> is used to communicate a series of 
+values to a client.  Since <code>FixedStack</code> does not (and should not!) directly 
+implement the <code>Enumeration</code> interface, a separate adapter class is required to 
+present the series of elements, in the form of an <code>Enumeration</code>.  Of &#32;course, the 
+adapter class will need some sort of access to the stack's array of elements.  If 
+the programmer puts the definition of the adapter class inside of <code>FixedStack</code>, 
+the adapter's code can directly refer to the stack object's instance variables.
+<p><a name="14612"></a>
+In Java, a class's non-<code>static</code> members are able to refer to each other, and they 
+all take their meaning relative to the current instance <code>this</code>.  Thus, the instance 
+variable <code>array</code> of <code>FixedStack</code> is available to the instance method <code>push</code> and 
+to the entire body of the inner class <code>FixedStack.Enumerator</code>.  Just as 
+instance method bodies "know" their current instance <code>this</code>, the code within 
+any inner class like <code>Enumerator</code> "knows" its <em>enclosing instance</em>, the instance of 
+the enclosing class from which variables like <code>array</code> are fetched.
+<p><a name="14661"></a>
+One of the ways in which the <code>FixedStack</code> example is incomplete is that there 
+is a race condition among the operations of the FixedStack and its 
+<code>Enumerator</code>.  If a sequence of pushes and pops occurs between calls to 
+<code>nextElement</code>, the value returned might not be properly related to previously 
+enumerated values; it might even be a "garbage value" from beyond the 
+current end of the stack.  It is the responsibility of the programmer to defend 
+against such race conditions, or to document usage limitations for the class.  
+This point is discussed later.  One defense against races looks like this: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="14780"></a>public class FixedStack {
+    <a name="14781"></a>    ...
+    <a name="14782"></a>    synchronized public void push(Object item) {
+    <a name="14783"></a>        array[top++] = item;
+    <a name="14784"></a>    }
+    <a name="14785"></a>    class Enumerator implements java.util.Enumeration {
+    <a name="14786"></a>        ...
+    <a name="14787"></a>        public Object nextElement() {
+    <a name="14812"></a>            synchronized (FixedStack.this) {
+    <a name="14789"></a>                if (count &gt; top)  count = top;
+    <a name="14817"></a>                if (count == 0)
+    <a name="14790"></a>                    throw new NoSuchElementException("FixedStack");
+    <a name="14791"></a>                return array[--count];
+    <a name="14792"></a>            }
+    <a name="14793"></a>        }
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="14622"></a>
+The expression <code>FixedStack.this</code> refers to the enclosing instance.
+<p><a name="17956"></a>
+<h2>		 Example: A local class
+</h2>
+<a name="19492"></a>
+When a class definition is local to a block, it may access any names which are 
+available to ordinary expressions within the same block.  Here is an example: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="19495"></a>    Enumeration myEnumerate(final Object array[]) {
+    <a name="19497"></a>        class E implements Enumeration {
+    <a name="19498"></a>            int count = 0;
+    <a name="19508"></a>            public boolean hasMoreElements()
+    <a name="19499"></a>                { return count &lt; array.length; }
+    <a name="19500"></a>            public Object nextElement()
+    <a name="19501"></a>                { return array[count++]; }
+    <a name="19502"></a>        }
+    <a name="19503"></a>        return new E();
+    <a name="19504"></a>    }
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="19605"></a>
+For the moment, we say nothing about <em>how</em> this code works, but Java's rules of 
+scoping and variable semantics precisely require <em>what</em> this code does.  Even 
+after the method <code>myEnumerate</code> returns, <code>array</code> can still be used by the inner 
+object; it does not "go away" as in C.  Instead, its value continues to be 
+available wherever that value is required, including the two methods of <code>E</code>.
+<p><a name="19714"></a>
+Note the final declaration.  Local <code>final</code> variables such as <code>array</code> are a new 
+feature in 1.1.  In fact, if a local variable or parameter in one class is referred to 
+by another (inner) class, it <em>must</em> be declared <code>final</code>.  Because of potential 
+synchronization problems, there is by design no way for two objects to share 
+access to a changeable local variable.  The state variable <code>count</code> could not be 
+coded as a local variable, unless perhaps it were changed a one-element array: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="19709"></a>    Enumeration myEnumerate(final Object array[]) {
+    <a name="19710"></a>        final int count[] = {0}; // final reference to mutable array
+    <a name="19711"></a>        class E implements Enumeration {
+    <a name="19712"></a>            public boolean hasMoreElements()
+    <a name="19713"></a>                { return count[0] &lt; array.length; }   ...
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="19547"></a>
+(Sometimes the combination of inheritance and lexical scoping can be 
+confusing.  For example, if the class <code>E</code> inherited a field named <code>array</code> from 
+<code>Enumeration</code>, the field would hide the parameter of the same name in the 
+enclosing scope.  To prevent ambiguity in such cases, Java 1.1 allows inherited 
+names to hide ones defined in enclosing block or class scopes, but prohibits 
+them from being used without explicit qualification.)
+<p><a name="19641"></a>
+<h2>		 Anonymous classes
+</h2>
+<a name="20515"></a>
+In the previous example, the local class name <code>E</code> adds little or no clarity to the 
+code.  The problem is not that it is too short:  A longer name would convey 
+little additional information to the maintainer, beyond what can be seen at a 
+glance in the class body.  In order to make very small adapter classes as concise 
+as possible, Java 1.1 allows an abbreviated notation for local objects.  A single 
+expression syntax combines the definition of an <em>anonymous</em> class with the 
+allocation of the instance: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="20518"></a>    Enumeration myEnumerate(final Object array[]) {
+    <a name="20519"></a>        return new Enumeration() {
+    <a name="20520"></a>            int count = 0;
+    <a name="20521"></a>            public boolean hasMoreElements()
+    <a name="20522"></a>                { return count &lt; array.length; }
+    <a name="20523"></a>            public Object nextElement()
+    <a name="20524"></a>                { return array[count++]; }
+    <a name="20525"></a>        };
+    <a name="20526"></a>    }
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="19773"></a>
+In general, a <code>new</code> expression (an instance creation expression) can end with a 
+class body.  The effect of this is to take the class (or interface) named after the 
+<code>new</code> token, and subclass it (or implement it) with the given body.  The resulting 
+anonymous inner class has the same meaning as if the programmer had 
+defined it locally, with a name, in the current block of statements.
+<p><a name="18109"></a>
+Anonymous constructs like these must be kept simple, to avoid deeply nested 
+code.  When properly used, they are more understandable and maintainable 
+than the alternatives-named local classes or top-level adapter classes.
+<p><a name="18194"></a>
+If an anonymous class contains more than a line or two of executable code, 
+then its meaning is probably not self-evident, and so a descriptive local name 
+should be given to either the class or (via a local variable) to the instance.
+<p><a name="19795"></a>
+An anonymous class can have initializers but cannot have a constructor.  The 
+argument list of the associated <code>new</code> expression (often empty) is implicitly 
+passed to a constructor of the superclass.
+<p><a name="19796"></a>
+As already hinted, if an anonymous class is derived from an interface <var>I</var>, the 
+actual superclass is <code>Object</code>, and the class implements <var>I</var> rather than extending 
+it.  (Explicit <code>implements</code> clauses are illegal.)  This is the only way an interface 
+name can legally follow the keyword <code>new</code>.  In such cases, the argument list 
+must always be null, to match the constructor of the actual superclass, <code>Object</code>.
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc.html">Prev</a> | <a href="innerclasses.doc2.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

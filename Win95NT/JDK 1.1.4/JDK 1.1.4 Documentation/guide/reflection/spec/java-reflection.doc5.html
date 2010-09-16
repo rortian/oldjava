@@ -1,0 +1,240 @@
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc4.html">Prev</a>  | <a href="java-reflection.doc6.html">Next</a>
+</font></td><td align=right><i>Java Core Reflection</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+
+<a name="5218"></a>
+<h1>The class java.lang.reflect.Constructor
+ </h1><pre>    <a name="5220"></a><code>package java.lang.reflect;
+</code>
+    <a name="5221"></a>public final class Constructor extends Object implements Member
+
+</pre><a name="5222"></a>
+A <code>Constructor</code> provides information about, and access to, a single constructor 
+of a declared class.  A <code>Constructor</code> may be used to create and initialize a new 
+instance of the class that declares the reflected constructor, provided the class is 
+instantiable.
+<p><a name="5223"></a>
+Only the Java Virtual Machine may create <code>Constructor</code> objects; user code 
+obtains <code>Constructor</code> references via the methods <code>getConstructor</code>, 
+<code>getConstructors</code>, <code>getDeclaredConstructor</code>, and <code>getDeclaredConstructors</code> 
+of class <code>Class</code>.
+<p><a name="5224"></a>
+A <code>Constructor</code> permits widening conversions to occur when matching the 
+actual parameters to <code>newInstance</code> with the underlying constructor's formal 
+parameters, but it throws an <code>IllegalArgumentException</code> if a narrowing 
+conversion would occur.
+<p>
+<hr>
+<a name="5225"></a>
+<h2>		 Methods
+</h2>
+
+<a name="5226"></a>
+<h3>		 getDeclaringClass
+</h3>
+<pre>    <a name="5227"></a><code>public Class getDeclaringClass()
+</code>
+</pre><a name="5228"></a>
+Returns the <code>Class</code> object for the class that declares the constructor represented 
+by this <code>Constructor</code> object.
+<p>
+<a name="5229"></a>
+<h3>		 getName
+</h3>
+<pre>    <a name="5230"></a><code>public String getName()
+</code>
+</pre><a name="5231"></a>
+Returns the name of the constructor represented by this <code>Constructor</code> object. 
+This is the same as the fully-qualified name of its declaring class.
+<p>
+<a name="5232"></a>
+<h3>		 getModifiers
+</h3>
+<pre>    <a name="5233"></a><code>public int getModifiers()
+</code>
+</pre><a name="5234"></a>
+Returns the Java language modifiers for the constructor represented by this 
+<code>Constructor</code> object, encoded in an integer.  The <code>Modifier</code> class should be used 
+to decode the modifiers.
+<p><a name="5235"></a>
+The modifier encodings are defined in <em>The Java Virtual Machine Specification</em>, 
+Table 4.4.
+<p>
+<a name="5236"></a>
+<h3>		 getParameterTypes
+</h3>
+<pre>    <a name="5237"></a><code>public Class[] getParameterTypes()
+</code>
+</pre><a name="5238"></a>
+Returns an array  of <code>Class</code> objects that represent the formal parameter types, in 
+declaration order, of the constructor represented by this <code>Constructor</code> object.  
+Returns an array of length <code>0</code> if the underlying constructor takes no parameters.
+<p>
+<a name="5239"></a>
+<h3>		 getExceptionTypes
+</h3>
+<pre>    <a name="5240"></a><code>public Class[] getExceptionTypes()
+</code>
+</pre><a name="5241"></a>
+Returns an array of <code>Class</code> objects that represent the classes of the checked 
+exceptions thrown by the underlying constructor represented by this 
+<code>Constructor</code> object.  Returns an array of length <code>0</code> if the constructor throws no 
+checked exceptions.
+<p>
+<a name="5242"></a>
+<h3>		 equals
+</h3>
+<pre>    <a name="5243"></a><code>public boolean equals(Object obj)
+</code>
+</pre><a name="5244"></a>
+Compares this <code>Constructor</code> against the specified object.  Returns <code>true</code> if the 
+objects are the same; <code>false</code> otherwise.  Two <code>Constructor</code> objects are the same 
+if they have the same declaring class and the same formal parameter types.
+<p><a name="5245"></a>
+This method overrides the <code>equals</code> method of class <code>Object</code>.
+<p>
+<a name="5246"></a>
+<h3>		 hashCode
+</h3>
+<pre>    <a name="5247"></a><code>public int hashCode()
+</code>
+</pre><a name="5248"></a>
+Returns a hashcode for this <code>Constructor</code>.  The hashcode is the same as the 
+hashcode for the <code>Constructor</code>'s declaring class name<code>.
+</code><p><a name="5249"></a>
+This method overrides the <code>hashCode</code> method of class <code>Object</code>.
+<p>
+<a name="5250"></a>
+<h3>		 toString
+</h3>
+<pre>    <a name="5251"></a><code>public String toString()
+</code>
+</pre><a name="5252"></a>
+Returns a string describing the underlying constructor represented by this 
+<code>Constructor</code> object. The string is formatted as the Java language modifiers for 
+the underlying constructor, if any, followed by the fully-qualified name of class 
+declaring the underlying constructor, followed by a parenthesized, comma-
+separated list of the fully-qualified names of the constructor's formal 
+parameter types.  If the constructor throws checked exceptions, the parameter 
+list is followed by a space, followed by the word <code>throws</code> followed by a comma-
+separated list of the fully-qualified names of the thrown exception types.  For 
+example:
+<p><pre>    <a name="5253"></a>
+
+    <a name="5254"></a>    public java.util.Hashtable(int,float)
+
+</pre><a name="5255"></a>
+The only possible modifiers for a constructor are one of <code>public</code>, <code>protected</code> or 
+<code>private</code>, or none if the constructor has default (package) access.
+<p><a name="5256"></a>
+This method overrides the <code>toString</code> method of class <code>Object</code>.
+<p>
+<a name="5257"></a>
+<h3>		 newInstance
+</h3>
+<pre>    <a name="5258"></a><code>public Object newInstance(Object initargs[])
+</code>
+    <a name="5259"></a><code>    throws InstantiationException, IllegalArgumentException,
+</code>
+    <a name="5260"></a><code>        IllegalAccessException, InvocationTargetException
+</code>
+</pre><a name="5261"></a>
+Uses the constructor represented by this <code>Constructor</code> object to create and 
+initialize a new instance of the constructor's declaring class, with the specified 
+initialization parameters.  Individual parameters are automatically unwrapped 
+to match primitive formal parameters, and both primitive and reference 
+parameters are subject to widening conversions as necessary.   Returns the 
+newly created and initialized object.
+<p><a name="5262"></a>
+Creation proceeds with the following steps, in order:
+<p>
+<ul><a name="5263"></a>
+<li>If the class that declares the underlying constructor represents an abstract 
+class, the creation throws an <code>InstantiationException</code>.
+<br><br>
+<a name="5264"></a>
+<li>If this <code>Constructor</code> object enforces Java language access control and the 
+underlying constructor is inaccessible, the creation throws an 
+<code>IllegalAccessException</code>.
+<br><br>
+<a name="5265"></a>
+<li>If the number of actual parameters supplied via <code>initargs</code> is different from 
+the number of formal parameters required by the underlying constructor, 
+the creation throws an <code>IllegalArgumentException</code>.  If the underlying 
+constructor takes no parameters, <code>initargs</code> may be <code>null</code>.
+<br><br>
+<a name="5266"></a>
+<li>A new instance of the constructor's declaring class is created, and its fields 
+are initialized to their default initial values.
+<br><br>
+<a name="5267"></a>
+<li>For each actual parameter in the supplied <code>initargs</code> array:
+<br><br>
+
+
+<ul>
+<a name="5268"></a>
+<li>If the corresponding formal parameter has a primitive type, an 
+unwrapping conversion is attempted to convert the object parameter 
+value to a value of a primitive type.   If the object parameter is <code>null</code>, the 
+conversion fails by throwing a <code>NullPointerException</code>.   If the object 
+parameter is not an instance of a standard Java wrapper class, the 
+conversion fails by throwing an <code>IllegalArgumentException</code>.
+<br><br>
+<a name="5269"></a>
+<li>If, after possible unwrapping, the parameter value cannot be converted to 
+the corresponding formal parameter type by an identity conversion or a 
+widening conversion, the invocation throws an 
+<code>IllegalArgumentException</code>.
+<br><br>
+</ul>
+<a name="5270"></a>
+<li>Control transfers to the underlying constructor to initialize the new 
+instance.
+<br><br>
+<a name="5271"></a>
+<li> If the underlying constructor completes abruptly by throwing an exception, 
+the exception is caught and placed in a new exception object of class 
+<code>InvocationTargetException</code>; <code>newInstance</code> then completes abruptly by 
+throwing this new exception.
+<br><br>
+<a name="5272"></a>
+<li>If the underlying constructor completes normally, the newly created and 
+initialized instance is returned by <code>newInstance</code>.
+<br><br>
+</ul><a name="5897"></a>
+&nbsp;
+<p>
+
+<br>
+<hr> 
+<font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc4.html">Prev</a>  | <a href="java-reflection.doc6.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<a href="java-reflection-copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

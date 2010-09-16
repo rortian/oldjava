@@ -1,0 +1,195 @@
+<html>
+<head><title>Environment Variables</title><head>
+<body bgcolor="ffffff">
+
+<h1>CLASSPATH</h1>
+<blockquote>
+The <b>CLASSPATH</b> environment variable tells the Java Virtual Machine 
+and other Java applications (for example, the Java tools located in the 
+<code>jdk1.1.x/bin</code> directory) 
+where to find the class libraries, including user-defined class 
+libraries. 
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+<blockquote>
+The CLASSPATH environment variable is set with the <b>setenv</b> 
+command. Using <b>setenv</b> at the command line changes the 
+current value of CLASSPATH. You can also use <b>setenv</b> in 
+your startup file to specify a CLASSPATH at startup. The format is:
+<pre>
+   setenv CLASSPATH <i>path1</i>:<i>path2</i> ...
+</pre>
+where a path to a .zip or .jar file must terminate with the filename, 
+and a path to a .class file must terminate with the directory name. The 
+Java interpreter will search the paths for a class by name and load 
+the first one it finds.
+</blockquote>
+
+<h2>DESCRIPTION</h2>
+<blockquote>
+The CLASSPATH tells the Java Virtual Machine and other Java 
+applications and tools  
+where to find the class libraries. The class libraries that 
+the CLASSPATH points to may be the JDK classes (contained in 
+the <code>classes.zip</code> file in the <code>lib</code> directory) 
+and/or any classes that you want to use.
+<p>
+
+<dl>
+<dt><b>Default CLASSPATH setting</b>
+<dd>
+If you followed the default JDK
+installation procedure, you probably do not need to set 
+CLASSPATH because the
+shell scripts automatically append the following 
+to the current CLASSPATH:
+<pre>
+   .:[bin]/../classes:[bin]/../lib/classes.zip
+</pre>
+In this expression, <code>[bin]</code> is the absolute path to the 
+<code>jdk1.1.x/bin</code> directory.  Therefore, if you keep the 
+<code>bin</code> and <code>lib</code> directories at the same 
+directory level, the Java executables
+will find the JDK classes (contained in the <code>classes.zip</code> 
+file). Note that the default CLASSPATH also 
+includes a path to a <code>classes</code> directory on the same 
+directory level as <code>bin</code> and <code>lib</code>. You can 
+put your own (unzipped) class files 
+in a <code>classes</code> directory that you create, and the Java 
+executables will be able to find them with the default CLASSPATH.
+<p>
+You should also be aware that some third-party applications that use the 
+Java Virtual Machine may modify your CLASSPATH environment variable.
+<p>
+<dt><b>Setting CLASSPATH</b>
+<dd>
+You need to set the CLASSPATH if you move the JDK's 
+<code>classes.zip</code> 
+file or if you want to load a class library that's 
+not in a location specified by the default CLASSPATH.  To set 
+CLASSPATH, use the <b>setenv</b> command. 
+<p>
+Classes can be saved either in individual class files, such as 
+<code>MyClass.class</code>, or in groups in a file such as 
+<code>classes.zip</code> or <code>classes.jar</code>. 
+When specifying a path to a .zip or .jar file, you 
+must end the path with the filename. When specifying a path to 
+.class files, that path should end with the directory containing 
+the .class files.  For example, if you 
+have class files in the directory <code>/home/MyClasses</code>, 
+you could set the CLASSPATH with the following:
+<pre>
+   setenv CLASSPATH /home/MyClasses
+</pre>
+If you also wanted to include the path <code>/home/OtherClasses</code>, 
+you could use the command:
+<pre>
+   setenv CLASSPATH /home/MyClasses:/home/OtherClasses
+</pre>
+Note that the two paths are separated by a colon.
+<p>
+The order in which you specify multiple directories in the CLASSPATH 
+variable is important. The Java interpreter will look for classes in 
+the directories 
+in the order they appear in the CLASSPATH variable. In the 
+example above, the Java interpreter will first look for a needed 
+class in the directory <code>/home/MyClasses</code>. Only if it doesn't find a 
+class with the proper name in that directory will the interpreter 
+look in the <code>/home/OtherClasses</code> directory.
+<p>
+If you want to use a class library that is in a zipped file, you 
+must include the name of that file in the CLASSPATH, for example:
+<pre>
+   setenv CLASSPATH /home/MyClasses/myclasses.zip
+</pre>
+<p>
+If you want the CLASSPATH to point to class files that belong to 
+a package, you should 
+specify a path name that includes the path to the directory <em>one 
+level above</em> the directory having the name of your package. For 
+example, suppose you want the Java interpreter to be able to find 
+classes in 
+the package <code>mypackage</code>. If the path to the 
+<code>mypackage</code> directory is 
+<code>/home/MyClasses/mypackage</code>, you would set the CLASSPATH 
+variable as follows:
+<pre>
+   setenv CLASSPATH /home/MyClasses
+</pre>
+<p>
+
+<dt><b>Unsetting CLASSPATH</b>
+<dd>
+If your CLASSPATH environment variable has been set to a value 
+that is not correct, or 
+if your startup file or script is setting an incorrect path, you can 
+unset CLASSPATH by using:
+<pre>
+   unsetenv CLASSPATH
+</pre>
+This command unsets only CLASSPATH's current value. You should also delete 
+or modify the lines in your startup file that may be setting an 
+incorrect CLASSPATH.
+<p>
+
+<dt><b>The Java Runtime Environment (JRE) and CLASSPATH</b>
+<dd>
+The wrappers that invoke the Java Runtime Environment (JRE) unset the 
+CLASSPATH variable before starting the Java interpreter. The reason is 
+simple: there might be several Java applications
+installed on the machine. If you or someone else previously installed a Java development
+tool that modified the .cshrc or
+.login script, then CLASSPATH may point at a JDK1.0.2-based Java runtime.
+If such a CLASSPATH were left intact when the Java
+interpreter is invoked, then it will be loading 1.0.2 classes. If your 
+app relies on 1.1 features, it will fail. Just as bad, it's
+unlikely that the classes for your app will even be found in that
+CLASSPATH. Unsetting CLASSPATH before invoking the JRE
+interpreter sanitizes your application against unpredictable results.
+<p>
+The default CLASSPATH used by the JRE is: 
+
+<pre>
+   [jre_path]/lib/rt.jar:[jre_path]/lib/i18n.jar:[jre_path]/lib/classes.jar:[jre_path]/lib/classes.zip:[jre_path]/classes
+</pre>   
+
+where <code>[jre_path]</code> is the absolute path of the 
+<code>jre1.1.x</code> 
+directory (it has <code>bin</code> and <code>lib</code> directories 
+underneath it).
+The files <code>rt.jar</code> and <code>i18n.jar</code> are used to 
+hold the runtime's (required) 
+core classes and (optional) internationalization classes. While you 
+can store the classes specific to your application in
+either <code>[jre_path]/lib/classes.jar</code> or as individual class 
+files in
+the <code>[jre_path]/classes</code> subdirectory, it is better to 
+keep the JRE 
+separate from your application and use CLASSPATH to point the 
+interpreter to your application's class files.
+<p>
+
+<dt><b>Using both JDK 1.0.2 and JDK 1.1.x</b>
+<dd>
+If you want to develop in both JDK 1.0.2 and JDK 1.1.x, you must 
+set CLASSPATH separately for each one. To use both JDKs 
+simultaneously, you can run them from separate shell windows each 
+having its own value for CLASSPATH. If you are running only one at 
+a time, you can write a batch script to switch the value of 
+CLASSPATH as appropriate.
+<p>
+
+<dt><b>The Java tools' -classpath option</b>
+<dd>
+Some of the Java tools such as <a href="java.html">java</a>, 
+<a href="javac.html">javac</a>, 
+and <a href="javah.html">javah</a> have a <b>-classpath</b> option 
+which can be used to 
+override the path or paths specified by the CLASSPATH environment 
+variable.
+
+</dl>
+</blockquote>
+</body>
+</html>

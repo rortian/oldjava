@@ -1,0 +1,284 @@
+<html><head><title>Exceptions In RMI		
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-protocol.doc.html">[Prev]</a> <a href="rmi-properties.doc.html">[Next]</a>
+<hr><br>
+ 
+<a name="3601">
+<h1>Exceptions In RMI		
+</h1>
+</a>
+<hr><p><a name="4120">
+
+<p>
+</a><h3><a name="4748">
+Topics:
+</a></h3><ul><li><a href="rmi-exceptions.doc.html#4746">Exceptions During Remote Object Export</a>
+<li><a href="rmi-exceptions.doc.html#4332">Exceptions During RMI Call</a>
+<li><a href="rmi-exceptions.doc.html#4940">Exceptions or Errors During Return</a>
+<li><a href="rmi-exceptions.doc.html#4823">Naming Exceptions</a>
+<li><a href="rmi-exceptions.doc.html#4824">Other Exceptions</a>
+</ul><h1><a name="4746">
+Exceptions During Remote Object Export
+</a></h1>When a remote object class is created that extends <code>UnicastRemoteObject</code>, 
+the object is exported, meaning it can receive calls from external Java virtual 
+machines and can be passed in an RMI call as either a parameter or return 
+value. An object can either be exported on an anonymous port or on a specified 
+port. For objects not extended from <code>UnicastRemoteObject</code>, the 
+<code>java.rmi.server.UnicastRemoteObject.exportObject</code> method is used 
+to explicitly export the object. 
+<Table Border="3">
+<caption></caption>
+<tr><th>Exception
+<th>Context
+
+<tr><td>java.rmi.StubNotFoundException
+
+<td><ol>
+<li>					Class of stub not found.
+<li>Name collision with class of same 
+name as stub causes one of these 
+errors:
+<ul>
+<li>Stub can't be instantiated.
+<li>Stub not of correct class.
+</ul>
+<li> Bad URL due to wrong codebase.
+<li>Stub not of correct class.
+</ol>
+
+<tr><td>java.rmi.server.SkeletonNotFoundException
+<td><ol>
+<li>				Class of skeleton not found.
+<li>Name collision with class of same 
+name as skeleton causes one of 
+these errors:
+<ul>
+<li>Skeleton can't be instantiated.
+<li>Skeleton not of correct class.
+</ul>
+<li>Bad URL due to wrong codebase.
+<li>Skeleton not of correct class.
+</ol>
+
+<tr><td>java.rmi.server.ExportException
+<td>The port is in use by another VM.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+<p><h1><a name="4332">
+Exceptions During RMI Call 
+<Table Border="3">
+<caption></caption>
+<tr><th>Exception
+<th>Context
+
+<tr><td>java.rmi.UnknownHostException
+<td>		Unknown host.
+
+<tr><td>java.rmi.ConnectException
+<td>		Connection refused to host.
+
+<tr><td>java.rmi.ConnectIOException
+<td>		I/O error creating connection.
+
+<tr><td>java.rmi.MarshalException
+<td>		I/O error marshaling transport header, 
+marshaling call header, or marshaling 
+arguments.
+
+<tr><td>java.rmi.NoSuchObjectException
+<td>		Attempt to invoke a method on an object that is 
+no longer available.
+
+<tr><td>java.rmi.StubNotFoundException
+<td>		Remote object not exported.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+</a></h1><h1><a name="4940">
+Exceptions or Errors During Return 
+<Table Border="3">
+<caption></caption>
+<tr><th>Exception
+<th>Context
+
+<tr><td>java.rmi.UnmarshalException		
+<td><ol>
+<li>Corrupted stream leads to either an 					I/O or 
+protocol error when:
+<ul>
+<li>Marshaling return header.
+<li>Checking return type.
+<li>Checking return code.
+<li>Unmarshaling return.
+</ul>
+<li>Return value class not found.
+</ol>
+
+<tr><td>java.rmi.UnexpectedException		
+<td>An exception not mentioned in the method 
+signature occurred, including runtime 
+exceptions on the client. An exception object 
+contains the actual exception.
+
+<tr><td>java.rmi.ServerError
+<td>Any error that occurs while the server is 
+executing a remote method.
+
+<tr><td>java.rmi.ServerException
+<td>Any remote exception that occurs while the 
+server is executing a remote method. For 
+examples, see <a href="rmi-exceptions.doc.html#4941">Possible Causes 
+of java.rmi.ServerException</a>.
+
+<tr><td>java.rmi.ServerRuntimeException		
+<td>Any runtime exception that occurs while the 
+server is executing a method, even if the 
+exception is in the method signature. This 
+exception object contains the underlying 
+exception.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+</a></h1><h2><a name="4941">
+Possible Causes of java.rmi.ServerException
+</a></h2>These are the underlying exceptions which can occur on the server when the 
+server is itself executing a remote method invocation. These exceptions are 
+wrapped in a <code>java.rmi.ServerException</code>; that is the 
+<code>java.rmi.ServerException</code> contains the original exception for the client to 
+extract. These exceptions are wrapped by <code>ServerException</code> so that the client 
+will know that its own remote method invocation on the server did not fail, but 
+that a secondary remote method invocation made by the server failed.  
+<Table Border="3">
+<caption></caption>
+<tr><th>Exception
+<th>Context
+
+<tr><td>java.rmi.server.SkeletonMismatchException
+<td>Hash mismatch of stub and skeleton.
+
+<tr><td>java.rmi.UnmarshalException
+<td>I/O error unmarshaling call header.
+					I/O error unmarshaling arguments.
+
+<tr><td>java.rmi.MarshalException
+<td>Protocol error marshaling return.
+
+<tr><td>java.rmi.RemoteException
+<td>		Method number out of range due to 
+corrupted stream.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+<p><h1><a name="4823">
+Naming Exceptions
+</a></h1>The following table lists the exceptions specified in methods of the 
+<code>java.rmi.Naming </code>class and the <code>java.rmi.registry.Registry</code> interface. 
+<Table Border="3">
+<caption></caption>
+<tr><th>Exception
+<th>Context
+
+<tr><td>java.rmi.AccessException
+<td>Operation disallowed. The registry 
+restricts bind, rebind, and unbind to 
+the same host. The lookup operation 
+can originate from any host.
+
+<tr><td>java.rmi.AlreadyBoundException
+<td>Attempt to bind a name that is 
+already bound.
+
+<tr><td>java.rmi.NotBoundException
+<td>Attempt to look up a name that is not 
+bound.
+
+<tr><td>java.rmi.UnknownHostException
+<td>Attempt to contact a registry on an 
+unknown host.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+<p><h1><a name="4824">
+Other Exceptions 
+<Table Border="3">
+<caption></caption>
+<tr><th>Exception
+<th>Context
+
+<tr><td>java.rmi.RMISecurityException
+<td>A security exception that is thrown 
+by the RMISecurityManager.
+
+<tr><td>java.rmi.server.ServerCloneException
+<td>Clone failed.
+
+<tr><td>java.rmi.server.ServerNotActiveException
+<td>Attempt to get the client host via the 
+RemoteServer.getClientHost method 
+when the remote server is not 
+executing in a remote method.
+
+<tr><td>java.rmi.server.SocketSecurityException
+<td>Attempt to export object on an illegal 
+port.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+ 
+</a></h1>
+
+<hr><br>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-protocol.doc.html">[Prev]</a> <a href="rmi-properties.doc.html">[Next]</a>
+<hr><br>
+ 
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email  -->
+<!-- -->
+<!-- Last updated: 03/18/97 13:00:11 -->
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+Card*resizable:                      TRUE
+Card.width:                          360
+Card.mainform.topAttachment:         attach_position
+Card.mainform.bottomAttachment:      attach_position
+Card.mainform.leftAttachment:        attach_position
+Card.mainform.rightAttachment:       attach_position
+
+Card.mainform.rowcol1.orientation:   horizontal
+Card.mainform.rowcol1.packing:       pack_column
+Card.mainform.rowcol2.orientation:   horizontal
+Card.mainform.rowcol2.packing:       pack_column
+Card.mainform.rowcol3.orientation:   horizontal
+Card.mainform.rowcol3.packing:       pack_tight
+Card.mainform.forward.orientation:   horizontal
+Card.mainform.forward.packing:       pack_column
+
+Card*btn1.labelString:               Button  1
+Card*btn2.labelString:               Button  2
+Card*btn3.labelString:               Button  3
+Card*btn4.labelString:               Button  4
+Card*btn5.labelString:               Button  5
+Card*btn6.labelString:               Button  6
+Card*btn7.labelString:               Button  7
+Card*btn8.labelString:               Button  8
+Card*btn9.labelString:               Button  9
+Card*btn10.labelString:              Button 10
+Card*btn11.labelString:              Button 11
+Card*btn12.labelString:              Button 12
+Card*forward.labelString:            Forward

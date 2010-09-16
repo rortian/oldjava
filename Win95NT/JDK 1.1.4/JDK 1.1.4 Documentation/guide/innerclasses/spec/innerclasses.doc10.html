@@ -1,0 +1,173 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc9.html">Prev</a> | <a href="innerclasses.doc11.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="20107"></a>
+<h1> What are the new binary compatibility requirements for Java 1.1 classes?
+</h1>
+<a name="20264"></a>
+In order to binary ensure compatibility between bytecodes output for Java 1.1 
+compilers from different vendors, and to ensure proper applicability of 
+debuggers and similar tools to those bytecodes, Java makes certain 
+requirements on the form of the bytecodes produced.  This section describes 
+the requirements, new in Java 1.1, which pertain to the implementation of 
+various kinds of inner and nested top-level classes.
+<p><a name="18807"></a>
+<h2>		 Bytecode names of classes and interfaces
+</h2>
+<a name="18804"></a>
+Instances of the Java Virtual Machines, and Java bytecodes, refer to reference 
+types by means of <em>bytecode names</em> which differ in detail from the names used in 
+Java source code.  The bytecode name of a package member <var>T</var> is defined as the 
+name of the package, with every `<code>.</code>' replaced by `<code>/</code>', followed (if the package 
+name is not null) by another `<code>/</code>', and then by the simple name of <var>T</var>.  The 
+bytecode name of <var>T</var> also serves as a prefix for the bytecode name of every class 
+defined within the body of <var>T</var>.
+<p><a name="18692"></a>
+The bytecode name of a class <var>C</var> which is a non-<code>private</code> member of another 
+class, and which is not contained (directly or indirectly) in any block or 
+<code>private</code> class, is defined as the bytecode name of the immediately-enclosing 
+class, followed by `<code>$</code>', followed by the simple name of <var>C</var>.
+<p><a name="18722"></a>
+All other classes are called <em>inaccessible</em>.  No inaccessible class <var>N</var> can ever be 
+referenced by the code of any other compilation unit.  Thus, as long as the 
+name of <var>N</var> is chosen by the compiler in such as way as not to conflict with any 
+other class in the same compilation unit, the name will be globally unique, 
+because (as required previously) its prefix is unique to the package member in 
+which it occurs.
+<p><a name="20637"></a>
+For the sake of tools, there are some additional requirements on the naming of 
+an inaccessible class <var>N</var>.  Its bytecode name must consist of the bytecode name 
+of an enclosing class (the immediately enclosing class, if it is a member), 
+followed either by `<code>$</code>' and a positive decimal numeral chosen by the compiler, 
+or by `<code>$</code>' and the simple name of <var>N</var>, or else by both (in that order).  Moreover, 
+the bytecode name of a block-local <var>N</var> must consist of its enclosing package 
+member <var>T</var>, the characters `<code>$1$</code>', and <var>N</var>, if the resulting name would be unique.
+<p><a name="18704"></a>
+The string produced by the <code>getName</code> method of <code>Class</code> is derived, in all of 
+these cases, from the bytecode name, by replacing `<code>/</code>' by `<code>.</code>'.  There is no 
+attempt to "clean up" the name to make it resemble Java source code.
+<p><a name="18814"></a>
+<h2>		 The class attribute <code>InnerClasses
+</code></h2>
+<a name="18861"></a>
+The bytecode output of a Java 1.1 compiler may refer (via <code>CONSTANT_Class</code> 
+entries) to bytecode names of classes or interfaces which are not package 
+members.  If so, the bytecodes must also contain an class attribute called 
+<code>InnerClasses</code> which declares the encoding of those names.  This attribute 
+contains an array of records, one for each encoded name: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="18886"></a>InnerClasses_attribute {
+    <a name="18891"></a>  u2 attribute_name_index;
+    <a name="18892"></a>  u4 attribute_length;
+    <a name="18893"></a>  u2 number_of_classes;
+    <a name="18912"></a>  {
+    <a name="18913"></a>    u2 inner_class_info_index;   // CONSTANT_Class_info index
+    <a name="18914"></a>    u2 outer_class_info_index;   // CONSTANT_Class_info index
+    <a name="18897"></a>    u2 inner_name_index;         // CONSTANT_Utf8_info index
+    <a name="18898"></a>    u2 inner_class_access_flags; // access_flags bitmask
+    <a name="18899"></a>  } classes[number_of_classes]
+    <a name="18900"></a>}
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="18877"></a>
+Each array element records a class with an encoded name, its defining scope, 
+its simple name, and a bitmask of the originally declared, untransformed 
+access flags.  If an inner class is not a member, its <code>outer_class_info_index</code> 
+is zero.  If a class is anonymous, its <code>inner_name_index</code> is zero.
+<p><a name="18953"></a>
+If a class <var>C</var> was declared <code>protected</code>, the <code>public</code> access flag bit is cleared in 
+its <code>InnerClasses</code> record, even though it is set in <var>C</var>'s <code>access_flags</code> field.
+<p><a name="18998"></a>
+If the <code>outer_class_info_index</code> of a record refers to a class <var>E</var> which itself is 
+not a package member, then an earlier record of the same <code>InnerClasses</code> 
+attribute must describe <var>E</var>.
+<p><a name="19009"></a>
+If a class has members which are types, it must have an <code>InnerClasses</code> 
+attribute, with a record for each of the types.  The rules already given imply 
+that a class which is not a package member has an <code>InnerClasses</code> attribute 
+which has a record for it and all of its enclosing classes, except the outermost.
+<p><a name="19264"></a>
+These rules ensure that compilers and debuggers can correctly interpret 
+bytecode names without parsing them, and without opening additional files to 
+examine inner class definitions.  Compilers are allowed to omit 
+<code>InnerClasses</code> records for inaccessible classes, but they are encouraged to 
+include records for all classes, especially when the code is being compiled for 
+use with a debugger.
+<p><a name="19265"></a>
+<h2>		 The member attribute <code>Synthetic
+</code></h2>
+<a name="19266"></a>
+As discussed previously, the compiler synthesizes certain hidden fields and 
+methods in order to implement the scoping of names.  These fields are 
+<code>private</code> unless noted otherwise, or they are at most of package scope.
+<p><a name="19128"></a>
+Java 1.1 compilers are required, when producing bytecodes, to mark any field 
+or member not directly defined in the source code with an attribute named 
+<code>Synthetic</code>.  (At present, the length must be zero.)  This will allow other 
+compilers to avoid inadvertant source-level references to non-private hidden 
+members, and will allow tools to avoid displaying them unnecessarily.
+<p><a name="19139"></a>
+(A corresponding mechanism for declaring a local variable to be <code>Synthetic</code> 
+may also be introduced.)
+<p><a name="19114"></a>
+Java 1.1 compilers are strongly encouraged, though not required, to use the 
+following naming conventions when implementing inner classes.  Compilers 
+may not use synthetic names of the forms defined here for any other purposes.
+<p><a name="19109"></a>
+A synthetic field pointing to the outermost enclosing instance is named 
+<code>this$0</code>.  The next-outermost enclosing instance is <code>this$1</code>, and so forth.  (At 
+most one such field is necessary in any given inner class.)  A synthetic field 
+containing a copy of a constant <var>v</var> is named <code>val$</code><var>v</var>.  These fields are <code>final</code>.
+<p><a name="17863"></a>
+All these synthetic fields are initialized by constructor parameters, which have 
+the same names as the fields they initialize.  If one of the parameters is the 
+innermost enclosing instance, it is the first.  All such constructor parameters 
+are deemed to be synthetic.  If the compiler determines that the synthetic 
+field's value is used only in the code of the constructor, it may omit the field 
+itself, and use only the parameter to implement variable references.
+<p><a name="19167"></a>
+A non-<code>private</code> <code>final</code> synthetic method which grants access to a private 
+member or constructor has a name of the form <code>access$</code><var>N</var>, where <var>N</var> is a 
+decimal numeral.  The organization of such access protocols is unspecified.
+<p><a name="19229"></a>
+Debuggers and similar tools which are 1.1 compatible must recognize these 
+naming conventions, and organize variable displays and symbol tables 
+accordingly.  Note that tools may need to parse these names.  Compilers are 
+strongly encouraged to use these conventions, at least by default.
+<p><a name="19281"></a>
+Implementations of the Java Virtual Machine may verify and require that the 
+synthetic members specified here are defined and used properly.  It is 
+reasonable to exploit the nature of synthetic members by basing optimization 
+techniques on them.
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc9.html">Prev</a> | <a href="innerclasses.doc11.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

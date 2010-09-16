@@ -1,0 +1,437 @@
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc5.html">Prev</a>  | <a href="java-reflection.doc7.html">Next</a>
+</font></td><td align=right><i>Java Core Reflection</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+
+<a name="5273"></a>
+<h1>The class java.lang.reflect.Array
+ </h1><pre>    <a name="5275"></a><code>package java.lang.reflect;
+</code>
+    <a name="5276"></a><code>public final class Array extends Object
+</code>
+</pre><a name="5277"></a>
+The <code>Array</code> class is an uninstantiable class that exports static methods to create 
+Java arrays with primitive or class component types, and to get and set array 
+component values.
+<p>
+<hr>
+<a name="5278"></a>
+<h2>		 Methods
+</h2>
+
+<a name="5279"></a>
+<h3>		 newInstance
+</h3>
+<pre>    <a name="5280"></a><code>public static Object newInstance(Class componentType, int length)
+</code>
+    <a name="5281"></a><code>    throws NullPointerException, NegativeArraySizeException
+</code>
+</pre><a name="5282"></a>
+Returns a new array with the specified component type and length.  The array 
+is created as if by the equivalent array creation expression, namely:
+<p><pre>    <a name="5283"></a>
+
+    <a name="5284"></a>    new <i>componentType</i>[<code>length</code>]
+
+</pre><a name="5285"></a>
+The method throws a <code>NullPointerException</code> if the specified <code>componentType</code> 
+argument is <code>null</code>.
+<p><a name="5286"></a>
+The method throws a <code>NegativeArraySizeException</code> if the specified <code>length</code> 
+argument is negative.
+<p>
+<a name="5287"></a>
+<h3>		 newInstance
+</h3>
+<pre>    <a name="5288"></a><code>public static Object newInstance(Class componentType,
+</code>
+    <a name="5289"></a><code>                             int[] dimensions)
+</code>
+    <a name="5290"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5291"></a><code>        NegativeArraySizeException
+</code>
+</pre><a name="5292"></a>
+Returns a new array with the specified component type and dimensions.  The 
+array is created as if by the equivalent array creation expression, namely:
+<p><pre>    <a name="5293"></a>
+
+    <a name="5294"></a>    new <i>componentType</i>[<code>dimensions[0]][dimensions[1]</code>]...
+
+</pre><a name="5295"></a>
+The method throws a <code>NullPointerException</code> if either the <code>componentType</code> 
+argument or the <code>dimensions</code> argument is <code>null</code>.
+<p><a name="5296"></a>
+The method throws an <code>IllegalArgumentException</code> if the specified 
+<code>dimensions</code> argument is a zero-dimensional array, or if the number of 
+requested dimensions exceeds the limit on the number of array dimensions 
+supported by the implementation (typically <code>255</code>).
+<p><a name="5297"></a>
+The method throws a <code>NegativeArraySizeException</code> if any of the elements of 
+the specified <code>dimensions</code> array is negative.
+<p>
+<a name="5298"></a>
+<h3>		 getLength
+</h3>
+<pre>    <a name="5299"></a><code>public static int getLength(Object array)
+</code>
+    <a name="5300"></a><code>    throws NullPointerException, IllegalArgumentException
+</code>
+</pre><a name="5301"></a>
+Returns the length of the specified array.
+<p><a name="5302"></a>
+Throws a <code>NullPointerException</code> if the specified object argument is <code>null</code>.
+<p><a name="5303"></a>
+Throws an <code>IllegalArgumentException</code> if the specified object argument is not 
+an array.
+<p>
+<a name="5304"></a>
+<h3>		 get
+</h3>
+<pre>    <a name="5305"></a><code>public static Object get(Object array, int index)
+</code>
+    <a name="5306"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5307"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5308"></a>
+Returns the value of the indexed component of the specified array object.  The 
+value is automatically wrapped in an object if it has a primitive type.
+<p><a name="5309"></a>
+The operation proceeds as follows:
+<p>
+<ul><a name="5310"></a>
+<li>If the specified object is <code>null</code>, the method throws a <code>NullPointerException</code>.
+<br><br>
+<a name="5311"></a>
+<li>If the specified object is not an array, the method throws an 
+<code>IllegalArgumentException</code>.
+<br><br>
+<a name="5312"></a>
+<li>If the specified <code>index</code> argument is negative, or if it is greater than or equal to 
+the length of the specified array, the method throws an 
+<code>ArrayIndexOutOfBoundsException</code>.
+<br><br>
+<a name="5313"></a>
+<li>The value of the indexed component is fetched.  If the array's component 
+type is primitive, the value is wrapped in an object.  The possibly wrapped 
+value is returned.
+<br><br>
+</ul><a name="5314"></a>
+Primitive variants of <code>Array.get</code> are also provided for efficiency; these avoid 
+the final wrapping conversion.  They are described below.
+<p>
+<a name="5315"></a>
+<h3>		 getBoolean
+</h3>
+<pre>    <a name="5316"></a><code>public static boolean getBoolean(Object array, int index)
+</code>
+    <a name="5317"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5318"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5319"></a>
+Returns the value of the indexed element in the specified array object, as a 
+<code>boolean</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5320"></a>
+If the indexed value is not of type <code>boolean</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5321"></a>
+<h3>		 getByte
+</h3>
+<pre>    <a name="5322"></a><code>public static byte getByte(Object array, int index)
+</code>
+    <a name="5323"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5324"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5325"></a>
+Returns the value of the indexed element in the specified array object, as a 
+<code>byte</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5326"></a>
+If the indexed value is not of type <code>byte</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5327"></a>
+<h3>		 getChar
+</h3>
+<pre>    <a name="5328"></a><code>public static char getChar(Object array, int index)
+</code>
+    <a name="5329"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5330"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5331"></a>
+Returns the value of the indexed element in the specified array object, as a 
+<code>char</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5332"></a>
+If the indexed value is not of type <code>char</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5333"></a>
+<h3>		 getShort
+</h3>
+<pre>    <a name="5334"></a><code>public static short getShort(Object array, int index)
+</code>
+    <a name="5335"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5336"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5337"></a>
+Returns the value of the indexed element in the specified array object, as a 
+<code>short</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5338"></a>
+If the indexed value cannot be converted to a <code>short</code> by an identity or widening 
+conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5339"></a>
+<h3>		 getInt
+</h3>
+<pre>    <a name="5340"></a><code>public static int getInt(Object array, int index)
+</code>
+    <a name="5341"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5342"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5343"></a>
+Returns the value of the indexed element in the specified array object, as an 
+<code>int</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5344"></a>
+If the indexed value cannot be converted to an <code>int</code> by an identity conversion or 
+a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5345"></a>
+<h3>		 getLong
+</h3>
+<pre>    <a name="5346"></a><code>public static long getLong(Object array, int index)
+</code>
+    <a name="5347"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5348"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5349"></a>
+Returns the value of the indexed element in the specified array object, as a 
+<code>long</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5350"></a>
+If the indexed value cannot be converted to a <code>long</code> by an identity conversion or 
+a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5351"></a>
+<h3>		 getFloat
+</h3>
+<pre>    <a name="5352"></a><code>public static float getFloat(Object array, int index)
+</code>
+    <a name="5353"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5354"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5355"></a>
+Returns the value of the indexed element in the specified array object, as a 
+<code>float</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5356"></a>
+If the indexed value cannot be converted to a <code>float</code> by an identity conversion 
+or a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5357"></a>
+<h3>		 getDouble
+</h3>
+<pre>    <a name="5358"></a><code>public static double getDouble(Object array, int index)
+</code>
+    <a name="5359"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5360"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5361"></a>
+Returns the value of the indexed element in the specified array object, as a 
+<code>double</code>.  See <code>Array.get</code> for the detailed procedure.
+<p><a name="5362"></a>
+If the indexed value cannot be converted to a <code>double</code> by an identity conversion 
+or a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5363"></a>
+<h3>		 set
+</h3>
+<pre>    <a name="5364"></a><code>public static void set(Object array, int index, Object value)
+</code>
+    <a name="5365"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5366"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5367"></a>
+Sets the indexed component of the specified array object to the specified new 
+value.  The new value is first automatically unwrapped if the array has a 
+primitive component type.
+<p><a name="5368"></a>
+The operation proceeds as follows:
+<p>
+<ul><a name="5369"></a>
+<li>If the specified object argument is <code>null</code>, the method throws a 
+<code>NullPointerException</code>.  
+<br><br>
+<a name="5370"></a>
+<li>If the specified object argument is not an array, the method throws an 
+<code>IllegalArgumentException</code>.
+<br><br>
+<a name="5371"></a>
+<li>If the specified <code>index</code> argument is negative, or if it is greater than or equal to 
+the length of the specified array, the method throws an 
+<code>ArrayIndexOutOfBoundsException</code>.
+<br><br>
+<a name="5372"></a>
+<li>If the array has a primitive component type, an unwrapping conversion is 
+attempted to convert the new object value to a value of a primitive type.   If 
+the object parameter is <code>null</code>, the conversion fails by throwing a 
+<code>NullPointerException</code>.   If the object parameter is not an instance of a 
+standard Java wrapper class, the conversion fails by throwing an 
+<code>IllegalArgumentException</code>.
+<br><br>
+<a name="5373"></a>
+<li>If, after possible unwrapping, the new value cannot be converted to a value 
+of the array component type by an identity conversion or a widening 
+conversion, the method throws an <code>IllegalArgumentException</code>.
+<br><br>
+<a name="5374"></a>
+<li>The indexed array component is set to the possibly unwrapped and 
+widened new value.
+<br><br>
+</ul><a name="5375"></a>
+Primitive variants of <code>Array.set</code> are also provided for efficiency; these let user 
+code avoid having to wrap the new value.  They are described below.
+<p>
+<a name="5376"></a>
+<h3>		 setBoolean
+</h3>
+<pre>    <a name="5377"></a><code>public static void setBoolean(Object array, int index, boolean z)
+</code>
+    <a name="5378"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5379"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5380"></a>
+Sets the indexed element of the specified array object to the specified <code>boolean</code> 
+value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+<a name="5381"></a>
+<h3>		 setByte
+</h3>
+<pre>    <a name="5382"></a><code>public static void setByte(Object array, int index, byte b)
+</code>
+    <a name="5383"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5384"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5385"></a>
+Sets the indexed element of the specified array object to the specified <code>byte</code> 
+value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+<a name="5386"></a>
+<h3>		 setChar
+</h3>
+<pre>    <a name="5387"></a><code>public static void setChar(Object array, int index, char c)
+</code>
+    <a name="5388"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5389"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5390"></a>
+Sets the indexed element of the specified array object to the specified <code>char</code> 
+value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+<a name="5391"></a>
+<h3>		 setShort
+</h3>
+<pre>    <a name="5392"></a><code>public static void setShort(Object array, int index, short s)
+</code>
+    <a name="5393"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5394"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5395"></a>
+Sets the indexed component of the specified array object to the specified <code>short</code> 
+value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+<a name="5396"></a>
+<h3>		 setInt
+</h3>
+<pre>    <a name="5397"></a><code>public static void setInt(Object array, int index, int i)
+</code>
+    <a name="5398"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5399"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5400"></a>
+Sets the indexed component of the specified array object to the specified <code>int</code> 
+value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+<a name="5401"></a>
+<h3>		 setLong
+</h3>
+<pre>    <a name="5402"></a><code>public static void setLong(Object array, int index, long l)
+</code>
+    <a name="5403"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5404"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5405"></a>
+Sets the indexed component of the specified array object to the specified <code>long</code> 
+value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+<a name="5406"></a>
+<h3>		 setFloat
+</h3>
+<pre>    <a name="5407"></a><code>public static void setFloat(Object array, int index, float f)
+</code>
+    <a name="5408"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5409"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5410"></a>
+Sets the indexed component of the specified array object to the specified <code>float</code> 
+value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+<a name="5411"></a>
+<h3>		 setDouble
+</h3>
+<pre>    <a name="5412"></a><code>public static void setDouble(Object array, int index, double d)
+</code>
+    <a name="5413"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5414"></a><code>        ArrayIndexOutOfBoundsException
+</code>
+</pre><a name="5415"></a>
+Sets the indexed component of the specified array object to the specified 
+<code>double</code> value.  See <code>Array.set</code> for the detailed procedure.
+<p>
+
+<br>
+<hr> 
+<font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc5.html">Prev</a>  | <a href="java-reflection.doc7.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<a href="java-reflection-copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

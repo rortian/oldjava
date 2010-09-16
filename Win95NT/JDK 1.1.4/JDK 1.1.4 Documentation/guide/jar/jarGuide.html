@@ -1,0 +1,99 @@
+<html>
+<head>
+<title>JAR Guide</title>
+<!-- Created by: Susan Keohan 30-Oct-1996 -->
+<!-- Updated by: Beth Stearns 18-Nov-1996 -->
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<CENTER><P ALIGN=LEFT>
+<IMG SRC="../../images/smi.logo.gif" ALT=" Sun Microsystems, Inc " BORDER=0>
+</P></CENTER>
+
+<font size=-1><a href="index.html">JDK Contents</a></font>
+<HR SIZE=3 NOSHADE>
+<BODY BGCOLOR="#FFFFFF">
+
+<center>
+                     <H1>JAR Guide</H1>
+</center>
+
+<H2>What is JAR?</H2>
+<P>
+JAR stands for Java ARchive.  It's a file format based on the popular ZIP
+file format and is used for aggregating many files into one. Although JAR
+can be used as a general archiving tool, the primary motivation for its
+development was so that Java applets and their requisite components (.class
+files, images and sounds) can be downloaded to a browser in a single HTTP
+transaction, rather than opening a new connection for each piece.  This
+greatly improves the speed with which an applet can be loaded onto a web page
+and begin functioning. The JAR format also supports compression, which reduces
+the size of the file and improves download time still further.  
+<!-- REMIND: put a link to download benchmark statistics in here --> 
+Additionally, individual entries in a JAR file may be digitally signed by the 
+applet author to authenticate their origin.  
+<P>
+JAR is:
+<UL>
+  <LI> the only archive format that is cross-platform
+  <LI> the only format that handles audio and image files as well as class files
+  <LI> backward-compatible with existing applet code
+  <LI> an open standard, fully extendable, and written in java
+  <LI> the preferred way to bundle the pieces of a java applet  
+</UL>
+
+<p>JAR consists of a zip archive, as defined by PKWARE, containing a manifest file and potentially 
+signature files, as defined in the <A HREF="manifest.html">Manifest and Signature</A> specification.
+<P>
+<H2>The APPLET tag</H2>
+Changing the APPLET tag in your HTML page to accomodate a JAR file is simple.
+The JAR file on the server is identified by the <B>ARCHIVE</B> parameter, where
+the directory location of the jar file should be relative to the location of the
+html page:
+<PRE>
+    &ltapplet code=Animator.class 
+      archive="jars/animator.jar"
+      width=460 height=160>
+      &ltparam name=foo value="bar"&gt
+    &lt/applet&gt
+</PRE>
+Note that the familiar <B>CODE=myApplet.class</B> parameter must still be present.  
+The <B>CODE</B> parameter, as always, identifies the name of the applet where execution 
+begins.  However, the class file for the applet and all of its helper classes are loaded 
+from the JAR file.  
+<P>
+Once the archive file is identified, it is downloaded and separated into its components.
+During the execution of the applet, when a new class, image or audio clip is requested by 
+the applet, it is searched for first in the archives associated with the applet.  If the file 
+is not found amongst the archives that were downloaded, it is searched for on the applet's 
+server, relative to the CODEBASE (that is, it is searched for as in JDK1.0.2).
+<P>
+The archive tag may specify multiple JAR files.  Each JAR file must be
+separated by "," (comma).  Each file is downloaded in turn:
+<PRE>
+    &ltapplet code=Animator.class 
+      archive="classes.jar ,  images.jar ,  sounds.jar"
+      width=460 height=160>
+      &ltparam name=foo value="bar"&gt
+    &lt/applet&gt
+</PRE>
+There can be any amount of white space between entries within the archive parameter.  
+In addition, the archive tag itself is case-insensitive; it can be lower-case, 
+upper-case, or any combination of lower- and upper-case letters, such as ArCHiVe.
+
+</BODY>
+<p>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+
+<IMG SRC="../../images/JAVA.85.GIF" ALIGN=RIGHT>
+
+<FONT SIZE=-2>
+<A HREF="../../relnotes/SMICopyright.html">Copyright &#169;</A> 1996 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn. View, CA 94043-1100 USA. All rights reserved.</font>
+<br><br>
+
+</BODY>
+</HTML>
+
+

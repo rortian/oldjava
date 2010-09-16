@@ -1,0 +1,265 @@
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc3.html">Prev</a>  | <a href="java-reflection.doc5.html">Next</a>
+</font></td><td align=right><i>Java Core Reflection</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+
+<a name="5157"></a>
+<h1>The class java.lang.reflect.Method
+ </h1><pre>    <a name="5159"></a><code>package java.lang.reflect;
+</code>
+    <a name="5160"></a><code>public final class Method extends Object implements Member
+</code>
+</pre><a name="5161"></a>
+<code>A Method</code> provides information about, and access to, a single method of a class 
+or an interface. The reflected method may be an <code>abstract</code> method, a class 
+(<code>static</code>) method, or an instance method.
+<p><a name="5162"></a>
+Only the Java Virtual Machine may create <code>Method</code> objects; user code obtains 
+<code>Method</code> references via the methods <code>getMethod</code>, <code>getMethods</code>, 
+<code>getDeclaredMethod</code>, and <code>getDeclaredMethods</code> of class <code>Class</code>.
+<p><a name="5163"></a>
+A <code>Method</code> permits widening conversions to occur when matching the actual 
+parameters to <code>invoke</code> with the underlying method's formal parameters, but it 
+throws an <code>IllegalArgumentException</code> if a narrowing conversion would occur. 
+<p>
+<hr>
+<a name="5164"></a>
+<h2>		 Methods
+</h2>
+
+<a name="5165"></a>
+<h3>		 getDeclaringClass
+</h3>
+<pre>    <a name="5166"></a><code>public Class getDeclaringClass()
+</code>
+</pre><a name="5167"></a>
+Returns the <code>Class</code> object for the class or interface that declares the method 
+represented by this <code>Method</code> object.
+<p>
+<a name="5168"></a>
+<h3>		 getName
+</h3>
+<pre>    <a name="5169"></a><code>public String getName()
+</code>
+</pre><a name="5170"></a>
+Returns the simple name of the method represented by this <code>Method</code> object.
+<p>
+<a name="5171"></a>
+<h3>		 getModifiers
+</h3>
+<pre>    <a name="5172"></a><code>public int getModifiers()
+</code>
+</pre><a name="5173"></a>
+Returns the Java language modifiers for the method represented by this <code>Method</code> 
+object, encoded in an integer. The <code>Modifier</code> class should be used to decode the 
+modifiers.
+<p><a name="5174"></a>
+The modifier encodings are defined in <em>The Java Virtual Machine Specification</em>, 
+Table 4.4.
+<p>
+<a name="5175"></a>
+<h3>		 getReturnType
+</h3>
+<pre>    <a name="5176"></a><code>public Class getReturnType()
+</code>
+</pre><a name="5177"></a>
+Returns a <code>Class</code> object that represents the formal return type of the method 
+represented by this <code>Method</code> object.
+<p>
+<a name="5178"></a>
+<h3>		 getParameterTypes
+</h3>
+<pre>    <a name="5179"></a><code>public Class[] getParameterTypes()
+</code>
+</pre><a name="5180"></a>
+Returns an array  of <code>Class</code> objects that represent the formal parameter types, in 
+declaration order, of the method represented by this <code>Method</code> object.  Returns an 
+array of length <code>0</code> if the underlying method takes no parameters.
+<p>
+<a name="5181"></a>
+<h3>		 getExceptionTypes
+</h3>
+<pre>    <a name="5182"></a><code>public Class[] getExceptionTypes()
+</code>
+</pre><a name="5183"></a>
+Returns an array of <code>Class</code> objects that represent the types of the checked 
+exceptions thrown by the underlying method represented by this <code>Method</code> 
+object.  Returns an array of length <code>0</code> if the underlying method throws no 
+checked exceptions.
+<p>
+<a name="5184"></a>
+<h3>		 equals
+</h3>
+<pre>    <a name="5185"></a><code>public boolean equals(Object obj)
+</code>
+</pre><a name="5186"></a>
+Compares this <code>Method</code> against the specified object.  Returns <code>true</code> if the objects 
+are the same; <code>false</code> otherwise.  Two <code>Method</code> objects are the same if they have 
+the same declaring class, the same name, and the same formal parameter types.
+<p><a name="5187"></a>
+This method overrides the <code>equals</code> method of class <code>Object</code>.
+<p>
+<a name="5188"></a>
+<h3>		 hashCode
+</h3>
+<pre>    <a name="5189"></a><code>public int hashCode()
+</code>
+</pre><a name="5190"></a>
+Returns a hashcode for this <code>Method</code>.  The hashcode is computed as the 
+exclusive-or of the hashcodes of the <code>Method</code>'s declaring class name and its 
+simple name.
+<p><a name="5191"></a>
+This method overrides the <code>hashCode</code> method of class <code>Object</code>.
+<p>
+<a name="5192"></a>
+<h3>		 toString
+</h3>
+<pre>    <a name="5193"></a><code>public String toString()
+</code>
+</pre><a name="5194"></a>
+Returns a string describing the underlying method represented by this <code>Method</code> 
+object. The string is formatted as the underlying method's Java language 
+modifiers, if any, followed by the fully-qualified name of the method return 
+type or <code>void</code>, followed by a space, followed by the fully-qualified name of class 
+declaring the method, followed by a period, followed by the simple method 
+name, followed by a parenthesized, comma-separated list of the fully-qualified 
+names of the underlying method's formal parameter types.  If the underlying 
+method throws checked exceptions, the parameter list is followed by a space, 
+followed by the word <code>throws</code> followed by a comma-separated list of the fully-
+qualified names of the thrown exception types.  For example:
+<p><pre>    <a name="5195"></a>
+
+    <a name="5196"></a>    public boolean java.lang.Object.equals(java.lang.Object)
+
+    <a name="5197"></a>    public final java.lang.String java.lang.Thread.getName()
+
+</pre><a name="5198"></a>
+The method modifiers are placed in canonical order as specified by <em>The Java 
+Language Specification</em>.  This is <code>public</code>, <code>protected</code> or <code>private</code> first, and then 
+other modifiers in the following order: <code>abstract</code>, <code>static</code>, <code>final</code>, 
+<code>synchronized</code>, and <code>native</code>.
+<p><a name="5199"></a>
+This method overrides the <code>toString</code> method of class <code>Object</code>.
+<p>
+<a name="5200"></a>
+<h3>		 invoke
+</h3>
+<pre>    <a name="5201"></a><code>public Object invoke(Object obj, Object[] args)
+</code>
+    <a name="5202"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5203"></a><code>        IllegalAccessException, InvocationTargetException
+</code>
+</pre><a name="5204"></a>
+Invokes the underlying method represented by this <code>Method</code> object on the 
+specified object with the specified parameters.  Individual parameters are 
+automatically unwrapped to match primitive formal parameters, and both 
+primitive and reference parameters are subject to widening conversions as 
+necessary. The value returned by the underlying method is automatically 
+wrapped in an object if it has a primitive type.
+<p><a name="5205"></a>
+Method invocation proceeds with the following steps, in order:
+<p>
+<ul><a name="5206"></a>
+<li>If the underlying method is a class (<code>static)</code> method, then the specified 
+object argument is ignored.  It may be <code>null</code>.
+<br><br>
+<a name="5207"></a>
+<li>Otherwise, the underlying method is an abstract method or an instance 
+method.  If the specified object argument is <code>null</code>, the invocation throws a 
+<code>NullPointerException</code>.  Otherwise, if the specified object argument is not 
+an instance of the class or interface declaring the underlying method, the 
+invocation throws an <code>IllegalArgumentException</code>.
+<br><br>
+<a name="5208"></a>
+<li>If this <code>Method</code> object enforces Java language access control and the 
+underlying method is inaccessible, the invocation throws an 
+<code>IllegalAccessException</code>.
+<br><br>
+<a name="5209"></a>
+<li>If the number of actual parameters supplied via <code>args</code> is different from the 
+number of formal parameters required by the underlying method, the 
+invocation throws an <code>IllegalArgumentException</code>.  If the underlying 
+method takes no parameters, <code>args</code> may be <code>null</code>.
+<br><br>
+<a name="5210"></a>
+<li>For each actual parameter in the supplied <code>args</code> array:
+<br><br>
+
+
+<ul>
+<a name="5211"></a>
+<li>If the corresponding formal parameter has a primitive type, an 
+unwrapping conversion is attempted to convert the object parameter 
+value to a value of a primitive type.   If the object parameter is <code>null</code>, the 
+conversion fails by throwing a <code>NullPointerException</code>.   If the object 
+parameter is not an instance of a standard Java wrapper class, the 
+conversion fails by throwing an <code>IllegalArgumentException</code>.
+<br><br>
+<a name="5212"></a>
+<li>If, after possible unwrapping, the parameter value cannot be converted to 
+the corresponding formal parameter type by an identity conversion or a 
+widening conversion, the invocation throws an 
+<code>IllegalArgumentException</code>.
+<br><br>
+</ul>
+<a name="5213"></a>
+<li>If the underlying method is a class (<code>static</code>) method, it is invoked as exactly 
+the underlying method of the relevant declaring class.
+<br><br>
+<a name="5214"></a>
+<li>If the underlying method is not a class (<code>static</code>) method, it is invoked using 
+dynamic method lookup as documented in <em>The Java Language Specification</em>, 
+section 15.11.4.4; in particular, overriding based on the class of the target 
+object will occur.
+<br><br>
+<a name="5215"></a>
+<li>Control transfers to the underlying method.
+<br><br>
+<a name="5216"></a>
+<li>If the underlying method completes abruptly by throwing an exception, the 
+exception is caught and placed in a new exception object of class 
+<code>InvocationTargetException</code>; <code>invoke</code> then completes abruptly by throwing 
+this new exception.
+<br><br>
+<a name="5217"></a>
+<li>If the underlying method completes normally, the value it returns is 
+returned by <code>invoke</code>; if the value has a primitive type, it is first appropriately 
+wrapped in an object.  If the underlying method is declared <code>void</code>, <code>invoke</code> 
+returns <code>null</code>.
+<br><br>
+</ul><a name="5894"></a>
+&nbsp;
+<p>
+
+<br>
+<hr> 
+<font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc3.html">Prev</a>  | <a href="java-reflection.doc5.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<a href="java-reflection-copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

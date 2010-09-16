@@ -1,0 +1,79 @@
+Grid*resizable:                  TRUE
+Grid.form*width:              400
+Grid.form*height:             400
+Grid*topAttachment:        attach_position
+Grid*bottomAttachment:  attach_position
+Grid*leftAttachment:        attach_position
+Grid*rightAttachment:      attach_position
+
+Grid*btn1.labelString:      Button 1
+Grid*btn1.leftPosition:                 1
+Grid*btn1.rightPosition:            33
+Grid*btn1.topPosition:                 1
+Grid*btn1.bottomPosition:         25
+
+Grid*btn2.labelString:      Button 2
+Grid*btn2.leftPosition:                 1
+Grid*btn2.rightPosition:             33
+Grid*btn2.topPosition:               26
+Grid*btn2.bottomPosition:         50
+
+Grid*btn3.labelString:      Button 3 
+Grid*btn3.leftPosition:                 1
+Grid*btn3.rightPosition:             33
+Grid*btn3.topPosition:               51
+Grid*btn3.bottomPosition:         75
+
+Grid*btn4.labelString:      Button 4 
+Grid*btn4.leftPosition:                  1
+Grid*btn4.rightPosition:              33
+Grid*btn4.topPosition:                76
+Grid*btn4.bottomPosition:        100
+
+Grid*btn5.labelString:      Button 5 
+Grid*btn5.leftPosition:               34 
+Grid*btn5.rightPosition:             66 
+Grid*btn5.topPosition:                 1
+Grid*btn5.bottomPosition:         25
+
+Grid*btn6.labelString:      Button 6 
+Grid*btn6.leftPosition:               34
+Grid*btn6.rightPosition:             66
+Grid*btn6.topPosition:               26
+Grid*btn6.bottomPosition:         50
+
+Grid*btn7.labelString:      Button 7 
+Grid*btn7.leftPosition:               34
+Grid*btn7.rightPosition:             66
+Grid*btn7.topPosition:               51
+Grid*btn7.bottomPosition:         75
+
+Grid*btn8.labelString:      Button 8 
+Grid*btn8.leftPosition:               34
+Grid*btn8.rightPosition:             66
+Grid*btn8.topPosition:                76
+Grid*btn8.bottomPosition:        100
+
+Grid*btn9.labelString:      Button 9 
+Grid*btn9.leftPosition:               67
+Grid*btn9.rightPosition:           100
+Grid*btn9.topPosition:                 1
+Grid*btn9.bottomPosition:         25
+
+Grid*btn10.labelString:    Button 10 
+Grid*btn10.leftPosition:               67
+Grid*btn10.rightPosition:          100
+Grid*btn10.topPosition:               26
+Grid*btn10.bottomPosition:         50
+
+Grid*btn11.labelString:    Button 11 
+Grid*btn11.leftPosition:               67
+Grid*btn11.rightPosition:          100
+Grid*btn11.topPosition:               51
+Grid*btn11.bottomPosition:        75
+
+Grid*btn12.labelString:    Button 12 
+Grid*btn12.leftPosition:               67
+Grid*btn12.rightPosition:           100
+Grid*btn12.topPosition:               76
+Grid*btn12.bottomPosition:       100

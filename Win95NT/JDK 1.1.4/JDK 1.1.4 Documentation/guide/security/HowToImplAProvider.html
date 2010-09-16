@@ -1,0 +1,1352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>		 How to Integrate Your Cryptography Algorithms into Java Security</TITLE>
+
+</HEAD>
+
+<BODY>
+<HR>
+
+<center>
+<H1>How to Integrate Your Cryptography Algorithms into Java<font size=-1><sup>TM</sup></font> Security</H1>
+
+<br>
+
+<H3><I>Last Modified: 27 June 1997</I></H3>
+
+</center>
+
+<HR>
+
+
+<p><dl>
+<dt><dd><a href="#Introduction">
+<font size="+2"><b>Introduction</b></font>
+</a><dl>
+
+<dt><dd><a href="#Who">
+<b>Who Should Read This Document</b>
+
+</a><dt><dd><a href="#RelatedDocumentation">
+<b>Related Documentation</b>
+</a></dl>
+<br>
+<br>
+
+<dt><dd><a href="#Steps">
+<font size="+2"><b>Steps to Implement and Integrate a Provider</b></font>
+</a><dl>
+
+<dt><dd><a href="#Step 1">
+<b>Step 1: Write your Algorithm Implementation Code</b>
+
+</a><dt><dd><a href="#Step 2">
+<b>Step 2: Give your Provider a Name</b>
+
+</a><dt><dd><a href="#Step 3">
+<b>Step 3: Write your "Master Class," a subclass of Provider</b>
+
+</a><dt><dd><a href="#Step 4">
+<b>Step 4: Compile your Code</b>
+
+</a><dt><dd><a href="#Step 5">
+<b>Step 5: Prepare for Testing: Install the Provider</b>
+
+</a><dt><dd><a href="#Step 6">
+<b>Step 6: Write and Compile Test Programs</b>
+
+</a><dt><dd><a href="#Step 7">
+<b>Step 7: Run your Test Programs</b>
+
+</a><dt><dd><a href="#Step 8">
+<b>Step 8: Document your Provider and its Supported Algorithms</b>
+
+</a><dt><dd><a href="#Step 9">
+<b>Step 9: Make your Class Files and Documentation Available to Clients</b>
+
+</a>
+</dl>
+<br>
+<br>
+
+<dt><dd><a href="#FurtherImplDetails">
+<font size="+2"><b>Further Implementation Details
+and Requirements</b></font>
+</a><dl>
+<dt><dd><a href="#AlgAliases">
+<b>Algorithm Aliases</b>
+</a><dt><dd><a href="#AlgDependencies">
+<b>Algorithm Interdependencies</b>
+</a><dt><dd><a href="#KPGRequirements">
+<b>Key Pair Generator and Signature 
+Algorithm Requirements</b>
+
+
+</a></dl>
+<br>
+<br>
+
+<dt><dd><a href="#AppA">
+<font size="+2"><b> Appendix A: The "SUN" Provider's Master Class</b></font>
+</a>
+<br>
+<br>
+<dt><dd><a href="#AppB">
+<font size="+2"><b> Appendix B: The java.security File</b></font>
+
+</a>
+</dl>
+
+
+<HR>
+
+<H1><a name="Intro">Introduction</a></H1>
+
+<blockquote>
+
+<p>JDK 1.1 introduced the notion of a 
+<em>Cryptography Package Provider</em>, or
+"provider" for short. This term refers to
+a package (or a set of packages) that supply
+a concrete implementation of a subset of the cryptography aspects of
+the Java Security API.  A provider may,
+for example, contain an implementation of one or more digital signature
+algorithms, message digest algorithms, and key generation
+algorithms.
+
+<p>A program wishing to use cryptography functionality
+may simply request a particular type of object
+(such as a Signature object) implementing a particular
+algorithm (such as DSS) and get an implementation from one of 
+the installed providers. If an implementation from a
+particular provider is desired, the program can request
+that provider by name, along with the algorithm desired.
+
+<p>Each JDK installation has one or more provider packages installed. 
+Clients may configure their runtimes with different providers,
+and specify a <i>preference order</i> for each of them. The preference
+order is the order in which providers are searched for requested 
+algorithms when no particular provider is requested. 
+
+<p><a name = "SUN">JDK 1.1 comes standard with a default provider, named 
+"SUN". The "SUN" provider package includes:
+
+<ul>
+
+<li>An implementation of the Digital Signature Algorithm (NIST FIPS 186).<p>
+
+<li>An implementation of the MD5 (RFC 1321) and SHA-1 (NIST FIPS 180-1)
+message digest algorithms.<p>
+
+</ul>
+
+
+<p>New providers may be added statically or dynamically. 
+Clients may also query which providers are currently installed.
+<P>
+
+<p>The different implementations may have different
+characteristics. Some may be software-based, while others may be
+hardware-based. Some may be platform-independent, while others may be
+platform-specific. Some provider source code may be available for
+review and evaluation, while some may not.
+
+<H2><a name="Who">Who Should Read This Document</a></H2>
+
+<p>This document is intendend for experienced programmers
+wishing to create their own provider packages supplying cryptography 
+algorithm implementations. It documents what you need to do in order
+to integrate your provider into Java Security so that
+your algorithms can be found when Java Security API clients
+request them.
+
+Programmers that only need to use the Java Security API to
+access existing cryptography algorithms
+do <i>not</i> need to read this document.
+
+<H2><a name="RelatedDocumentation">Related Documentation</a></H2>
+
+<p>This document assumes you have already read the
+<a href = "CryptoSpec.html">Java Cryptography Architecture 
+API Specification and Reference</a>.
+
+<p>It also discusses various classes and interfaces in the
+Java Security API. The complete reference documentation for 
+the relevant Security API packages can be found in:
+
+<ul>
+   <LI><a href="../../api/Package-java.security.html">java.security package</a>
+   <LI><a href="../../api/Package-java.security.interfaces.html">java.security.interfaces package</a>
+</ul><p>
+
+
+</blockquote>
+
+<H1><a name="Steps">Steps to Implement and Integrate a Provider</a></H1>
+
+<blockquote>
+
+The steps required in order to implement a provider and integrate it
+into Java Security are the following:<p>
+
+<ul>
+
+<li><a href = "#Step 1">Step 1: Write your Algorithm Implementation Code</a><p>
+
+<li><a href = "#Step 2">Step 2: Give your Provider a Name</a><p>
+
+<li><a href = "#Step 3">Step 3: Write your "Master Class", a subclass of Provider</a><p>
+
+<li><a href = "#Step 4">Step 4: Compile your Code</a><p>
+
+<li><a href = "#Step 5">Step 5: Prepare for Testing: Install the Provider</a><p>
+
+<li><a href = "#Step 6">Step 6: Write and Compile your Test Programs</a><p>
+
+<li><a href = "#Step 7">Step 7: Run your Test Programs</a><p>
+
+<li><a href = "#Step 8">Step 8: Document your Provider and its Supported Algorithms</a><p>
+
+<li><a href = "#Step 9">Step 9: Make your Class Files and Documentation Available to Clients</a><p>
+
+</ul>
+
+
+
+<H2><a name="Step 1">Step 1: Write your Algorithm Implementation Code</a></H2>
+
+<blockquote>
+
+The first thing you need to do is write the code supplying implementations 
+of the algorithm(s) you want to support.
+
+<p>There are three types of cryptography algorithms you can supply for JDK 1.1:
+signature, message digest, and key pair generation algorithms.
+
+<p>For each algorithm, you need to create a subclass of the appropriate 
+"engine" class (Signature, MessageDigest, or KeyPairGenerator). (See
+<a href = "CryptoSpec.html#Engine">"Engine Classes"</a> in the
+Java Cryptography Architecture 
+API Specification and Reference.)
+
+<p>In your subclass, you need to 
+
+<ol>
+
+<li>supply implementations for  
+the abstract methods, whose names 
+usually begin with "engine".<p>
+
+<li>include a constructor without any arguments. Here's why: 
+When one of your algorithms is requested, Java Security looks up
+the subclass implementing that algorithm, as specified by
+a property in your "master class" (see <a href = "#Step 3">Step 3</a>). 
+Java Security then creates the Class object associated with your subclass,
+and creates an instance of your subclass by calling the 
+<code>newInstance</code> method on that Class object.
+<code>newInstance</code> requires your subclass to have a 
+constructor without any arguments.
+
+<p>Note that each engine class (which you are subclassing)
+has a constructor that takes a single <code>algorithm</code> argument:
+
+<pre>
+    protected KeyPairGenerator(String algorithm)
+
+    protected MessageDigest(String algorithm)
+
+    protected Signature(String algorithm)
+</pre>
+
+<p>Each subclass constructor without any arguments should call
+
+<pre>
+    super(<i>"algName"</i>)
+</pre>
+
+where <i>"algName"</i> is the name of the algorithm implemented
+by the subclass. With such a call, client invocations of the
+<code>getAlgorithm</code> method (inherited from the superclass) 
+result in the return of the correct algorithm name. Without it, 
+a null String is returned when <code>getAlgorithm</code> is called.
+
+<p>As an example, suppose a class named <code>AcmeMD5</code> implements 
+the message digest algorithm named "MD5". This class must be a
+subclass of MessageDigest, and should contain a constructor like
+the following:
+
+<pre>
+    public AcmeMD5() {
+	super("MD5");
+	...
+    }
+</pre>
+ 
+</ol>
+
+<p>If you are implementing a signature algorithm that requires
+a message digest algorithm, the name specified for your algorithm 
+should include both the message digest and signature algorithm
+names. For example, an implementation of RSA that uses the MD2
+message digest algorithm should have the name "MD2/RSA".
+See <a href="CryptoSpec.html#AppA">Appendix A</a>
+of the <i>Java Cryptography Architecture API Specification
+& Reference</i> for the standard algorithm names that
+can be used.
+
+<p>See <a href = "#FurtherImplDetails">
+Further Implementation Details and Requirements</a> for
+additional information.
+
+</blockquote>
+
+
+<H2><a name="Step 2">Step 2: Give your Provider a Name</a></H2>
+
+<blockquote>
+
+Decide on a name for your provider. This is the name to 
+be used by client applications to refer to your provider.
+
+</blockquote>
+
+
+<H2><a name="Step 3">Step 3: Write your "Master Class", a subclass of Provider</a></H2>
+
+<blockquote>
+
+The third step is to create a subclass of the Provider class. 
+
+<p>Your subclass should be a <code>final</code> class, and its 
+constructor should 
+
+<ul>
+
+<li>call <code>super</code>, specifying the provider name (see
+<a href = "#Step 2">Step 2</a>), version number, 
+and a string of information about the provider and algorithms it 
+supports. For example:
+
+<pre>
+    super("ACME", 1.0, "ACME provider v1.0, implementing " + 
+      "RSA signing and key generation, SHA-1 and MD5 message digests.");
+</pre>
+
+<li>set the values of various properties that are required
+for the Java Security API to look up the algorithms or other facilities
+implemented by the provider. That is, the constructor must specify the 
+fully qualified names of the classes implementing the algorithms. Substitute
+your algorithm name for <i>algName</i> in the following (see below):<p>
+
+<ul>
+
+<li>For each signature algorithm implemented by the provider, 
+there must be a property named<p>
+
+<pre>
+    <code>Signature.</code><i>algName</i>
+</pre>
+
+<li>For each message digest algorithm implemented by the provider, 
+there must be a property named<p>
+
+<pre>
+    <code>MessageDigest.</code><i>algName</i>
+</pre>
+
+<li>For each key pair generator algorithm implemented by the provider, 
+there must be a property named<p>
+
+<pre>
+    <code>KeyPairGenerator.</code><i>algName</i>
+</pre>
+
+</ul>
+
+
+<p>In all of these, <i>algName</i> is the "standard" name of the 
+algorithm. (See <a href="CryptoSpec.html#AppA">Appendix A</a>
+of the <i>Java Cryptography Architecture API Specification
+& Reference</i> for the standard algorithm names that
+should be used.)
+
+<p>The value of each property must be
+the fully qualified name of the class implementing the 
+specified algorithm. That is, it must be the package name
+followed by the class name, where the two are separated by
+a period.
+
+<p>As an example, the default provider named "SUN" implements the
+Digital Signature Algorithm (DSA) in a class named <code>DSA</code>
+in the <code>sun.security.provider</code> package. Its subclass of
+Provider (which is the <code>Sun</code> class in the 
+<code>sun.security.provider</code> package) sets the
+<code>Signature.DSA</code> property to have the value
+"sun.security.provider.DSA" via the following:
+
+<pre>
+    <code>put("Signature.DSA", "sun.security.provider.DSA")</code>
+</pre>
+
+</ul>
+
+<p>For further master class property setting examples, see
+<a href = "#AppA">Appendix A</a> to view the current JDK 1.1 
+<code>Sun.java</code> source file. This shows
+how the <code>Sun</code> class constructor sets all the properties 
+for the "SUN" provider.
+
+<p>Note: The Provider subclass can get its information from wherever it 
+wants. Thus, the information can be hard-wired in, or retrieved at runtime, 
+e.g., from a file.<p> 
+
+
+</blockquote>
+
+
+
+<H2><a name="Step 4">Step 4: Compile your Code</a></H2>
+
+<blockquote>
+
+After you have created your implementation code
+(<a href="#Step 1">Step 1</a>), given your provider a name
+(<a href="#Step 2">Step 2</a>), and created the master class
+(<a href="#Step 3">Step 3</a>), use the Java compiler 
+to compile your files.
+
+</blockquote>
+
+
+<H2><a name="Step 5">Step 5: Prepare for Testing: Install the Provider</a></H2>
+
+<blockquote>
+
+In order to prepare for testing your provider, you must
+install it in the same manner as will be done by
+clients wishing to use it. The installation enables 
+Java Security to find your algorithm implementations
+when clients request them.
+
+<p>There are two parts to installing a provider: installing the provider
+package classes, and configuring the provider.
+
+<H4>Installing the Provider Classes</H4>
+
+The first thing you must do is
+make your classes available so that they can be found when
+requested. There are a few possible ways
+of doing this:
+
+<ul>
+
+<li>Place the provider classes (the .class files) anywhere on your 
+CLASSPATH. They should be in appropriate directories reflecting
+their package(s). For example, if the 
+classes implementing the provider are in the <code>COM.acme.provider</code>
+package, install the classes in the following directory structure
+(within any directory on your CLASSPATH):<p>
+
+<ul>
+<li><code>COM/acme/provider/</code> (Solaris)<p>
+<li><code>COM\acme\provider\</code> (Windows)
+</ul><p>
+
+<li>Create a <code>classes</code> directory in the JDK installation
+directory, and install the .class files in that
+directory. For example, if the JDK is 
+installed in a directory called <code>jdk1.1.1</code>, and the
+classes implementing the provider are in the <code>COM.acme.provider</code>
+package, install the classes in the directory<p>
+
+<ul>
+<li><code>jdk1.1.1/classes/COM/acme/provider/ (Solaris)</code><p>
+<li><code>jdk1.1.1\classes\COM\acme\provider\ (Windows)</code><p>
+</ul><p>
+
+<li>Place a zip or JAR (Java ARchive) file containing the classes
+anywhere on your CLASSPATH.
+
+</blockquote>
+
+
+<H4><a name="Configuring">Configuring the Provider</a></H4>
+
+<blockquote>
+
+<p>The next step is to add the provider to your list of approved
+providers. This is done statically by editing the 
+<code>java.security</code> file in the <code>lib/security</code> 
+(<code>lib\security</code> on Windows) directory of the JDK. 
+Thus, if the JDK is installed in a directory 
+called <code>jdk1.1.1</code>, the file is<p>
+
+<ul>
+<li><code>jdk1.1.1/lib/security/java.security</code> (Solaris)<p>
+<li><code>jdk1.1.1\lib\security\java.security</code> (Windows)
+</ul>
+
+<p>For each provider, this file should have a statement
+of the following form:
+
+<pre>
+    security.provider.<i>n</i>=<i>masterClassName</i>
+</pre>
+
+<p>This declares a provider, and specifies its preference order
+<i>n</i>. The preference order is the order in which providers are
+searched for requested algorithms when no specific provider is 
+requested. The order is 1-based; 1 is the most preferred, followed
+by 2, and so on.
+
+<p><i>masterClassName</i> must specify the fully qualified
+name of the provider's "master
+class", which you implemented in <a href = "#Step 3">Step 3</a>. 
+This class is always a subclass of the Provider
+class.
+
+<p>Whenever the JDK is installed, it contains one built-in
+(default) provider, the provider referred to as "SUN". 
+The <code>java.security</code> 
+file has just the following provider specification:
+
+<pre>
+    security.provider.1=sun.security.provider.Sun
+</pre>
+
+(Recall that the "SUN" provider's master class is the 
+<code>Sun</code> class in the <code>sun.security.provider</code>
+package.)
+
+<p>Suppose that your master class is the <code>Acme</code> class in the
+<code>COM.acme.provider</code> package,
+and that you would like to make your provider the second
+preferred provider. To do so, add the following line to the 
+<code>java.security</code> file below the line for the "SUN"
+provider:
+
+<pre>
+    security.provider.2=COM.acme.provider.Acme
+</pre>
+
+Note: Providers may also be registered dynamically. To do so, 
+a program (such as your test program, to be written in 
+<a href = "#Step 7">Step 7</a>) 
+can call either the <code>addProvider</code> or
+<code>insertProviderAt</code> method in the <code>Security</code> class.
+This type of registration is not persistent and can only be
+done by "trusted" programs. See the <a href = "CryptoSpec.html#Security">Security</a> class section of the
+<em>Java Cryptography Architecture API Specification and 
+Reference</em>.
+
+</blockquote>
+
+</blockquote>
+
+
+
+<H2><a name="Step 6">Step 6: Write and Compile your Test Programs</a></H2>
+
+<blockquote>
+
+Write and compile one or more test programs that test your provider's 
+incorporation into the Security API as well as the correctness 
+of its algorithm(s). Create any supporting files needed,
+such as those for test data to be hashed or signed.
+
+<p>The first tests your program should perform are ones
+to ensure that your provider is found, and that its name,
+version number, and additional information is as expected. To do so,
+you could write code like the following, substituting your
+provider name for "MyPro":
+
+<pre>
+    import java.security.*;
+
+    Provider p = Security.getProvider("MyPro");
+    
+    System.out.println("MyPro provider name is " + p.getName());
+    System.out.println("MyPro provider version # is " + p.getVersion());
+    System.out.println("MyPro provider info is " + p.getInfo());
+</pre>
+
+<p>Next, you should ensure that your algorithms are found.
+For instance, if you implemented an SHA-1 message digest
+algorithm, you could check to ensure it's found when requested by
+using the following code (again substituting your
+provider name for "MyPro"):
+
+<pre>
+    MessageDigest sha = MessageDigest.getInstance("SHA-1", "MyPro");
+
+    System.out.println("My MessageDigest algorithm name is " + 
+        sha.getAlgorithm());
+</pre>
+
+<p>If you don't specify a provider name in the call to
+<code>getInstance</code>, all registered providers will be searched, in
+preference order (see <a href = "#Configuring">Configuring the Provider</a>),
+until one implementing the algorithm is found. 
+
+</blockquote>
+
+
+<H2><a name="Step 7">Step 7: Run your Test Programs</a></H2>
+
+<blockquote>
+
+Run your test program(s). Debug your code and continue testing as
+needed. If the Java Security API cannot seem to find one of your
+algorithms, review the steps above and ensure they are all
+completed.
+
+</blockquote>
+
+
+<H2><a name="Step 8">Step 8: Document your Provider and its Supported Algorithms</a></H2>
+
+<blockquote>
+
+The next-to-last step is to write documentation for your clients. At the
+minimum, you need to specify
+
+<ul>
+
+<li>the name programs should use to refer to your provider.
+Please note: As of this writing, provider name searches are
+<b>case-sensitive</b>. That is, if your master class
+specifies your provider name as "ACME" but a user requests
+"Acme", your provider will not be found. This behavior may
+change in the future, but for now be sure to warn your
+clients to use the exact case you specify.<p>
+
+<li>the names of the algorithms implemented by your provider.<p>
+
+<li>instructions for installing the provider, similar to those provided
+in <a href = "#Step 5">Step 5</a>, except that the information and
+examples should be specific to your provider.
+
+</ul>
+
+In addition, your documentation should specify anything else of
+interest to clients, such as any default algorithm parameters.
+
+<p>For each message digest algorithm, tell whether or not
+your implementation is cloneable. This is not technically
+necessary, but it may save clients some time and coding
+by telling them
+whether or not intermediate hashes may be possible through
+cloning. Clients who do not know whether or not a message
+digest implementation is cloneable can find out by calling
+
+<pre>
+    boolean cloneable = sha instanceof Cloneable;
+</pre>
+
+where <code>sha</code> is the message digest object they
+received when they requested one via a call to 
+<code>MessageDigest.getInstance</code>.
+
+<p>For a signature algorithm, specify which parameters can
+be set (or gotten) via a call to the <code>setParameter</code>
+(or <code>getParameter</code>) method in the
+<code>Signature</code> class. Tell the Strings that can be
+used for the <code>param</code> argument to <code>setParameter</code> or
+<code>getParameter</code> to indicate which parameter should
+be set or gotten. Also tell what parameter values can be
+specified in the setParameter <code>value</code> argument. 
+See the <a href="../../api/java.security.Signature.html">
+Signature</a> class documentation for further information about
+<code>setParameter</code> and <code>getParameter</code>.
+
+<p>For a key pair generator algorithm, if you have defined and
+implemented an algorithm-specific initialization interface (see
+<a href="../../api/java.security.interfaces.DSAKeyPairGenerator.html">
+DSAKeyPairGenerator</a> for a sample interface), document the 
+interface and the parameters that can be specified in its
+<code>initialize</code> method(s).
+
+
+</blockquote>
+
+<H2><a name="Step 9">Step 9: Make your Class Files and Documentation Available to Clients</a></H2>
+
+<blockquote>
+
+The final step is to make your class files and documentation available to clients in whatever form (.class files, zip files, JAR files, ...) and
+methods (web download, floppy, mail, ...) you feel are appropriate.
+
+</blockquote>
+
+</blockquote>
+
+
+<H1><a name="FurtherImplDetails">Further Implementation Details
+and Requirements</a></H1>
+
+<blockquote>
+
+<H2><a name="AlgAliases">Algorithm Aliases</a></H2>
+
+<blockquote>
+
+For many signature, message digest, and key pair generator algorithms, 
+there is a single official "standard name" defined in
+<a href="CryptoSpec.html#AppA">Appendix A</a>
+of the <i>Java Cryptography Architecture API Specification
+& Reference</i>.
+
+<p>For example, "MD5" is the standard name for the RSA-MD5 Message Digest
+algorithm defined by RSA DSI in RFC 1321. 
+
+<p>In JDK 1.1, there is an aliasing scheme that enables clients to use
+aliases when referring to algorithms rather than their standard names.
+For example, the "SUN" provider's master class
+(<code>Sun.java</code>) defines the alias "SHA-1/DSA" for the 
+algorithm whose
+standard name is "DSA". Thus, the following statements are equivalent:
+
+<pre>
+    Signature sig = Signature.getInstance("DSA", "SUN");
+
+    Signature sig = Signature.getInstance("SHA-1/DSA", "SUN");
+</pre>
+
+Aliases can be defined in your "master class" (see
+<a href = "#Step 3">Step 3</a>). To define an alias, create a property
+named
+
+<pre>
+    <code>Alg.Alias.</code><i>engineClassName.aliasName</i>
+</pre>
+
+<p>where <i>engineClassName</i> is either <code>Signature</code>, 
+<code>MessageDigest</code>, or <code>KeyPairGenerator</code>, and
+<i>aliasName</i> is your alias name. The <i>value</i> of the property
+must be the standard algorithm name for the algorithm being aliased.
+
+<p>As an example, the "SUN" provider 
+defines the alias "SHA-1/DSA" for the signature
+algorithm whose standard name is "DSA" by setting a property
+named <code>Alg.Alias.Signature.SHA-1/DSA</code> to have the value 
+<code>DSA</code> via the following:
+
+<pre>
+    put("Alg.Alias.Signature.SHA-1/DSA", "DSA");
+</pre>
+
+<p>Currently, aliases defined by the "SUN" provider are available to
+all clients, no matter which provider clients request. For example, if
+you create a provider named "MyPro" that implements the DSA algorithm,
+then even if you don't define
+any aliases for it, the "SHA-1/DSA" alias defined by "SUN" can be used
+to refer to your DSA implementation as follows:
+
+<pre>
+    Signature sig = Signature.getInstance("SHA-1/DSA", "MyPro");
+</pre>
+
+<hr>
+<b><i>WARNING: The aliasing scheme may be changed or eliminated in
+future releases.</b></i>
+<hr>
+<p>
+
+</blockquote>
+
+
+<H2><a name="AlgDependencies">Algorithm Interdependencies</a></H2>
+
+<blockquote>
+
+Some algorithms require the use of other types of algorithms.
+For example, a signature algorithm usually needs to use a message
+digest algorithm in order to sign and verify data.
+
+<p>If you are implementing one type of algorithm that requires
+another, you can do one of the following: 
+
+<ol>
+
+<li>Provide your own implementations for both.<p>
+
+<li>Let your implementation of one algorithm 
+use an instance of the other type of algorithm, as supplied by the 
+default <a href = "#SUN">"SUN"</a> provider that is included
+with every JDK installation. For example, if you
+are implementing a signature algorithm that requires a message 
+digest algorithm, you can obtain an instance of a class 
+implementing the MD5 message digest algorithm by calling 
+
+<pre>
+    MessageDigest.getInstance("MD5", "SUN").
+</pre><p>
+
+<li>Let your implementation of one algorithm 
+use an instance of the other type of algorithm, as supplied by
+another specific provider. This is only appropriate if you are
+sure that all clients who will use your provider will also have 
+the other provider installed. 
+
+</ol>
+
+<p>Here are some common types of algorithm interdependencies:
+
+<blockquote>
+
+<H3>Signature and Message Digest Algorithms</H3>
+
+<blockquote>
+
+For example, the DSA signature algorithm requires the SHA-1 message digest
+algorithm.
+
+</blockquote>
+
+<H3>Key Pair Generation and Message Digest Algorithms</H3>
+
+<blockquote>
+
+For example, DSA keys are generated using the SHA-1 message digest
+algorithm.
+
+</blockquote>
+
+<H3>Signature and Key Pair Generation Algorithms</H3>
+
+<blockquote>
+
+<p>If you are implementing a signature algorithm, your implementation's <code>engineInitSign</code> and <code>engineInitVerify</code> methods 
+will require 
+passed-in keys that are valid for the underlying algorithm (e.g., DSA 
+keys for the DSS algorithm). You can either 
+
+<ol>
+
+<li> also implement your own key pair generation algorithm and require 
+the keys to have been generated from that key pair generator, or<p> 
+
+<li>accept keys from other key pair generators, as long as they are 
+instances of appropriate interfaces that enable your signature 
+implementation to obtain the information it needs (such as the private 
+and public keys and the key parameters). For example, the 
+<code>engineInitSign</code> method for a DSS Signature class could 
+accept any private keys that are instances of 
+<code>java.security.interfaces.DSAPrivateKey</code>.
+
+</ol>
+
+<hr>
+<b><i>IMPORTANT NOTE: In JDK 1.1, it is not possible to instantiate
+a key, given key information. If you generate a key pair, you can use it,
+for example for generating a signature, during the same program
+execution. But you cannot save your keys and then use them during
+another program execution; there is no way to instantiate a
+key object using the saved key information.
+This restriction will be fixed in JDK 1.2; there 
+will be features for importing and exporting keys in various formats.
+</b></i>
+<hr>
+
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+
+<H2><a name="KPGRequirements">Key Pair Generator and Signature 
+Algorithm Requirements</a></H2>
+
+<blockquote>
+
+<H3>DSA Key Pair Generators and Signature Algorithms</H3>
+
+<blockquote>
+
+<H4>Default Parameter Requirements</H4>
+
+<blockquote>
+
+If you implement a DSA key pair generator, your implementation 
+should supply default parameters that are used when clients
+don't specify parameters. The documentation you supply
+(<a href = "#Step 8">Step 8</a>) should state what the default parameters are.
+
+<p>For example, the DSA key pair generator in the "SUN" provider
+supplies a set of pre-computed <code>p</code>, <code>q</code>, and 
+<code>g</code> default values for the
+generation of 512, 768, and 1024-bit key pairs.
+The following <code>p</code>, <code>q</code>, and 
+<code>g</code> values are used as the default values
+for the generation of 1024-bit DSA key pairs:
+
+<pre>
+p = fd7f5381 1d751229 52df4a9c 2eece4e7 f611b752 3cef4400 c31e3f80
+    b6512669 455d4022 51fb593d 8d58fabf c5f5ba30 f6cb9b55 6cd7813b
+    801d346f f26660b7 6b9950a5 a49f9fe8 047b1022 c24fbba9 d7feb7c6
+    1bf83b57 e7c6a8a6 150f04fb 83f6d3c5 1ec30235 54135a16 9132f675
+    f3ae2b61 d72aeff2 2203199d d14801c7
+
+q = 9760508f 15230bcc b292b982 a2eb840b f0581cf5
+	 
+g = f7e1a085 d69b3dde cbbcab5c 36b857b9 7994afbb fa3aea82 f9574c0b
+    3d078267 5159578e bad4594f e6710710 8180b449 167123e8 4c281613
+    b7cf0932 8cc8a6e1 3c167a8b 547c8d28 e0a3ae1e 2bb3a675 916ea37f
+    0bfa2135 62f1fb62 7a01243b cca4f1be a8519089 a883dfe1 5ae59f06
+    928b665e 807b5525 64014c3b fecf492a
+</pre>
+
+<p>
+(The <code>p</code> and <code>q</code> values given here were 
+generated by the prime
+generation standard, using the 160-bit
+
+<pre>
+SEED:  8d515589 4229d5e6 89ee01e6 018a237e 2cae64cd
+</pre>
+
+With this seed, the algorithm found <code>p</code> and 
+<code>q</code> when the counter
+was at 92.)
+
+</blockquote>
+
+<H4>DSA Interfaces</H4>
+
+<blockquote>
+
+The Java Security API contains the following interfaces for the
+convenience of programmers implementing DSA algorithms:
+
+<ul>
+
+<li><a href="../../api/java.security.interfaces.DSAKey.html">
+DSAKey</a>
+<li><a href="../../api/java.security.interfaces.DSAKeyPairGenerator.html">
+DSAKeyPairGenerator</a>
+<li><a href="../../api/java.security.interfaces.DSAParams.html">
+DSAParams</a>
+<li><a href="../../api/java.security.interfaces.DSAPrivateKey.html">
+DSAPrivateKey</a>
+<li><a href="../../api/java.security.interfaces.DSAPublicKey.html">
+DSAPublicKey</a>
+
+</ul>
+
+The following sections discuss requirements for implementations
+of these interfaces.
+
+</blockquote>
+
+
+<H4><a href="../../api/java.security.interfaces.DSAKeyPairGenerator.html">
+DSAKeyPairGenerator</a> Implementation</H4>
+
+<blockquote>
+
+<p>If you are implementing a DSA key pair generator, your subclass of 
+KeyPairGenerator should implement 
+<code>java.security.interfaces.DSAKeyPairGenerator</code>. The 
+DSAKeyPairGenerator interface contains <code>initialize</code> methods 
+that clients call when they want to provide DSA-specific parameters 
+to be used rather than the default parameters your implementation 
+supplies.
+
+</blockquote>
+
+<H4><a href="../../api/java.security.interfaces.DSAParams.html">
+DSAParams</a> Implementation</H4>
+
+<blockquote>
+
+<p>If you are implementing a DSA key pair generator or the DSS 
+signature algorithm, you will need to create a class implementing 
+<code>java.security.interfaces.DSAParams</code> for holding and 
+returning the <code>p</code>, <code>q</code>, and <code>g</code>
+parameters. All that is needed is a simple implementation such as 
+the following:
+
+<pre>
+  import java.math.BigInteger;
+
+  class myDSAParams implements java.security.interfaces.DSAParams {
+    BigInteger p, q, g;
+
+    myDSAParams(BigInteger p, BigInteger q, BigInteger g) {
+        this.p = p;
+        this.q = q;
+        this.g = g;
+    }
+
+    public BigInteger getP() { 
+        return p;
+    }
+
+    public BigInteger getQ() {
+        return q;
+    }
+
+    public BigInteger getG() {
+        return g;
+    }
+  }
+</pre>
+
+</blockquote>
+
+<H4><a href="../../api/java.security.interfaces.DSAPrivateKey.html">
+DSAPrivateKey</a> and 
+<a href="../../api/java.security.interfaces.DSAPublicKey.html">
+DSAPublicKey</a> Implementations</H4>
+
+<blockquote>
+
+If you implement a DSA key pair generator, you need to 
+create classes implementing the DSAPrivateKey and 
+DSAPublicKey interfaces from the package 
+<code>java.security.interfaces</code>. Your 
+<code>generateKeyPair</code> method (in your 
+KeyPairGenerator subclass) will return instances of those classes.
+
+<p>Note the following interface signatures:
+
+<pre>
+    public interface DSAPrivateKey extends DSAKey, 
+                                     java.security.PrivateKey
+
+    public interface DSAPublicKey extends DSAKey, 
+                                    java.security.PublicKey
+
+    public interface DSAKey
+
+    public interface PrivateKey extends Key
+
+    public interface PublicKey extends Key
+
+    public interface Key extends java.io.Serializable
+</pre>
+
+<p>In order to implement the DSAPrivateKey and 
+DSAPublicKey interfaces, you must implement the methods
+they define as well as those defined by interfaces they
+extend, directly or indirectly.  
+
+
+<p>Thus, for private keys, you need to supply a class that implements
+
+<ul>
+
+<li>the <code>getX</code> method from the 
+<a href="../../api/java.security.interfaces.DSAPrivateKey.html">
+DSAPrivateKey</a> interface<p>
+
+<li>the <code>getParams</code> method from the 
+<a href="../../api/java.security.interfaces.DSAKey.html">
+java.security.interfaces.DSAKey</a> interface, since 
+DSAPrivateKey extends DSAKey<p>
+
+<li>the <code>getAlgorithm</code>, <code>getEncoded</code>, and 
+<code>getFormat</code> methods from the 
+<a href="../../api/java.security.Key.html">
+java.security.Key</a> interface, since DSAPrivateKey 
+extends <code>java.security.PrivateKey</code>, and PrivateKey 
+extends Key 
+
+</ol>
+
+Similarly, for public DSA keys, you need to supply a class that 
+implements
+
+<ul>
+
+<li>the <code>getY</code> method from the 
+<a href="../../api/java.security.interfaces.DSAPublicKey.html">
+DSAPublicKey</a> interface<p>
+
+<li>the <code>getParams</code> method from the 
+<a href="../../api/java.security.interfaces.DSAKey.html">
+java.security.interfaces.DSAKey</a> interface, since 
+DSAPublicKey extends DSAKey<p>
+
+<li>the <code>getAlgorithm</code>, <code>getEncoded</code>, and 
+<code>getFormat</code> methods from the 
+<a href="../../api/java.security.Key.html">
+java.security.Key</a> interface, since DSAPublicKey 
+extends <code>java.security.PublicKey</code>, and PublicKey extends Key 
+
+</ol>
+
+</blockquote>
+
+</blockquote>
+
+
+
+<H3>Non-DSA Key Pair Generators</H3>
+
+<blockquote>
+
+As noted above, the Java Security API contains interfaces for the
+convenience of programmers implementing DSA algorithms.
+The API does not at this time contain similar
+interfaces for any other type of algorithm. Thus, you need
+to define your own.
+
+<p>If you are implementing a non-DSA key pair generator, you should 
+create an interface with one or more <code>initialize</code> methods 
+that clients can call when they want to provide algorithm-specific 
+parameters to be used rather than the default parameters your 
+implementation supplies. Your subclass of KeyPairGenerator should 
+implement this interface.
+
+<p>For private and public keys for non-DSA algorithms, 
+there are currently no <code>java.security.interfaces</code> 
+interfaces corresponding to the DSAPrivateKey and
+DSAPublicKey ones for DSA. It is 
+recommended that you create similar interfaces and provide 
+implementation classes. Your public key interface should extend the 
+<a href="../../api/java.security.PublicKey.html">
+PublicKey</a> interface. Similarly, your 
+private key interface should extend the 
+<a href="../../api/java.security.PrivateKey.html">
+PrivateKey</a> interface.
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+
+<H1><a name="AppA">Appendix A: The "SUN" Provider's Master Class</a></H1>
+
+<blockquote>
+
+Below is an edited version of the <code>Sun.java</code> file,
+which contains a class named <code>Sun</code> that is the 
+<a href = "#Step 3">master class</a> for
+the provider named "SUN". (This provider is supplied with every JDK
+installation.) As with all master classes, this class is a subclass 
+of Provider. It
+specifies the class names and package locations of all the algorithm
+implementations
+supplied by the "SUN" provider. Java Security uses this information
+to look up the various algorithms when they are requested.
+
+<p>This code is supplied as an example of a master class.
+
+<pre>
+/*
+ * @(#)Sun.java	1.15 97/02/03
+ * 
+ * Copyright (c) 1995, 1996 Sun Microsystems, Inc. All Rights Reserved.
+ * 
+ * This software is the confidential and proprietary information of Sun
+ * Microsystems, Inc. ("Confidential Information").  You shall not
+ * disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Sun.
+ * 
+ * SUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
+ * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE, OR NON-INFRINGEMENT. SUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ * 
+ * CopyrightVersion 1.1_beta
+ * 
+ */
+
+package sun.security.provider;
+
+import java.io.*;
+import java.util.*;
+import java.security.*;
+
+/**
+ * The SUN Security Provider.
+ *
+ * @version 	1.15, 02/03/97
+ * @author Benjamin Renaud 
+ */
+
+/**
+ * Defines the "SUN" provider.
+ *
+ * Algorithms supported, and their names:
+ *
+ * - SHA-1 is the message digest scheme decribed in FIPS 180-1. 
+ *   An alias for SHA-1 is SHA.
+ *
+ * - DSA is the signature scheme described in FIPS 186.  (SHA used in
+ *   DSA is SHA-1: FIPS 186 with Change No 1.)  Aliases for DSA are
+ *   SHA/DSA, SHA-1/DSA, DSS and the object identifier (OID) string
+ *   "OID:1.3.14.3.2.13".
+ *
+ * - DSA is the key generation scheme as described in FIPS 186.
+ *   Aliases for DSA include the OID string "OID:1.3.14.3.2.12".
+ *
+ * - MD5 is the message digest scheme described in RFC 1321.
+ *   There are no aliases for MD5.
+ *
+ * Notes: The name of the algorithm described in FIPS-180 is SHA-0, and 
+ * it is not supported by the SUN provider.)  
+ *
+ * @author Benjamin Renaud
+ * @version 1.15, 97/02/04
+ */
+public final class Sun extends Provider {
+
+    private static String info = "SUN Security Provider v1.0, " + 
+    "DSA signing and key generation, SHA-1 and MD5 message digests.";
+
+    public Sun() {
+	/* We are the SUN provider */
+	super("SUN", 1.0, info);
+
+	/*
+	 * Signature engines 
+	 */
+	put("Signature.DSA", "sun.security.provider.DSA");
+
+	put("Alg.Alias.Signature.SHA/DSA", "DSA");
+	put("Alg.Alias.Signature.SHA-1/DSA", "DSA");
+	put("Alg.Alias.Signature.DSS", "DSA");
+	put("Alg.Alias.Signature.OID:1.3.14.3.2.13", "DSA");
+
+	/*
+	 *  Key Pair Generator engines 
+	 */
+	put("KeyPairGenerator.DSA", 
+	    "sun.security.provider.DSAKeyPairGenerator");
+	put("Alg.Alias.KeyPairGenerator.OID:1.3.14.3.2.12", "DSA");
+
+	/* 
+	 * Digest engines 
+	 */
+	put("MessageDigest.MD5", "sun.security.provider.MD5");
+	put("MessageDigest.SHA-1", "sun.security.provider.SHA");
+	
+	put("Alg.Alias.MessageDigest.SHA", "SHA-1");
+
+    }
+}
+</pre>
+
+</blockquote>
+
+
+
+<H1><a name="AppB">Appendix B: The java.security File</a></H1>
+
+<blockquote>
+
+Below is an edited copy of the <code>java.security</code> 
+file that appears in every JDK installation. (The edits simply
+add more comments.) This file appears
+in the <code>lib/security</code> 
+(<code>lib\security</code> on Windows) directory of the JDK. 
+Thus, if the JDK is installed in a directory 
+called <code>jdk1.1.1</code>, the file would be<p>
+
+<ul>
+<li><code>jdk1.1.1/lib/security/java.security</code> (Solaris)<p>
+<li><code>jdk1.1.1\lib\security\java.security</code> (Windows)
+</ul>
+
+See <a href = "#Step 5">Step 5</a> for an example of adding information 
+about your provider to this file. 
+
+<p>See <a href="CryptoSpec.html#SysIdScope">The System Identity
+Scope</a> of the <i>Java Cryptography Architecture API Specification
+& Reference</i> for information about the system scope mentioned
+at the end of this file.<p>
+
+<pre>
+#
+# This is the "master security properties file".
+#
+# In this file, various security properties are set for use by
+# java.security classes. This is where users can statically register 
+# Cryptography Package Providers ("providers" for short). The term 
+# "provider" refers to a package or set of packages that supply a 
+# concrete implementation of a subset of the cryptography aspects of 
+# the Java Security API. A provider may, for example, implement one or 
+# more digital signature algorithms or message digest algorithms.
+#
+# Each provider must implement a subclass of the Provider class.
+# To register a provider in this master security properties file, 
+# specify the Provider subclass name and priority in the format
+#
+#    security.provider.<i>n</i>=<i>className</i>
+#
+# This declares a provider, and specifies its preference 
+# order <i>n</i>. The preference order is the order in which providers are 
+# searched for requested algorithms (when no specific provider is 
+# requested). The order is 1-based; 1 is the most preferred, followed 
+# by 2, and so on.
+#
+# <i>className</i> must specify the subclass of the Provider class whose 
+# constructor sets the values of various properties that are required
+# for the Java Security API to look up the algorithms or other 
+# facilities implemented by the provider.
+# 
+# There must be at least one provider specification in java.security. 
+# There is a default provider that comes standard with the JDK. It
+# is called the "SUN" provider, and its Provider subclass
+# named Sun appears in the sun.security.provider package. Thus, the
+# "SUN" provider is registered via the following:
+#
+#    security.provider.1=sun.security.provider.Sun 
+#
+# (The number 1 is used for the default provider.) 
+#
+# Note: Statically registered Provider subclasses are instantiated 
+# when the system is initialized. Providers can be dynamically 
+# registered instead by calls to either the addProvider or 
+# insertProviderAt method in the Security class.
+
+#
+# List of providers and their preference orders (see above):
+#
+security.provider.1=sun.security.provider.Sun
+
+#
+# Class to instantiate as the system scope:
+#
+system.scope=sun.security.provider.IdentityDatabase
+
+</pre>
+
+</blockquote>
+
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+ 
+<IMG SRC="../../images/JAVA.85.GIF" ALIGN=RIGHT>
+ 
+<FONT SIZE=-2>
+<A HREF="../../relnotes/SMICopyright.html">Copyright &#169;</A> 
+1996, 1997 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn. View, CA 94043-1100 USA. All rights reserved.
+</FONT>
+
+<br><br>
+<FONT SIZE=-1>
+Please send comments to: <a href="mailto:java-security@java.sun.com">
+java-security@java.sun.com</a>
+</FONT>
+
+
+</BODY>
+
+</HTML>
+

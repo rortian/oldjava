@@ -1,0 +1,17 @@
+Flow*resizable:                 TRUE
+
+Flow*btn1.labelString:      Button 1
+Flow*btn2.labelString:      Button 2
+Flow*btn3.labelString:      Button 3
+Flow*btn4.labelString:      Button 4
+Flow*btn5.labelString:      Button 5
+Flow*btn6.labelString:      Button 6
+Flow*btn7.labelString:      Button 7
+Flow*btn8.labelString:      Button 8
+Flow*btn9.labelString:      Button 9
+Flow*btn10.labelString:    Button 10
+Flow*btn11.labelString:    Button 11
+Flow*btn12.labelString:    Button 12
+
+Flow*orientation:               horizontal
+Flow*rowcol*packing:      pack_tight

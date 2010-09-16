@@ -1,0 +1,376 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="intro.doc.html">Prev</a>  | <a href="drivermanager.doc.html">Next</a>
+</font></td><td align=right><i>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="1000900"></a>
+<h1>2  - Connection</h1>
+<a name="1000908"></a>
+This overview is excerpted from <em>JDBC<font size=-1><sup>TM</sup></font> Database Access from Java<font size=-1><sup>TM</sup></font>:  A Tutorial 
+and Annotated Reference,</em> currently in progress at JavaSoft.  This book, both a tutorial and the definitive reference manual for JDBC, will be published in the spring of 
+1997 by Addison-Wesley Publishing Company as part of the Java series.
+<p>
+<a name="996856"></a>
+<h2>2.1	 &nbsp;&nbsp; Overview</h2>
+<a name="1001148"></a>
+A <code>Connection</code> object represents a connection with a database.  A connection session includes the SQL statements that are executed and the results that are returned 
+over that connection.  A single application can have one or more connections with a 
+single database, or it can have connections with many different databases.
+<p>
+<a name="1000950"></a>
+<h3>2.1.1	 &nbsp; &nbsp; Opening a Connection</h3>
+<a name="1000951"></a>
+The standard way to establish a connection with a database is to call the method 
+<code>DriverManager.getConnection</code>. This method takes a string containing a URL. The 
+<code>DriverManager</code> class, referred to as the JDBC management layer, attempts to locate 
+a driver than can connect to the database represented by that URL.    The <code>DriverManager</code> class maintains a list of registered <code>Driver</code> classes, and when the method 
+<code>getConnection</code> is called, it checks with each driver in the list until it finds one that 
+can connect to the database specified in the URL.  The <code>Driver</code> method <code>connect</code> uses 
+this URL to actually establish the connection.  
+<p><a name="1000952"></a>
+A user can bypass the JDBC management layer and call <code>Driver</code> methods 
+directly.  This could be useful in the rare case that two drivers can connect to a 
+database and the user wants to explicitly select a particular driver.  Normally, however, it is much easier to just let the <code>DriverManager</code> class handle opening a connection.  
+<p>
+<a name="1000959"></a>
+The following code exemplifies opening a connection to a database located at 
+the URL <code>"jdbc:odbc:wombat"</code> with a user ID of <code>"oboy"</code> and <code>"12Java"</code> as the  password :
+<p>
+<pre><a name="1000960"></a>    String url = "jdbc:odbc:wombat";
+<a name="1000961"></a>    Connection con = DriverManager.getConnection(url, "oboy", "12Java");
+</pre>
+<a name="1001163"></a>
+<h3>2.1.2	 &nbsp; &nbsp; URLs in General Use</h3>
+<a name="1001164"></a>
+Since URLs often cause some confusion, we will first give a brief explanation of 
+URLs in general and then go on to a discussion of JDBC URLs.
+<p><a name="1001165"></a>
+A URL  (Uniform Resource Locator) gives information for locating a resource on  the 
+Internet.  It can be thought of  as an address.  
+<p>
+<a name="1001166"></a>
+The first part of a URL specifies the protocol used to access information, and it is 
+always followed by a colon.  Some common protocols are "ftp", which specifies 
+"file transfer protocol,"  and "http," which specifies "hypertext transfer protocol."   If the protocol is "file," it indicates that the resource is in a local file system 
+rather than on the Internet.  (Underlining in the examples below is used to indicate the 
+part being described; it is not part of the URL.)  
+<p>
+<pre><a name="1001167"></a>    <strong>        ftp:</strong>//javasoft.com/docs/JDK-1_apidocs.zip
+<a name="1001168"></a>    <strong>      http:</strong>//java.sun.com/products/jdk/CurrentRelease
+<a name="1001169"></a>            <strong>file</strong>:/home/haroldw/docs/books/tutorial/summary.html
+</pre><a name="1001170"></a>
+The rest of a URL, everything after the first colon, gives information about 
+where the data source is located.  If  the protocol is <code>file</code>, the rest of the URL is the 
+path to a file.  For the protocols <code>ftp</code> and <code>http</code>, the rest of the URL identifies the 
+host and may optionally give a path to a more specific site.  For example, below is 
+the URL for the JavaSoft home page.  This URL identifies only the host:
+<p>
+<pre><a name="1001171"></a>    http://java.sun.com
+</pre><a name="1001172"></a>
+By navigating from this home page, one can go to many other pages, one of which is 
+the JDBC home page.  The URL for the JDBC home page is more specific and 
+looks like this:
+<p><pre><a name="1001173"></a>    http://java.sun.com/products/jdbc
+</pre>
+<a name="1001174"></a>
+<h3>2.1.3	 &nbsp; &nbsp; JDBC URLs  </h3>
+<a name="1001175"></a>
+A JDBC URL provides a way of identifying a database so that the appropriate driver 
+will recognize it and establish a connection with it.  Driver writers are the ones who 
+actually determine what the JDBC URL that identifies their particular driver will be.  
+Users do not need to worry about how to form a JDBC URL; they simply use the 
+URL supplied with the drivers they are using.  JDBC's role is to recommend some 
+conventions for driver writers to follow in structuring their JDBC URLs.
+<p><a name="1001176"></a>
+Since JDBC URLs are used with various kinds of drivers,  the conventions are  
+of necessity very flexible.  First, they allow different drivers to use different 
+schemes for naming databases.  The <code>odbc</code> subprotocol, for example, lets the URL 
+contain attribute values (but does not require them).   
+<p>
+<a name="1001177"></a>
+Second, JDBC URLs allow  driver writers to encode all necessary connection 
+information within them.  This makes it possible, for example, for an applet that 
+wants to talk to a given database to open the database connection without requiring the user to do any system administration chores.  
+<p>
+<a name="1001178"></a>
+Third, JDBC URLs allow a level of indirection.  This means that the JDBC 
+URL may refer to a logical host or database name that is dynamically translated to 
+the actual name by a network naming system.  This allows system administrators 
+to avoid specifying particular hosts as part of the JDBC name.  There are a number of different network name services (such as DNS, NIS, and DCE), and there is 
+no restriction about which ones can be used.
+<p>
+<a name="1001179"></a>
+ The standard syntax for JDBC URLs is shown below.  It <strong>has three parts, 
+which are separated by colons:</strong>
+<p>
+<pre><a name="1001180"></a>      jdbc:&lt;subprotocol&gt;:&lt;subname&gt;
+</pre><a name="1001181"></a>
+<strong>The three parts of a JDBC URL are broken down as follows:
+</strong><p>
+<ol>
+<a name="1001182"></a>
+<li><code>jdbc</code>-the protocol.  The protocol in a JDBC URL is always <code>jdbc</code>.
+
+
+<pre><a name="1001183"></a>    
+</pre><a name="1001184"></a>
+<li> <code>&lt;subprotocol&gt;</code>-the name of the driver or the name of a database connectivity 
+mechanism, which may be supported by one or more drivers.  A prominent example of a subprotocol name is "odbc", which has been reserved for URLs that 
+specify ODBC-style data source names.  For example, to access a database 
+through a JDBC-ODBC bridge, one might use a URL such as the following:
+
+<pre><a name="1001185"></a>      jdbc:odbc:fred
+<a name="1001186"></a>
+ In this example, the subprotocol is "odbc", and the subname "fred" is a local 
+ODBC data source.
+<p>
+</pre><blockquote><a name="1001187"></a>
+If one wants to use a network name service (so that the database name in 
+the JDBC URL does not have to be its actual name), the naming service can 
+be the subprotocol.  So, for example, one might have a URL like:
+<p>
+</blockquote><pre><a name="1001188"></a>      jdbc:dcenaming:accounts-payable
+<a name="1001189"></a>
+ In this example, the URL specifies that the local DCE naming service should 
+resolve the database name "accounts-payable" into a more specific name that 
+can be used to connect to the real database.
+<p>
+</pre><blockquote><a name="1001190"></a>
+
+<p>
+</blockquote><a name="1001191"></a>
+<li><code>&lt;subname&gt;</code>-a way to identify the database.  The subname can vary, depending 
+on the subprotocol, and it can have a subsubname with any internal syntax the 
+driver writer chooses.  The point of a subname is to give enough information 
+to locate the database.  In the previous example, "fred" is enough because 
+ODBC provides the remainder of the information.  A database  on a remote 
+server requires more information, however.  If the database is to be accessed 
+over the Internet, for example, the network address should be included in the 
+JDBC URL as  part of the subname and should follow the standard URL naming convention of 
+
+</ol>
+<pre><a name="1001192"></a>       <code>//hostname:port/subsubname</code> 
+<a name="1001193"></a>
+ Supposing that "dbnet" is a protocol for connecting to a host on the Internet, a 
+JDBC URL might look like this:
+<p>
+<a name="1001194"></a>      jdbc:dbnet://wombat:356/fred
+</pre>
+<a name="1001002"></a>
+<h3>2.1.4	 &nbsp; &nbsp; The "odbc" Subprotocol</h3>
+<a name="1001003"></a>
+The subprotocol <code>odbc</code> is a special case.  It has been reserved for URLs that 
+specify ODBC-style data source names and has the special feature of allowing any 
+number of  attribute values to be specified after the subname (the data source 
+name).  The full syntax for the odbc subprotocol is:
+<p>
+<a name="1001004"></a>
+
+<p>
+<pre><a name="1001005"></a>      jdbc:odbc:&lt;<code>data-source-name</code>&gt;[;&lt;<code>attribute-name&gt;</code>=&lt;<code>attribute-value</code>&gt;]*
+</pre><a name="1001006"></a>
+
+<p>
+<a name="1001007"></a>
+Thus all of the following are valid <code>jdbc:odbc</code> names:
+<p>
+<pre><a name="1001008"></a>    <code>  jdbc:odbc:qeor7
+</code><a name="1001009"></a>    <code>  jdbc:odbc:wombat
+</code><a name="1001010"></a>    <code>  jdbc:odbc:wombat;CacheSize=20;ExtensionCase=LOWER
+</code><a name="1001011"></a>    <code>  jdbc:odbc:qeora;UID=kgh;PWD=fooey
+</code></pre>
+<a name="1001012"></a>
+<h3>2.1.5	 &nbsp; &nbsp; Registering Subprotocols</h3>
+<a name="1001013"></a>
+A driver developer can reserve a name to be used as the subprotocol in a JDBC 
+URL.   When the <code>DriverManager</code> class presents this name to its list of registered 
+drivers, the driver for which this name is reserved should recognize it and establish a 
+connection to the database it identifies.  For example, <code>odbc</code> is reserved for the JDBC-
+ODBC Bridge.  If there were, for another example, a Miracle Corporation, it might 
+want to register "miracle" as the subprotocol for the JDBC driver that connects to its 
+Miracle DBMS so that no one else would use that name.  
+<p><a name="1001014"></a>
+JavaSoft is acting as an informal registry for JDBC subprotocol names.  To 
+register a subprotocol name, send email to:
+<p>
+<pre><a name="1001015"></a>      jdbc@wombat.eng.sun.com
+</pre>
+<a name="1001016"></a>
+<h3>2.1.6	 &nbsp; &nbsp; Sending SQL Statements</h3>
+<a name="1001017"></a>
+Once a connection is established, it is used to pass SQL statements to its underlying 
+database.  JDBC does not put any restrictions on the kinds of SQL statements that 
+can be sent; this provides a great deal of flexibility, allowing the use of database-specific statements or even non-SQL statements.  It requires, however,  that  the user be 
+responsible for making sure that the underlying database can process the SQL statements being sent and suffer the consequences if it cannot.  For example, an application that tries to send a stored procedure call to a DBMS that does not support stored 
+procedures will be unsuccessful and generate an exception.  JDBC requires that a 
+driver provide at least ANSI SQL-2 Entry Level capabilities in order to be designated JDBC COMPLIANT<font size=-1><sup>TM</sup></font>.  This means that users can count on at least this standard level of functionality.
+<p><a name="1001018"></a>
+JDBC provides three classes for sending SQL statements to the database, and 
+three methods in the <code>Connection</code> interface create instances of these  classes.  
+These classes and the methods which create them are listed below:
+<p>
+<ol>
+<a name="1001019"></a>
+<li> <code>Statement</code>- -created by the method <code>createStatement</code>.  A <code>Statement</code> object is 
+used for sending simple SQL statements. 
+
+
+<a name="1001020"></a>
+<li><code>PreparedStatement</code>- -created by the method <code>prepareStatement</code>.  A <code>PreparedStatement</code> object is  used for SQL statements that take one or more parameters 
+as input arguments (IN parameters).  <code>PreparedStatement</code> has a group of  methods which set the value of IN parameters, which are sent to the database when 
+the statement is executed. Instances of <code>PreparedStatement</code> extend <code>Statement</code> 
+and therefore include <code>Statement</code> methods.  A <code>PreparedStatement</code> object has 
+the potential to be more efficient than a <code>Statement</code> object because it has been 
+pre-compiled and stored for future use. 
+
+<a name="1001091"></a>
+<li><code>CallableStatement</code>- -created by the method <code>prepareCall</code>.   <code>CallableStatement</code> objects are used to execute SQL stored procedures- -a group of SQL statements that is called by name, much like invoking a function.  A 
+<code>CallableStatement</code> object inherits methods for handling IN parameters from 
+<code>PreparedStatement</code>; it adds methods for handling OUT and INOUT parameters.
+
+</ol>
+<a name="1001022"></a>
+The following list gives a quick way to determine which <code>Connection</code> method 
+is appropriate for creating different types of SQL statements:
+<p>
+<a name="1001023"></a>
+
+<p>
+<blockquote><a name="1001024"></a>
+<code>createStatement</code>  method is used for
+<p>
+
+
+<ul>
+<a name="1001025"></a>
+<li>simple SQL statements (no parameters)
+<br><br>
+</ul>
+</blockquote><a name="1001026"></a>
+
+<p>
+<blockquote><a name="1001027"></a>
+<code>prepareStatement</code> method is used for
+<p>
+
+
+<ul>
+<a name="1001028"></a>
+<li>SQL statements with one or more IN parameters
+<br><br>
+<a name="1001029"></a>
+<li>simple SQL statements  that are executed frequently
+<br><br>
+</ul>
+</blockquote><a name="1001030"></a>
+
+<p>
+<blockquote><a name="1001031"></a>
+<code>prepareCall</code> method is used for
+<p>
+
+
+<ul>
+<a name="1001032"></a>
+<li>call to stored procedures
+<br><br>
+</ul>
+</blockquote>
+<a name="1001033"></a>
+<h3>2.1.7	 &nbsp; &nbsp; Transactions</h3>
+<a name="1001034"></a>
+A transaction consists of one or more statements that have been executed, completed, and then either committed or rolled back.   When the method <code>commit</code> or 
+<code>rollback</code> is called, the current transaction ends and another one begins.  
+<p><a name="1001035"></a>
+A new connection is in auto-commit mode by default, meaning that when a 
+statement is completed, the method <code>commit</code> will be called on that statement automatically.  In this case, since each statement is committed individually, a transaction consists of only one statement.  If auto-commit mode has been disabled, a 
+transaction will not terminate until the method <code>commit</code> or <code>rollback</code> is called 
+explicitly, so it will include all the statements that have been executed since the 
+last invocation of  the <code>commit</code> or <code>rollback</code> method.  In this second case, all the 
+statements in the transaction are committed or rolled back as a group.
+<p>
+<a name="1001036"></a>
+The method <code>commit</code> makes permanent any changes an SQL statement makes  
+to a database, and it also releases any locks held by the transaction.  The method 
+<code>rollback</code> will discard those changes.
+<p>
+<a name="1001037"></a>
+  Sometimes a user doesn't want one change to take effect unless another one 
+does also.  This can be accomplished by disabling auto-commit and grouping both 
+updates into one transaction.  If both updates are successful, then the <code>commit</code> 
+method is called, making the effects of both updates permanent; if one fails or 
+both fail, then the <code>rollback</code> method  is called, restoring the values that existed 
+before the updates were executed.  
+<p>
+<a name="1001038"></a>
+Most JDBC drivers will support transactions.  In fact, a JDBC-compliant 
+driver must support transactions.  <code>DatabaseMetaData</code> supplies information 
+describing the level of transaction support  a DBMS provides. 
+<p>
+
+<a name="1001039"></a>
+<h3>2.1.8	 &nbsp; &nbsp; Transaction Isolation Levels</h3>
+<a name="1001040"></a>
+If a DBMS supports transaction processing, it will have some way of managing 
+potential conflicts that can arise when two transactions are operating on a database 
+at the same time.  A user can specify a transaction isolation level to indicate what 
+level of care the DBMS should exercise in resolving potential conflicts.  For example, what happens when one transaction changes a value and a second transaction 
+reads that value before the change has been committed or rolled back?    Should that 
+be allowed, given that the changed value read by the second transaction will be 
+invalid if the first transaction is rolled back?  A JDBC user can instruct the DBMS to 
+allow  a value to be read before it has been committed ("dirty reads") with the following code, where <code>con</code> is the current connection:
+<p><pre><a name="1001041"></a>    con.setTransactionIsolation(TRANSACTION_READ_UNCOMMITTED);
+</pre><a name="1001042"></a>
+The higher the transaction isolation level, the more care is taken to avoid conflicts.  The <code>Connection</code> interface defines five levels, with  the lowest specifying 
+that transactions are not supported at all and the highest specifying that while one 
+transaction is operating on a database, no other transactions may make any 
+changes to the data read by that transaction.  Typically, the higher the level of isolation, the slower the application executes (due to increased locking overhead and 
+decreased concurrency between users).   The developer must balance the need for 
+performance with the need for data consistency when making a decision about 
+what isolation level to use.  Of course, the level that can actually be supported 
+depends on the capabilities of the underlying DBMS.
+<p>
+<a name="1001043"></a>
+When a new <code>Connection</code> object is created, its transaction isolation level 
+depends on the driver, but normally it is the default for the underlying database.  A 
+user  may call the method <code>setIsolationLevel</code> to  change the transaction isolation 
+level, and the new level will be in effect for the rest of the connection session.  To 
+change the transaction isolation level for just one transaction, one needs to set it 
+before the transaction begins and reset it after the transaction terminates. Changing the transaction isolation level during a transaction is not recommended, for it 
+will trigger an immediate call to the method <code>commit</code>, causing any changes up to 
+that point to be made permanent.  
+<p>
+
+
+<br>
+<hr>
+<font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="intro.doc.html">Prev</a>  | <a href="drivermanager.doc.html">Next</a>
+</font>
+<hr>
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

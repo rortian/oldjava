@@ -1,0 +1,153 @@
+<html>
+<head>
+<title>Release Notes</title>
+<!-- Changed by: Chris Darke - JavaSoft East,  20-Nov-1996 -->
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<CENTER><P ALIGN=LEFT>
+<IMG SRC="../../images/smi.logo.gif" ALT=" Sun Microsystems, Inc " BORDER=0>
+</P></CENTER>
+
+
+<font size=-1><a href="../../index.html">JDK Contents</a></font>
+<HR SIZE=3 NOSHADE>
+
+<center><h1>RMI and Object Serialization</h1>
+<h1>JDK 1.1 Release Notes</h1></center>
+<p>
+These release notes contain the following sections:
+<ul>
+<li><a href="#rmi">RMI General Notes</a>
+<li><a href="#serial">Serialization General Notes</a>
+<li><a href="#fire">RMI through Firewalls via a CGI Program (required under limited conditions)</a>
+<li><a href="#bugs">Known Limitations and Bugs</a>
+</ul>
+<p>
+<h2><a name=rmi>RMI General Notes</a></h2>
+<p>
+<ol>
+<li>Two examples illustrate the use of the RMI APIs. The first is
+a distributed version of Hello World, which has an accompanying Getting
+Started tutorial that explains the basics of using RMI. The second example is
+a stock monitoring applet that receives notification when the values of 
+the portfolio change and that demonstrates callbacks from an object exported
+by the applet.
+<p>
+<li>Applets developed with the JDK 1.1 release of RMI can be run in the
+appletviewer and <a href="http://java.sun.com/products/hotjava/index.html">HotJava 1.0</a>. Full support in
+all Java enabled browsers will be available when each Java licensee
+incorporates the JDK 1.1 release.  In the interim,
+<a href ="http://java.sun.com/products/jdk/rmi/index.html">RMI on JDK 1.0.2</a> has a Netscape plug-in that allows RMI based applets to
+be run in Nescape 3.01.
+<p>
+</ol>
+<h2><a name=serial>Serialization General Notes</a></h2>
+<p>
+<ol>
+<li>Objects must explicitly declare that they can be written to an
+ObjectOutputStream by implementing either the interface <code>java.io.Serializable</code> or the 
+  interface <code>java.io.Externalizable</code>. Many of the core classes
+ implement the <code>Serializable</code> interface.<p>
+<li>Objects implementing the interface <code>java.io.Externalizable</code>
+must implement the <code>writeExternal</code> method to save the entire state
+of the object and the <code>readExternal</code> method to restore the entire
+state of the object.
+<p>
+<li>To support versioning of classes, each version of a class except the
+  first must specify the <code>SerialVersionUID</code> variable. This variable indicates
+  the original class version for which the current class is capable of writing
+or reading streams. For example: 
+<pre>
+      static final long serialVersionUID = 3487495895819393L; 
+</pre>
+<p>
+  To obtain this value, use the method
+  <code>ObjectStreamClass.getSerialVersionUID</code> or the <code>serialver </code>tool.
+<p>
+</ol>
+<p>
+<h2><a name=fire>RMI through Firewalls via a CGI Program (required under limited conditions)</a></h2>
+<p>
+For a server to support RMI calls from clients behind firewalls that do
+not foward HTTP requests to arbitrary ports, a CGI program needs to be
+installed on the server host's default HTTP server (listening on port
+80).  (Without installion of the CGI program, the server will still
+support RMI calls from clients behind typical firewalls.)
+<p>
+The CGI program "java-rmi.cgi" is responsible for forwarding
+HTTP-packaged RMI calls sent to the default HTTP server to be forwarded
+to an RMI server listening on a port specified in the URL.
+Specifically, when a POST request is sent with the URL path
+"/cgi-bin/java-rmi.cgi?forward=<port>", the body of the request will be
+sent (as another POST request) to the server listening on the specified
+port (must be >= 1024).  The HTTP response from this forwarded request
+will be the response to the original request.
+<p>
+On Solaris:
+<p>
+In the JDK release, copy the file bin/java-rmi.cgi to the directory to
+which your HTTP server maps the URL path "/cgi-bin".  You will need to
+edit this script to fill in the proper path for the Java interpreter
+on the host machine, as noted in the script comments.
+<p>
+On Windows 95/NT:
+<p>
+In the JDK release, copy the file bin/java-rmi.cgi to the directory to
+which your HTTP server maps the URL path "/cgi-bin".  For this program
+to execute correctly, the system PATH environment variable must include
+the directory for the Java interpreter.
+<p>
+<h2><a name=bugs>Known Limitations and Bugs</a></h2>
+<p>
+<ul>
+<p>
+<li>JDK 1.1 and the RMI Prebeta release are not compatible, if you use
+the <code>java.rmi.server.UnicastRemoteObject.exportObject</code> method in
+your applet or application. This is due to a change in the method signature, 
+which in JDK 1.1 now returns a <code>RemoteStub</code> instead of
+<code>void</code>.
+<p>
+<li>On some network configurations the Registry operations of bind,
+  rebind and unbind will throw an <code>AccessException</code> in cases where it
+  should not.  The Registry implementation restricts these operations
+  to clients on the same host as the Registry.  If the hostname or IP
+  address does not match the exception is thrown. In some DHCP and PPP
+  network configurations the assigned IP address and hostname do not
+  match the name assigned to the node.  A workaround is to statically
+  and explicitly assign the IP address for the node.
+<p>
+  On Solaris, another alternative is to change the node name have the
+  IP address assigned by PPP, or to set the nodename to "localhost"
+  which is bound to the IP address 127.0.0.1.
+<p>
+<li>Applications (servers) that export remote objects may not exit even if
+  all remote objects have been garbage collected (remotely and locally)
+  and there are no other non-daemon threads in the process other than an
+  RMI thread which keeps the process alive. The current workaround is for
+  a server process to call <code>System.exit()</code> to exit the application.
+<p>
+<li><code>rmic</code> does not currently flag an error if a remote interface implemented
+  by a remote class is not public.
+<p>
+<li>The implementation of the <code>java.rmi.registry.Registry</code> interface does not
+  handle stub classes evolving over time. If a remote object
+  implementation adds support for an additional interface after its
+  previous stub was loaded into the registry, object serialization will
+  flag a class mismatch when binding the new stub in the registry. As a
+  workaround, a registry must be stopped and restarted if changes are made
+  to the remote interfaces implemented by remote object implementation classes.
+</ul>
+
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+
+<IMG SRC="../../images/JAVA.85.GIF" ALIGN=RIGHT>
+
+
+<FONT SIZE=-2>
+<A HREF="../../relnotes/SMICopyright.html">Copyright &#169;</A> 1996 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn. View, CA 94043-1100 USA. All rights reserved.
+<br><br>
+
+</BODY>
+</HTML>

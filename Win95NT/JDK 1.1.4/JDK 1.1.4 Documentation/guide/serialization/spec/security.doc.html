@@ -1,0 +1,104 @@
+<html><head><title>Security in Object Serialization
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="protocol.doc.html">[Prev]</a> <a href="exceptions.doc.html">[Next]</a>
+<hr><br>
+ 
+<h1><a name="2527">
+Security in Object Serialization
+
+</a></h1>
+<hr><p>
+<p><h3><a name="3461">
+Topics:
+</a></h3><ul><li><a href="security.doc.html#3435">Overview</a>
+<li><a href="security.doc.html#2630">Design Goals</a>
+<li><a href="security.doc.html#2595">Using transient to Protect Important System Resources</a>
+<li><a href="security.doc.html#2605">Writing Class-Specific Serializing Methods</a>
+<li><a href="security.doc.html#2492">Encrypting a Bytestream</a>
+</ul><h1><a name="3435">
+Overview
+</a></h1>The object serialization system allows a bytestream to be produced from a 
+graph of objects, sent out of the Java environment (either saved to disk or sent 
+over the network) and then used to recreate an equivalent set of new objects 
+with the same state.
+<p>What happens to the state of the objects outside of the environment is outside 
+of the control of the Java system (by definition), and therefore is outside the 
+control of the security provided by the system. The question then arises, once 
+an object has been serialized, can the resulting byte array be examined and 
+changed, perhaps injecting viruses into Java programs? The intent of this 
+section is to address these security concerns.
+<p><h1><a name="2630">
+Design Goals
+</a></h1>The goal for object serialization is to be as simple as possible and yet still be 
+consistent with known security restrictions; the simpler the system is, the more 
+likely it is to be secure. The following points summarize how security in object 
+serialization has been implemented:
+<p><ul><li>Only objects implementing the java.io.Serializable or java.io.Externalizable 
+interfaces can be serialized. there are mechanisms for not serializing certain 
+fields and certain classes.
+<li>The serialization package cannot be used to recreate the <em>same</em> object, and no 
+object is ever overwritten by a deserialize operation. All that can be done 
+with the serialization package is to create <em>new</em> objects, initialized in a 
+particular fashion.
+<li>While deserializing an object might cause code for the class of the object to 
+be loaded, that code loading is protected by all of the usual Java code 
+verification and security management guarantees. Classes loaded because of 
+deserialization are no more or less secure than those loaded in any other 
+fashion.
+<li>Externalizable objects expose themselves to being overwritten because the 
+readExternal method is public.
+</ul><h1><a name="2595">
+Using transient to Protect Important System Resources
+</a></h1>Direct handles to system resources, such as file handles, are the kind of 
+information that is relative to an address space and should not be written out 
+as part of an object's persistent state. Therefore, fields that contain this kind of 
+information should be declared <strong>transient</strong>, which prevents them from being 
+serialized. Note that this is not a new or overloaded meaning for the 
+<strong>transient</strong> keyword.
+<p>If a resource, like a file handle, was not declared <strong>transient</strong>, the object could 
+be altered while in its serialized state, enabling it to have improper access to 
+resources after it is deserialized.
+<p><h1><a name="2605">
+Writing Class-Specific Serializing Methods
+</a></h1>To guarantee that a deserialized object does not have state which violates some 
+set of invariants that need to be guaranteed, a class can define its own 
+serializing and deserializing methods. If there is some set of invariants that 
+need to be maintained between the data members of a class, only the class can 
+know about these invariants, and it is up to the class writer to provide a 
+deserialization method that checks these invariants.
+<p>This is important even if you are not worried about security; it is possible that 
+disk files can be corrupted and serialized data be invalid. So checking such 
+invariants is more than just a security measure; it is a validity measure. 
+However, the only place it can be done is in the code for the particular class, 
+since there is no way the serialization package can determine what invariants 
+should be maintained or checked.
+<p><h1><a name="2492">
+Encrypting a Bytestream
+</a></h1>Another way of protecting a bytestream outside the Java virtual machine is to 
+encrypt the stream produced by the serialization package. Encrypting the 
+bytestream prevents the decoding and the reading of a serialized object's 
+private state.
+<p>The implementation allows encryption, both by allowing the classes to have 
+their own special methods for serialization/deserialization and by using the 
+stream abstraction for serialization, so the output can be fed into some other 
+stream or filter.
+<p>
+<hr><br>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="protocol.doc.html">[Prev]</a> <a href="exceptions.doc.html">[Next]</a>
+<hr><br>
+ 
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email rmi-support@javasoft.com -->
+<!-- -->
+<!-- Last updated: 02/04/97 16:46:46 -->
+
+</body>
+</html>

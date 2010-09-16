@@ -1,0 +1,124 @@
+<html>
+<head>
+<title>JDK1.1 - AWT Enhancements</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF">
+<h1><img align=middle src="images/toolbox.med.gif">  JDK1.1 - AWT Enhancements</h1>
+<HR>
+<p>
+The AWT in JDK1.1 is targeted at providing major quality improvements while introducing the beginnings of a richer infrastructure for larger-scale GUI development.  Although we are introducing enhancements and changes to the overall API, we will maintain backward compatibility with the 1.0 API so that existing applets will continue to run.
+<p>
+A number of the AWT changes and enhancements are aimed at the needs of tool developers.  Good software tools are fundamental to the usability and success of Java technology. Additionally, the AWT in 1.1 will support the <a href="http://java.sun.com/beans/index.html">JavaBeans</a> architecture.  In fact, all AWT components in 1.1 are "simple" Java Beans.
+<p>
+The 1.1 AWT contains a wide range of improvements, including a complete rewrite of the Win32 implementation.  This document, however, focuses on API changes:
+<UL>
+<LI> <A HREF="./datatransfer.html">Data Transfer/Clipboard </A> 
+<LI> <A HREF="./desktopcolors.html">Desktop Colors</A>
+<LI> <A HREF="./events.html">Delegation Event Model</A>
+<LI> <A HREF="graphics/index.html">Graphics and Images</A>
+<LI> <A HREF="./lightweights.html">Lightweight UI Framework</a>
+<LI> <A HREF="./mouseless.html">Mouseless Operation</A>
+<LI> <A HREF="./popupmenu.html">Popup Menu</A>
+<LI> <A HREF="./printing.html">Printing</A>
+<LI> <A HREF="./scrollpane.html">ScrollPane Container</A>
+</UL>
+<p>
+Note that these APIs may be modified for the final release of the JDK1.1 as a result of more complete testing and feedback from real-world usage by Java developers. We will update these documents periodically to reflect such changes (see <a href="#updates">Recent Updates</a>).
+To see our plans for the future, go to 
+<a href=nextAWT.html>AWT: The Next Generation</a>.
+
+<p>
+We welcome your feedback! 
+<p>
+
+<h2><a name="updates">Recent Updates</h2>
+The following modifications were made to the documents in response to the feedback we've received so far (many thanks to those of you who have taken the time to send us your feedback - it makes a difference!):
+<h3>August 13, 1997</h3>
+<ul>
+<li> Replaced Drag-and-Drop specification with link to new Drag-and-Drop specification being developed as part of JFC.
+</ul>
+
+<h3>February 4, 1997</h3>
+<ul>
+<li> Updated examples so that they compile cleanly.
+</ul>
+<h3>January 29, 1997</h3>
+<ul>
+<li> Added "Lightweight UI Framework" document.
+</ul>
+
+<h3>January 3, 1997</h3>
+<ul>
+<li> Delegation Event Model
+<ol>
+<li> Added new TextEvent/TextListener classes to enable getting text value changed events on text components.
+<li> Added new windowActivated/windowDeactivated event types to WindowEvent to enable programs to determine when a window gets/loses focus.
+<li> Added isTemporary() method to FocusEvent in order to enable determining the difference between when focus is explicited moved between components and when focus *temporarily* changes (such as when a window is de-activated).
+<li> Added new ContainerEvent/ContainerListener classes in order to enable notification when components are added/removed from containers.  This makes it relatively easy for containers to register themselves as listeners for events on all of their descendents.
+<li> Changed the way input event consumption works: now there is a new consume() method on InputEvent so that any object can "consume" an input event (previously only subclasses could do this).
+<li> Made the AWTEventMulticaster class public so that it can be reused by component subclasses who wish to act as multicast sources for AWT defined events.
+<li> Made java.awt.event Adapter classes abstract to be clearer that they
+  are intended to be extended.
+<li> Removed obsoleted constructors in java.awt.event Event classes which took
+  an old 1.0 event as a parameter.
+<li> Changed the event id values of the ComponentEvent types to prevent them
+  from clashing with the WindowEvent ids.
+<li> Added virtual keycode identifiers to java.awt.event.KeyEvent in order
+  to properly represent all standard keys on the keyboard.  The keyCode
+  property of the key event will now contain one of those identifiers
+  (instead of the ascii integer equivelent).
+<li> Changed the ItemSelectable interface so that it doesn't force items to be
+represented by a string.  Specifically, the getSelectedIndexes and
+getSelectedItems methods have been replaced by a getSelectedObjects method
+that returns an array of Objects.
+<li> Updated our statement on "Compatibility" and how mixing of the 1.0 and 1.1 works.
+</ol>
+<li> Popup Menu
+<ol>
+<li> Added isPopupTrigger() method to java.awt.event.MouseEvent in order provide a platform-indendent mechanism for determining whether a mouse event should show a popup menu on a given platform.
+<li> Updated example to use 1.1 event model and isPopupTrigger() method.
+
+</ol>
+</ul>
+<h3>December 11, 1996</h3>
+<ul>
+<li> Next Generation: Added link to document that describes future plans.
+</ul>
+
+<h3>November 21, 1996</h3>
+<ul>
+<li> Desktop Colors
+     <ol>
+     <li> Moved desktop colors into new SystemColor class
+          (since they are a special type of color).
+     </ol>
+<li> Graphics and Images: First release of these specifications.
+</ul>
+
+<h3>October 25, 1996</h3>
+<ul>
+<li>Delegation Event Model
+<ol>
+<li> Re-worked the section on "Handling Events in Extended Components" in order to provide more flexibility in how to override methods to handle events in subclasses.
+<li> Added a system event queue object in order to allow central access/view of all incoming events
+<li> Simplified the AdjustmentListener and ItemListener interfaces to contain only a single method
+<li> Removed all 3 semantic Adapter classes, since each of the semantic listeners now only has a single method
+</ol>
+</ul>
+
+<hr>
+Many people contributed to the ideas and designs in these documents. In particular we'd like to recognize the following people (in alphabetical order): Tom Ball, Larry Cable, Amy Fowler, Jim Graham, Graham Hamilton, Herb Jellinek, Jonni Kanerva, Tim Prinzing, Blake Sullivan, Carl Quinn, Arthur Van Hoff.
+
+<HR> 
+<ADDRESS>
+<DL>
+<DT> Copyright &#169 1996, 1997 Sun Microsystems, Inc.
+<DT> Last updated August 13, 1997
+<DT>
+<a href="mailto: java-awt@java.sun.com">send feedback to: java-awt@java.sun.com</a>
+</address>
+</DL>
+</ADDRESS>
+</BODY>
+</HTML>

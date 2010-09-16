@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="SimpleSelect.doc.html">Prev</a>  | Next
+</font></td><td align=right><i>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="996747"></a>
+<h1>10  - JDBC-ODBC Bridge Driver </h1>
+
+<a name="997135"></a>
+<h2>10.1	 &nbsp;&nbsp; JDBC-ODBC Bridge</h2>
+<a name="996910"></a>
+ If possible, use a Pure Java JDBC driver instead of the Bridge and an ODBC driver. 
+This completely eliminates the client configuration required by ODBC. It also eliminates the potential that the Java VM could be corrupted by an error in the native 
+code brought in by the Bridge (that is, the Bridge native library, the ODBC driver 
+manager library, the ODBC driver library, and the database client library). 
+<p>
+<a name="996913"></a>
+<h3>10.1.1	 &nbsp; &nbsp; What Is the JDBC-ODBC Bridge?  </h3>
+<a name="997016"></a>
+The JDBC-ODBC Bridge is a JDBC driver which implements JDBC operations by 
+translating them into ODBC operations. To ODBC it appears as a normal application program. The Bridge implements JDBC for any database for which an ODBC 
+driver is available. The Bridge is implemented as the <code>sun.jdbc.odbc</code> Java package 
+and contains a native library used to access ODBC. The Bridge is a joint development of Intersolv and JavaSoft. 
+<p>
+<a name="996914"></a>
+<h3>10.1.2	 &nbsp; &nbsp; What Version of ODBC Is Supported?</h3>
+<a name="997019"></a>
+The bridge supports ODBC 2.x. This is the version that most ODBC drivers currently support. It will also likely work with most forthcoming ODBC 3.x drivers; 
+however, this has not been tested. 
+<p>
+<a name="996915"></a>
+<h3>10.1.3	 &nbsp; &nbsp; The Bridge Implementation</h3>
+<a name="997026"></a>
+The Bridge is implemented in Java and uses Java native methods to call ODBC. 
+<p>
+<a name="996916"></a>
+<h3>10.1.4	 &nbsp; &nbsp; Installation</h3>
+<a name="997033"></a>
+The Bridge is installed automatically with the JDK as package <code>sun.jdbc.odbc</code>.  See 
+your ODBC driver vendor for information on installing and configuring ODBC. No 
+special configuration is required for the Bridge. See your database vendor for client 
+installation and configuration information. On Solaris, some ODBC driver managers name their libs <code>libodbcinst.so</code> and <code>libodbc.so</code>. The Bridge expects these 
+libraries to be named <code>libodbcinst.so.1</code> and <code>libodbc.so.1</code>, so symbolic links for 
+these names must be created. 
+<p>
+<a name="996917"></a>
+<h2>10.2	 &nbsp;&nbsp; Using the Bridge </h2>
+<a name="997040"></a>
+The Bridge is used by opening a JDBC connection using a URL with the <code>odbc</code> subprotocol. See below for URL examples. Before a connection can be established, the 
+bridge driver class, <code>sun.jdbc.odbc.JdbcOdbcDriver</code>, must either be added to the 
+<code>java.lang.System</code> property named <code>jdbc.drivers</code>, or it must be explicitly loaded 
+using the Java class loader.  Explicit loading is done with the following line of code:     
+<p><pre><a name="996978"></a>    Class.forName("sun.jdbc.odbc.JdbcOdbcDriver"); 
+</pre><a name="996979"></a>
+When loaded, the ODBC driver (like all good JDBC drivers) creates an 
+instance of itself and registers this with the JDBC driver manager. 
+<p>
+
+<a name="996918"></a>
+<h3>10.2.1	 &nbsp; &nbsp; Using the Bridge from an Applet</h3>
+<a name="997093"></a>
+JDBC used with a Pure Java JDBC driver works well with applets. The Bridge 
+driver does not work well with applets. 
+<p>
+<a name="996919"></a>
+<h3>10.2.2	 &nbsp; &nbsp; Most Browsers Do Not Support the Bridge</h3>
+<a name="997100"></a>
+Since the Bridge is an optional component of the JDK, it may not be provided by a 
+browser. Even if it is provided, only trusted applets (those allowed to write to files) 
+will be able to use the Bridge. This is required in order to preserve the security of the 
+applet sandbox. Finally, even if the applet is trusted, ODBC and the DBMS client 
+library must be configured on each client. 
+<p>
+<a name="996920"></a>
+<h3>10.2.3	 &nbsp; &nbsp; Tested Configurations </h3>
+<a name="997107"></a>
+From Solaris, we have used the Bridge to access Oracle 7.1.6 and Sybase Version 10 
+running on Solaris. From NT, we have used the Bridge to access SQL Server 6.x. 
+<p>
+<a name="996921"></a>
+<h3>10.2.4	 &nbsp; &nbsp; ODBC Drivers Known to Work with the Bridge</h3>
+<a name="997114"></a>
+Visigenic provides ODBC drivers which have been tested with the the Bridge. Drivers are available for Oracle, Sybase, Informix, Microsoft SQL Server, and Ingres. To 
+purchase the ODBC DriverSet 2.0, please contact Visigenic sales at 415-312-7197, 
+or visit the web site <code>www.visigenic.com</code>. The INTERSOLV ODBC driver suite 
+should be completely compatible with the JDBC-ODBC Bridge. The following 
+drivers have successfully passed a minimal test suite: Oracle, xBASE, Sybase (Windows NT/95 only), Microsoft SQL-Server, and Informix. To evaluate or purchase 
+INTERSOLV ODBC drivers, please contact INTERSOLV DataDirect Sales at 1- 
+800-547-4000 Option 2 or via the World Wide Web at <code>http:\\www.intersolv.com</code>. 
+The MS SQL Server driver has also been used successfully on NT. Many other 
+ODBC drivers will likely work. 
+<p>
+<a name="996922"></a>
+<h3>10.2.5	 &nbsp; &nbsp; ODBC Driver Incompatibilities</h3>
+<a name="997062"></a>
+On Solaris, we have found that the Sybase ctlib-based drivers don't work because 
+ctlib has a signal-handling conflict with the Java VM. This is likely not a problem on 
+NT due to differences in the NT Java VM; however, this has not been verified. Some 
+ODBC drivers only allow a single result set to be active per connection. 
+<p>
+<a name="996923"></a>
+<h3>10.2.6	 &nbsp; &nbsp; What Is the JDBC URL Supported by the Bridge? </h3>
+<a name="997123"></a>
+The Bridge driver uses the <code>odbc</code> subprotocol. URLs for this subprotocol are of the 
+form: 
+<p><pre><a name="997124"></a>    <code>jdbc:odbc:&lt;data-source-name&gt;[&lt;attribute-name&gt;=&lt;attribute-value&gt;]*
+</code></pre><a name="997125"></a>
+For example: 
+<p>
+<pre><a name="997006"></a>    jdbc:odbc:sybase
+<a name="997007"></a>    jdbc:odbc:mydb;UID=me;PWD=secret
+<a name="997013"></a>    jdbc:odbc:ora123;Cachesize=300
+</pre>
+<a name="996924"></a>
+<h3>10.2.7	 &nbsp; &nbsp; Debugging</h3>
+<a name="997077"></a>
+The Bridge provides extensive tracing when <code>DriverManager</code> tracing is enabled. The 
+following line of code enables tracing and sends it to standard out:    
+<p><pre><a name="997072"></a>     java.sql.DriverManager.setLogStream(java.lang.System.out);
+</pre>
+<a name="996927"></a>
+<h2>10.3	 &nbsp;&nbsp; General Notes</h2>
+<a name="997086"></a>
+The Bridge assumes that ODBC drivers are not reentrant. This means the Bridge 
+must synchronize access to these drivers. The result is that the Bridge provides limited concurrency. This is a limitation of the Bridge. Most Pure Java JDBC drivers 
+provide the expected level of concurrent access. 
+<p><a name="996877"></a>
+
+<p>
+
+
+<br>
+<hr> 
+<font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="SimpleSelect.doc.html">Prev</a>  | Next
+</font>
+<hr>
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

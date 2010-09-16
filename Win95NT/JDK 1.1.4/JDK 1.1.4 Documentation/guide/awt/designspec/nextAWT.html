@@ -1,0 +1,132 @@
+<html>
+<head>
+<title>AWT: The Next Generation</title>
+</head>
+
+<body bgcolor="#ffffff">
+<h1>AWT: The Next Generation</h1>
+<HR>
+<address>
+Last Updated: April 21, 1997
+</address>
+<p>
+The Abstract Window Toolkit (AWT)
+is the API responsible for building the graphical user interface (GUI)
+for Java programs.
+The AWT is undoubtedly one of the most visible and critical 
+pieces of the Java platform.  JavaSoft's goal is to ensure that the AWT 
+meets the increasing demands of developers who are building innovative and 
+competitive products for the Java platform.
+<p>
+The AWT in 1.0 was designed for building GUIs for 
+fairly simple Java applets.  It is clear that the AWT must migrate towards 
+providing a framework for more powerful and complex GUI development.
+We are currently working on this next generation, and it's called The Java
+Foundation Classes (JFC).  We will be rolling out the JFC in phases over
+the course of the coming year.
+<p>
+The JFC includes many exciting changes and additions to the AWT,
+ including some fairly major architectural enhancements.  We know the 
+development community is quickly pushing the
+envelope of the current 1.0 platform and is anxious to understand our future
+direction.
+Therefore, this document provides some high-level information
+about our direction and you should watch the java.sun.com website
+for more updates on JFC.
+
+<p>
+<h2>A glimpse at highlights of the next phase...</h2>
+<ul>
+<li> <a href="#swing">Swing set of Components</a>
+<li> <a href="#pluggable">Pluggable Look-and-Feel</a>
+<li> <a href="#dnd">Drag-and-Drop</a>
+<li> <a href="#2d">Java 2D</a>
+</ul>
+<p>
+<h3> <a name="swing">Swing Set of Components </a></h3>
+The peer model in the AWT was designed for the sole purpose of 
+being able to provide a truly native look-and-feel
+by delegating the look-and-feel of the components
+to a set of underlying "peer" classes.
+Each platform has a different set of peer classes
+to wrap the native system's widgets.
+While this design works well for its intended goal,
+it suffers from a number of deficiencies:
+<ol>
+<li> Changing the look of components is difficult.
+<li> Native widgets behave slightly differently on different platforms.
+     This causes inconsistencies
+     that the AWT must try to alleviate with complex logic.
+<li> The peer model provides no option of a common look & feel.
+</ol>
+We are currently working on providing "peerless" versions of the AWT 
+UI components, which will be called the "Swing" set of components, 
+and they will all be based on the 
+<a href="./lightweights.html">Lightweight UI Framework</a>
+introduced in the beta3 release of JDK1.1.  
+In addition to peerless versions of the existing AWT components,
+this set will also include a much richer array of high-level components
+(such as TreeView, StyledText, TableView, etc.) because we have heard
+over and over from developers that they expect to find these in the
+core toolkit.   You can find out more about the Swing APIs in the
+<a href="http://java.sun.com/products/jdk/awt/swing/index.html">
+Swing Overview</a> document.
+
+<p>
+<h3> <a name="pluggable">Pluggable Look-and-Feel </a></h3>
+By default, the 1.0 AWT provides a native look-and-feel,
+determined at runtime,
+that matches the particular platform it is running on.
+Because the look-and-feel is truly native,
+it varies from platform to platform.
+We've discovered that a large community would like the option of selecting a
+<i>common</i> look-and-feel <i>across</i> the platforms.  We believe the right
+way to do this is to make this look-and-feel "pluggable", which means that the
+<em>default</em> look-and-feel of components is delegated to a separate set of 
+look-and-feel objects and rendering functions.
+The basis of this architecture will
+allow look-and-feel customization at three levels:
+<ol>
+<li> Completely replace the whole look-and-feel by providing a separate
+     look-and-feel implementation.
+<li> Customize parts of the the default look-and-feel implementation to provide
+     consistent modifications across components (for example, change the depth
+     of a border's shadow).
+<li> Customize the look-and-feel of just an individual component subclass.
+</ol>
+Note that this differs from today's peer model in that it is all implemented
+in Java and all the necessary hooks will be provided to allow easy extending
+of components.  All the new <a href="#swing">Swing components</a> will be based on this
+pluggable look-and-feel architecture.
+<p>
+<h3> <a name="dnd">Drag-and-Drop </a></h3>
+Drag-and-Drop has become an expected feature of most modern interfaces today.
+We have been working on a general data transfer architecture,
+on top of which the API for Clipboard and Drag-and-Drop will be built.
+We have introduced this data transfer mechanism in JDK 1.1,
+along with the Clipboard API,
+and will provide the Drag-and-Drop API in the following release.
+You can read the
+<a href="./datatransfer.html">Data Transfer design document</a> for more details.
+<p>
+<h3> <a name="2d">Java 2D </a></h3>
+The graphics model in the 1.0 JDK provided only basic rendering capabilities.
+We realize the need to provide
+more graphically rich rendering and visual effects.
+We have been working jointly with major partners on a new Java 2D
+API that layers into the AWT and dramatically extends its capabilities.
+This API provides complex rendering that supports
+arbitrary transformations (rotation, scaling, and so on),
+image compositing,
+sophisticated text handling,
+and more.  You can now read more about this API from the <a href="http://java.sun.com/products/java-media/2d/index.html">Java2D home page</a>. 
+<HR>
+<ADDRESS>
+<DL>
+<DT> Copyright &#169 1996,1997 Sun Microsystems, Inc.
+<DT> Send feedback to:
+     <A HREF="mailto:java-awt@java.sun.com">java-awt@java.sun.com</A>
+</DL>
+</ADDRESS>
+</BODY>
+</HTML>

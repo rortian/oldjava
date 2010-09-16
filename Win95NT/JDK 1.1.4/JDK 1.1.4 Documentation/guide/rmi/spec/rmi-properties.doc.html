@@ -1,0 +1,124 @@
+<html><head><title>Properties In RMI		
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-exceptions.doc.html">[Prev]</a> [Next]
+<hr><br>
+ 
+<a name="3601">
+<h1>Properties In RMI		
+</h1>
+</a>
+<hr><p><a name="4120">
+
+<p>
+</a><h3><a name="4748">
+Topics:
+</a></h3><ul><li><a href="rmi-properties.doc.html#4746">Server Properties</a>
+<li><a href="rmi-properties.doc.html#4332">Other Properties</a>
+</ul><h1><a name="4746">
+Server Properties
+</a></h1>The following table contains a list of properties typically used by servers for 
+configuration. 
+<Table Border="3">
+<caption></caption>
+<tr><th>Property
+<th>Description
+
+<tr><td>java.rmi.server.codebase
+
+<td>Indicates the server's codebase URL where 
+classes are available for clients to download.
+
+<tr><td>java.rmi.server.disableHttp
+<td>If set to true, disables the use of HTTP for RMI 
+calls. This means that RMI will never resort to 
+using HTTP to invoke a call via a firewall. 
+Defaults to false (HTTP usage is enabled).
+
+<tr><td>java.rmi.server.hostname
+<td>Used to specify the fully-qualified hostname, if 
+one is not available via the 
+InetAddress.getLocalHost() call.
+Not set by default.
+
+<tr><td>java.rmi.dgc.leaseValue
+<td>Sets the maximum lease duration that is 
+granted for clients referencing remote objects in 
+the VM. Defaults to 10 minutes.
+
+<tr><td>java.rmi.server.logCalls
+<td>If set to true, server call logging is turned on 
+and prints to stderr. Defaults to false.
+
+<tr><td>java.rmi.server.useCodebaseOnly
+<td>If set to true, when RMI loads classes (if not 
+available via CLASSPATH) they are only 
+loaded using the URL specified by the property 
+java.rmi.server.codebase.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+<p><h1><a name="4332">
+Other Properties
+</a></h1>These properties are used to locate specific implementation classes within 
+implementation packages.
+<p> 
+<Table Border="3">
+<caption></caption>
+<tr><th>Property
+<th>Description
+
+<tr><td>java.rmi.loader.packagePrefix
+<td>		The package prefix for the class that implements 
+the interface java.rmi.server.LoaderHandler. 
+Defaults to sun.rmi.server.
+
+<tr><td>java.rmi.registry.packagePrefix
+<td>		The package prefix for the class that implements 
+the interface java.rmi.registry.RegistryHandler. 
+Defaults to sun.rmi.registry.
+
+<tr><td>java.rmi.server.packagePrefix
+<td>The server package prefix. Assumes that the 
+implementation of the server reference classes 
+(such as UnicastRef and UnicastServerRef) are 
+located in the package defined by the prefix. 
+Defaults to sun.rmi.server.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+<p>
+<hr><br>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-exceptions.doc.html">[Prev]</a> [Next]
+<hr><br>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email  -->
+<!-- -->
+<!-- Last updated: 03/18/97 13:00:15 -->
+
+</body>
+</html>

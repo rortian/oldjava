@@ -1,0 +1,514 @@
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc2.html">Prev</a>  | <a href="java-reflection.doc4.html">Next</a>
+</font></td><td align=right><i>Java Core Reflection</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+
+<a name="4999"></a>
+<h1>The class java.lang.reflect.Field
+ </h1><pre>    <a name="5000"></a><code>
+</code>
+    <a name="5001"></a><code>package java.lang.reflect;
+</code>
+    <a name="5002"></a><code>public final class Field extends Object implements Member
+</code>
+</pre><a name="5003"></a>
+A <code>Field</code> provides information about, and access to, a single field of a class or 
+interface.  The reflected field may be a class variable (<code>static</code> field) or an 
+instance variable (instance field).
+<p><a name="5004"></a>
+Only the Java Virtual Machine may create <code>Field</code> objects; user code obtains 
+<code>Field</code> references via the methods <code>getField</code>, <code>getFields</code>, <code>getDeclaredField</code>, 
+and <code>getDeclaredFields</code> of class <code>Class</code>.
+<p><a name="5005"></a>
+<code>A Field</code> permits widening conversions to occur during <code>get</code> or <code>set</code> operations, 
+but throws an <code>IllegalArgumentException</code> if a narrowing conversion would 
+occur.
+<p>
+<hr>
+<a name="5006"></a>
+<h2>		 Methods
+</h2>
+
+<a name="5007"></a>
+<h3>		 getDeclaringClass
+</h3>
+<pre>    <a name="5008"></a><code>public Class getDeclaringClass()
+</code>
+</pre><a name="5009"></a>
+Returns the <code>Class</code> object representing the class or interface that declares the 
+field represented by this <code>Field</code> object.
+<p>
+<a name="5010"></a>
+<h3>		 getName
+</h3>
+<pre>    <a name="5011"></a><code>public String getName()
+</code>
+</pre><a name="5012"></a>
+Returns the simple name of the field represented by this <code>Field</code> object.
+<p>
+<a name="5013"></a>
+<h3>		 getModifiers
+</h3>
+<pre>    <a name="5014"></a><code>public int getModifiers()
+</code>
+</pre><a name="5015"></a>
+Returns the Java language modifiers for the field represented by this <code>Field</code> 
+object, encoded in an integer. The <code>Modifier</code> class should be used to decode the 
+modifiers.
+<p><a name="5016"></a>
+The modifier encodings are defined in <em>The Java Virtual Machine Specification</em>, 
+Table 4.3.
+<p>
+<a name="5017"></a>
+<h3>		 getType
+</h3>
+<pre>    <a name="5018"></a><code>public Class getType()
+</code>
+</pre><a name="5019"></a>
+Returns a <code>Class</code> object that identifies the declared type for the field 
+represented by this <code>Field</code> object.
+<p>
+<a name="5020"></a>
+<h3>		 equals
+</h3>
+<pre>    <a name="5021"></a><code>public boolean equals(Object obj)
+</code>
+</pre><a name="5022"></a>
+Compares this <code>Field</code> against the specified <code>Object</code>.  Returns <code>true</code> if they  are 
+the same; <code>false</code> otherwise. Two <code>Field</code> objects are the same if they have the 
+same declaring class and the same name.
+<p><a name="5023"></a>
+This method overrides the <code>equals</code> method of class <code>Object</code>.
+<p>
+<a name="5024"></a>
+<h3>		 hashCode
+</h3>
+<pre>    <a name="5025"></a><code>public int hashCode()
+</code>
+</pre><a name="5026"></a>
+Returns a hashcode for this <code>Field</code> object.  This is computed as the exclusive-or 
+of the hashcodes for the <code>Field</code>'s declaring class name and its simple name.
+<p><a name="5027"></a>
+This method overrides the <code>hashCode</code> method of class <code>Object</code>.
+<p>
+<a name="5028"></a>
+<h3>		 toString
+</h3>
+<pre>    <a name="5029"></a><code>public String toString()
+</code>
+</pre><a name="5030"></a>
+Returns a <code>String</code> object describing this <code>Field</code>.  The format is the Java language 
+modifiers for the represented field, if any, followed by the field type, followed      
+by a space, followed by the fully-qualified name of the class declaring the field, 
+followed by a period, followed by the name of the field.  For example:
+<p><pre>    <a name="5031"></a>
+
+    <a name="5032"></a>    public static final int java.lang.Thread.MIN_PRIORITY
+
+    <a name="5033"></a>    private int java.io.FileDescriptor.fd
+
+</pre><a name="5034"></a>
+The modifiers are placed in canonical order as specified in <em>The Java Language 
+Specification</em>.  This is <code>public</code>, <code>protected</code>, or <code>private</code> first, and then other 
+modifiers in the following order: <code>static</code>, <code>final</code>, <code>transient</code>, and <code>volatile</code>.
+<p><a name="5035"></a>
+This method overrides the <code>toString</code> method of class <code>Object</code>.
+<p>
+<a name="5036"></a>
+<h3>		 get
+</h3>
+<pre>    <a name="5037"></a><code>public Object get(Object obj) 
+</code>
+    <a name="5038"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5039"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5040"></a>
+Returns the value of the field represented by this <code>Field</code>, on the specified object. 
+The value is automatically wrapped in an object if it has a primitive type.
+<p><a name="5041"></a>
+The underlying field's value is obtained as follows:
+<p>
+<ul><a name="5042"></a>
+<li>If the underlying field is a <code>static</code> field, the object argument is ignored; it 
+may be <code>null</code>.
+<br><br>
+<a name="5043"></a>
+<li>Otherwise, the underlying field is an instance field.  If the specified object 
+argument is <code>null</code>, the method throws a <code>NullPointerException</code>.  If the 
+specified object is not an instance of the class or interface declaring the 
+underlying field, the method throws an <code>IllegalArgumentException</code>.
+<br><br>
+<a name="5044"></a>
+<li>If this <code>Field</code> object enforces Java language access control, and the 
+underlying field is inaccessible, the method throws an 
+<code>IllegalAccessException</code>.
+<br><br>
+<a name="5045"></a>
+<li>Otherwise, the value is retrieved from the underlying instance or static field. 
+If the field has a primitive type, the value is wrapped in an object before 
+being returned, otherwise it is returned as is.
+<br><br>
+</ul><a name="5046"></a>
+Primitive variants of <code>Field.get</code> are also provided for efficiency; these avoid 
+the final wrapping conversion.  They are described below.
+<p>
+<a name="5047"></a>
+<h3>		 getBoolean
+</h3>
+<pre>    <a name="5048"></a><code>public boolean getBoolean(Object obj)
+</code>
+    <a name="5049"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5050"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5051"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as a <code>boolean</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5052"></a>
+If the underlying field is not of type <code>boolean</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5053"></a>
+<h3>		 getByte
+</h3>
+<pre>    <a name="5054"></a><code>public byte getByte(Object obj)
+</code>
+    <a name="5055"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5056"></a><code>    IllegalAccessException
+</code>
+</pre><a name="5057"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as a <code>byte</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5058"></a>
+If the underlying field is not of type <code>byte</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5059"></a>
+<h3>		 getChar
+</h3>
+<pre>    <a name="5060"></a><code>public char getChar(Object obj)
+</code>
+    <a name="5061"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5062"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5063"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as a <code>char</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5064"></a>
+If the underlying field's value is not of type <code>char</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5065"></a>
+<h3>		 getShort
+</h3>
+<pre>    <a name="5066"></a><code>public short getShort(Object obj)
+</code>
+    <a name="5067"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5068"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5069"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as a <code>short</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5070"></a>
+If the underlying field's value cannot be converted to a <code>short</code> by an identity or 
+a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5071"></a>
+<h3>		 getInt
+</h3>
+<pre>    <a name="5072"></a><code>public int getInt(Object obj)
+</code>
+    <a name="5073"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5074"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5075"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as an <code>int</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5076"></a>
+If the underlying field's value cannot be converted to an <code>int</code> by an identity or 
+a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5077"></a>
+<h3>		 getLong
+</h3>
+<pre>    <a name="5078"></a><code>public long getLong(Object obj)
+</code>
+    <a name="5079"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5080"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5081"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as a <code>long</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5082"></a>
+If the underlying field's value cannot be converted to a <code>long</code> by an identity or 
+a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5083"></a>
+<h3>		 getFloat
+</h3>
+<pre>    <a name="5084"></a><code>public float getFloat(Object obj)
+</code>
+    <a name="5085"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5086"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5087"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as a <code>float</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5088"></a>
+If the underlying field's value cannot be converted to a <code>float</code> by an identity or 
+a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5089"></a>
+<h3>		 getDouble
+</h3>
+<pre>    <a name="5090"></a><code>public double getDouble(Object obj)
+</code>
+    <a name="5091"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5092"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5093"></a>
+Returns the value of the field represented by this <code>Field</code> object on the specified 
+object, as a <code>double</code>.  See <code>Field.get</code> for the detailed procedure.
+<p><a name="5094"></a>
+If the underlying field's value cannot be converted to a <code>double</code> by an identity 
+or a widening conversion, the method throws an <code>IllegalArgumentException</code>.
+<p>
+<a name="5095"></a>
+<h3>		 set
+</h3>
+<pre>    <a name="5096"></a><code>public void set(Object obj, Object value)
+</code>
+    <a name="5097"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5098"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5099"></a>
+Sets the field represented by this <code>Field</code> object on the specified object argument 
+to the specified new value. The new value is automatically unwrapped if the 
+underlying field has a primitive type.
+<p><a name="5100"></a>
+The operation proceeds as follows:
+<p>
+<ul><a name="5101"></a>
+<li>If the underlying field is a <code>static</code> field, the object argument is ignored; it 
+may be <code>null</code>.
+<br><br>
+<a name="5102"></a>
+<li>Otherwise the underlying field is an instance field.  If the specified object 
+argument is <code>null</code>, the method throws a <code>NullPointerException</code>.  If the 
+specified object argument is not an instance of the class or interface 
+declaring the underlying field, the method throws an 
+<code>IllegalArgumentException</code>.
+<br><br>
+<a name="5103"></a>
+<li>If this <code>Field</code> object enforces Java language access control, and the 
+underlying field is inaccessible, the method throws an 
+<code>IllegalAccessException</code>.
+<br><br>
+<a name="5104"></a>
+<li>If the underlying field is a <code>final</code> field, the method throws an 
+<code>IllegalAccessException</code>.
+<br><br>
+<a name="5105"></a>
+<li>If the underlying field is of a primitive type, an unwrapping conversion is 
+attempted to convert the new object value to a value of a primitive type.   If 
+the new object value is <code>null</code>, the conversion fails by throwing a 
+<code>NullPointerException</code>.  If the new object value is not an instance of a 
+standard Java wrapper class, the conversion fails by throwing an 
+<code>IllegalArgumentException</code>.
+<br><br>
+<a name="5106"></a>
+<li>If, after possible unwrapping, the new value cannot be converted to the type 
+of the underlying field by an identity or a widening conversion, the method 
+throws an <code>IllegalArgumentException</code>.
+<br><br>
+<a name="5107"></a>
+<li>The field is set to the possibly unwrapped and widened new value.
+<br><br>
+</ul><a name="5108"></a>
+Primitive variants of <code>Field.set</code> are also provided for efficiency; these let 
+application code avoid having to wrap the new field value.  They are described 
+below.
+<p>
+<a name="5109"></a>
+<h3>		 setBoolean
+</h3>
+<pre>    <a name="5110"></a><code>public void setBoolean(Object obj, boolean z)
+</code>
+    <a name="5111"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5112"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5113"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>boolean</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5114"></a>
+If the underlying field is not of type <code>boolean</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5115"></a>
+<h3>		 setByte
+</h3>
+<pre>    <a name="5116"></a><code>public void setByte(Object obj, byte b)
+</code>
+    <a name="5117"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5118"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5119"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>byte</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5120"></a>
+If the new value cannot be converted to the type of the underlying field by an 
+identity or a widening conversion, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5121"></a>
+<h3>		 setChar
+</h3>
+<pre>    <a name="5122"></a><code>public void setChar(Object obj, char c)
+</code>
+    <a name="5123"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5124"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5125"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>char</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5126"></a>
+If the new value cannot be converted to the type of the underlying field by an 
+identity or a widening conversion, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5127"></a>
+<h3>		 setShort
+</h3>
+<pre>    <a name="5128"></a><code>public void setShort(Object obj, short s)
+</code>
+    <a name="5129"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5130"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5131"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>short</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5132"></a>
+If the new value cannot be converted to the type of the underlying field by an 
+identity or a widening conversion, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5133"></a>
+<h3>		 setInt
+</h3>
+<pre>    <a name="5134"></a><code>public void setInt(Object obj, int i)
+</code>
+    <a name="5135"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5136"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5137"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>int</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5138"></a>
+If the new value cannot be converted to the type of the underlying field by an 
+identity or a widening conversion, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5139"></a>
+<h3>		 setLong
+</h3>
+<pre>    <a name="5140"></a><code>public void setLong(Object obj, long l)
+</code>
+    <a name="5141"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5142"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5143"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>long</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5144"></a>
+If the new value cannot be converted to the type of the underlying field by an 
+identity or a widening conversion, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5145"></a>
+<h3>		 setFloat
+</h3>
+<pre>    <a name="5146"></a><code>public void setFloat(Object obj, float f)
+</code>
+    <a name="5147"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5148"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5149"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>float</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5150"></a>
+If the new value cannot be converted to the type of the underlying field by an 
+identity or a widening conversion, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+<a name="5151"></a>
+<h3>		 setDouble
+</h3>
+<pre>    <a name="5152"></a><code>public void setDouble(Object obj, double d)
+</code>
+    <a name="5153"></a><code>    throws NullPointerException, IllegalArgumentException,
+</code>
+    <a name="5154"></a><code>        IllegalAccessException
+</code>
+</pre><a name="5155"></a>
+Sets the value of the field represented by this <code>Field</code> object on the specified 
+object argument to the specified <code>double</code> value.  See <code>Field.set</code> for the detailed 
+procedure.
+<p><a name="5156"></a>
+If the underlying field is not of type <code>double</code>, the method throws an 
+<code>IllegalArgumentException</code>.
+<p>
+
+<br>
+<hr> 
+<font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc2.html">Prev</a>  | <a href="java-reflection.doc4.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<a href="java-reflection-copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

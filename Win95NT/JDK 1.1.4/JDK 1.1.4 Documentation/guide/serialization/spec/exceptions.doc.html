@@ -1,0 +1,88 @@
+<html><head><title>Exceptions In Object Serialization		
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="security.doc.html">[Prev]</a> [Next]
+<hr><br>
+ 
+<h1><a name="3601">
+Exceptions In Object Serialization		
+
+</a></h1>
+<hr><p>
+<p>	All exceptions thrown by serialization classes are subclasses of 
+<code>ObjectStreamException</code> which is a subclass of <code>IOException</code>. 
+<Table Border="3">
+<caption></caption>
+<tr><th>Exception
+<th>Description
+
+<tr><td><code>ObjectStreamException
+</code><td>Superclass of all serialization exceptions.
+
+<tr><td><code>InvalidClassException
+</code><td>Thrown when a class cannot be used to restore 
+objects for any of these reasons:
+<ul><li>The class does not match the serial version of 
+the class in the stream.
+<li>The class contains fields with invalid 
+primitive data types.
+<li>The class is not public; the class does not 
+have an accessible no-arg constructor.
+</ul>
+<tr><td><code>NotSerializableException
+</code><td>Thrown by a <code>readObject</code> or <code>writeObject</code> 
+method to terminate serialization or 
+deserialization.
+
+<tr><td><code>StreamCorruptedException
+</code><td>Thrown when the stream header is invalid or 
+when control information in the stream is not 
+found or found to be invalid.
+
+<tr><td><code>NotActiveException
+</code><td>Thrown if <code>registerValidation</code> is not called 
+during <code>readObject</code>.
+
+<tr><td><code>InvalidObjectException
+</code><td>Thrown when a restored object cannot be made 
+valid.
+
+<tr><td><code>OptionalDataException
+</code><td>Thrown by readObject when there is primitive 
+data in the stream and an object is expected. 
+The length field of the exception indicates the 
+number of bytes that are available in the current 
+block.
+
+<tr><td>WriteAbortedException
+<td>Thrown when reading a stream terminated by 
+an exception that occurred while the stream 
+was being written.
+
+
+</Table>
+
+<table>
+<tr><td>
+</table>
+
+<p>
+<p>
+<hr><br>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="security.doc.html">[Prev]</a> [Next]
+<hr><br>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email rmi-support@javasoft.com -->
+<!-- -->
+<!-- Last updated: 02/04/97 16:46:48 -->
+
+</body>
+</html>

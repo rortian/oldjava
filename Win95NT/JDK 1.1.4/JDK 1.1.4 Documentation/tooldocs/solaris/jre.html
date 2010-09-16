@@ -1,0 +1,242 @@
+<html>
+<head>
+<title>jre - The Java Runtime Interpreter (Solaris)</title>
+</head>
+<BODY BGCOLOR="#FFFFFF">
+
+<h1>jre - The Java Runtime Interpreter (Solaris)</h1>
+<blockquote>
+<b>jre</b> interprets (executes) Java bytecodes.
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+
+<pre>
+jre [ <a href="#Options">options</a> ] classname &lt;args&gt;
+</pre>
+
+
+<h2>DESCRIPTION</h2>
+<blockquote>
+The <b>jre</b> command executes Java <code>class</code> files.
+The <code>classname</code> argument is the name of the class to be executed.
+Any arguments to be passed to the class must be placed 
+after the <code>classname</code> on the command line.
+<p>
+Class paths for the Solaris version of the <b>jre</b> tool can be 
+specified using the <tt>CLASSPATH</tt> environment variable or by 
+using the <tt>-classpath</tt> or <tt>-cp</tt> options. The Windows 
+version of the <b>jre</b> tool ignores the <tt>CLASSPATH</tt> 
+environment variable. For both Solaris and Windows, the <tt>-cp</tt> 
+option is recommend for specifying class paths when using <tt>jre</tt>.
+
+<p>
+
+
+<a name=Options>
+<h2>OPTIONS</h2>
+</a>
+
+<dl>
+
+<dt><b>-classpath</b><i>&nbsp; &nbsp;path(s)</i>
+<dd>
+Specifies the path or paths that <b>jre</b> uses to look up classes. 
+Overrides the default or the CLASSPATH environment variable if it is set. 
+If more than one path is specified, they must be separated by colons. 
+Each path should end with the directory containing the class file(s) to 
+be executed. However, if a file to be executed is a <code>zip</code> 
+or <code>jar</code> file, the path to that file must end with the file's 
+name. Here is an example of an argument for <tt>-classpath</tt> that 
+specifies three paths consisting of the current directory and two 
+additional paths:
+
+<pre>
+   .:/home/xyz/classes:/usr/local/java/classes/MyClasses.jar
+</pre>
+
+<p>
+
+<dt><b>-cp</b><i>&nbsp; &nbsp;path(s)</i>
+<dd>
+Prepends the specified path or paths to the base classpath or path 
+given by the CLASSPATH environment variable. If more than one path 
+is specified, they must be separated by colons. Each path should end 
+with the directory containing the class file(s) to be executed. However, 
+if a file to be executed is a <cocd>zip</code> or <code>jar</code> 
+file, the path to that file must end with the file's name. 
+Here is an example of an argument for <tt>-cp</tt> that specifies three 
+paths consisting of the current directory and two additional paths:
+
+<pre>
+   .:/home/xyz/classes:/usr/local/java/classes/MyClasses.jar
+</pre>
+
+<p>
+
+<dt><b>-help</b>  
+<dd> 
+Print a usage message.
+<p> 
+
+<dt><b>-mx</b>&nbsp; &nbsp;<i>x</i>
+<dd>
+Sets the maximum size of the memory allocation pool (the garbage collected
+heap) to <i>x</i>. The default is 16 megabytes of memory. <i>x</i> must be
+greater than or equal to 1000 bytes.
+<p>
+By default, <i>x</i> is measured in bytes. You can specify <i>x</i> in either
+kilobytes or megabytes by appending the letter &quot;k&quot; for kilobytes or
+the letter &quot;m&quot; for megabytes.
+<p>
+
+<dt><b>-ms</b>&nbsp; &nbsp;<i>x</i>
+<dd>
+Sets the startup size of the memory allocation pool (the garbage collected
+heap) to <i>x</i>. The default is 1 megabyte of memory. <i>x</i> must be
+&gt; 1000 bytes.
+<p>
+By default, <i>x</i> is measured in bytes. You can specify <i>x</i> in either
+kilobytes or megabytes by appending the letter &quot;k&quot; for kilobytes or
+the letter &quot;m&quot; for megabytes.
+<p>
+
+<dt><b>-noasyncgc</b>
+<dd>
+Turns off asynchronous garbage collection. When activated no garbage
+collection takes place unless it is explicitly called or the program 
+runs out of memory. Normally garbage collection runs as an asynchronous 
+thread in parallel with other threads.
+<p>
+
+<dt><b>-noclassgc</b>
+<dd>
+Turns off garbage collection of Java classes. By default, the Java interpreter
+reclaims space for unused Java classes during garbage collection.
+<p>
+
+<dt><b>-nojit</b>
+<dd>
+Specifies that any JIT compiler should be ignored and instead invokes 
+the default Java interpreter.
+<p>
+
+
+<dt><b>-ss</b>&nbsp; &nbsp;<i>x</i>
+<dd>
+Each Java thread has two stacks: one for Java code and one for C code.
+The <code>-ss</code> option sets the maximum stack size that can be used by 
+C code 
+in a thread to <i>x</i>. Every thread that is spawned during the execution of
+the program passed to <b>jre</b> has <i>x</i> as its C stack size. The 
+default
+units for <i>x</i> are bytes. The value of <i>x</i> must be greater
+than or equal to 1000 bytes.
+<p>
+You can modify the meaning of <i>x</i> by appending either the letter 
+&quot;k&quot;
+for kilobytes or the letter &quot;m&quot; for megabytes. The default stack 
+size
+is 128 kilobytes ("-ss 128k").
+<p>
+
+<dt><b>-oss</b>&nbsp; &nbsp;<i>x</i>
+<dd>
+Each Java thread has two stacks: one for Java code and one for C code.
+The <code>-oss</code> option sets the maximum stack size that can be used by 
+Java code 
+in a thread to <i>x</i>. Every thread that is spawned during the execution of
+the program passed to <b>jre</b> has <i>x</i> as its Java stack size. The 
+default 
+units for <i>x</i> are bytes. The value of <i>x</i> must be greater
+than or equal to 1000 bytes.
+<p>
+You can modify the meaning of <i>x</i> by appending either the letter 
+&quot;k&quot;
+for kilobytes or the letter &quot;m&quot; for megabytes. The default stack 
+size is
+400 kilobytes ("-oss 400k").
+<p>
+
+<dt><b>-v,&nbsp; &nbsp;-verbose</b>
+<dd>
+Causes <b>jre</b> to print a message to stdout each time a class file is 
+loaded.
+<p>
+
+<dt><b>-verify</b>
+<dd>
+Performs byte-code verification on the class file. Beware, 
+however, that <b>java -verify</b> does not perform a full verification 
+in all situations. Any code path that is not actually executed 
+by the interpreter is not verified. Therefore, <b>java -verify</b> 
+cannot be relied upon to certify class files unless all code 
+paths in the class file are actually run.
+<p>
+
+<dt><b>-verifyremote</b>
+<dd>
+Runs the verifier on all code that is loaded into the system via a
+classloader. <i>verifyremote</i> is the default for the interpreter.
+<p>
+
+<dt><b>-noverify</b>
+<dd>
+Turns verification off.
+<p>
+
+<dt><b>-verbosegc</b>
+<dd>
+Causes the garbage collector to print out messages whenever it frees 
+memory.
+<p>
+
+
+<dt><b>-D</b><i>propertyName=newValue</i>
+<dd>
+Defines a property value. <i>propertyName</i> is the name of the 
+property whose value you want to change and <i>newValue</i> is the 
+value to change it to. For example, this command line
+<pre>
+% jre -Dawt.button.color=green ...
+</pre>
+sets the value of the property awt.button.color to "green". <b>jre</b> 
+accepts any number of <tt>-D</tt> options on the command line.
+
+</dl>
+</blockquote>
+
+<h2>ENVIRONMENT VARIABLES</h2>
+<blockquote>
+<dl>
+
+<dt>CLASSPATH
+<dd>
+You can use the CLASSPATH environment variable to specify the path to 
+the class file or files that you want to execute. CLASSPATH consists 
+of a colon-separated list of directories that contain the class files 
+to be executed. 
+For example:
+
+<pre>
+   .:/home/xyz/classes
+</pre>
+
+If the file to be executed is a <code>zip</code> file or a 
+<code>jar</code> file, the path should end with the file name. 
+For example:
+
+<pre>
+   .:/usr/local/java/classes/MyClasses.jar
+</pre>
+
+</dl>
+</blockquote>
+
+<h2>SEE ALSO</h2>
+<blockquote>
+<a href="classpath.html">CLASSPATH</a>
+</blockquote>
+
+</body>
+</html>

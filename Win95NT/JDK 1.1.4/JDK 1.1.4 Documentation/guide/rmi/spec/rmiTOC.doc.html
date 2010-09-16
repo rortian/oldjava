@@ -1,0 +1,207 @@
+<html><head><title>Remote Method Invocation Specification
+</title></head>
+<body bgcolor=#ffffff>
+ 
+[TOC] [Prev] <a href="rmi-intro.doc.html">[Next]</a>
+<hr><br>
+<a name="1558">
+<center>
+<h1>Remote Method Invocation Specification
+</h1>
+</center>
+</a>
+<hr><p>
+<h2>Contents
+</h2>
+<dl>
+<a href="rmi-intro.doc.html#60">
+<dt><dd>Introduction				
+</a><dl>
+<a href="rmi-intro.doc.html#718">
+<dt><dd>Overview				
+</a><a href="rmi-intro.doc.html#215">
+<dt><dd>System Goals				
+</a></dl>
+<a href="rmi-objmodel.doc.html#167">
+<dt><dd>Java Distributed Object Model				
+</a><dl>
+<a href="rmi-objmodel.doc.html#3441">
+<dt><dd>Definition of Terms				
+</a><a href="rmi-objmodel.doc.html#182">
+<dt><dd>The Distributed and Nondistributed Models Contrasted				
+</a><a href="rmi-objmodel.doc.html#213">
+<dt><dd>RMI Interfaces and Classes				
+</a><a href="rmi-objmodel.doc.html#1830">
+<dt><dd>Implementing a Remote Interface				
+</a><a href="rmi-objmodel.doc.html#307">
+<dt><dd>Type Equivalency of Remote Objects with Local Stub				
+</a><a href="rmi-objmodel.doc.html#2521">
+<dt><dd>Parameter Passing in Remote Method Invocation				
+</a><a href="rmi-objmodel.doc.html#315">
+<dt><dd>Exception Handling in Remote Method Invocation				
+</a><a href="rmi-objmodel.doc.html#3734">
+<dt><dd>Object Methods Overridden by the RemoteObject Class				
+</a><a href="rmi-objmodel.doc.html#2490">
+<dt><dd>The Semantics of Object Methods Declared final				
+</a><a href="rmi-objmodel.doc.html#357">
+<dt><dd>Locating Remote Objects				
+</a></dl>
+<a href="rmi-arch.doc.html#60">
+<dt><dd>System Architecture				
+</a><dl>
+<a href="rmi-arch.doc.html#194">
+<dt><dd>Overview				
+</a><a href="rmi-arch.doc.html#200">
+<dt><dd>Architectural Overview				
+</a><a href="rmi-arch.doc.html#240">
+<dt><dd>The Stub/Skeleton Layer				
+</a><a href="rmi-arch.doc.html#583">
+<dt><dd>The Remote Reference Layer				
+</a><a href="rmi-arch.doc.html#264">
+<dt><dd>The Transport Layer				
+</a><a href="rmi-arch.doc.html#5112">
+<dt><dd>Thread Usage in Remote Method Invocations				
+</a><a href="rmi-arch.doc.html#5097">
+<dt><dd>Garbage Collection of Remote Objects				
+</a><a href="rmi-arch.doc.html#280">
+<dt><dd>Dynamic Class Loading				
+</a><a href="rmi-arch.doc.html#4041">
+<dt><dd>Security				
+</a><a href="rmi-arch.doc.html#4018">
+<dt><dd>Configuration Scenarios				
+</a><a href="rmi-arch.doc.html#4799">
+<dt><dd>RMI Through Firewalls Via Proxies				
+</a></dl>
+<a href="rmi-client.doc.html#60">
+<dt><dd>Client Interfaces				
+</a><dl>
+<a href="rmi-client.doc.html#1174">
+<dt><dd>The Remote Interface				
+</a><a href="rmi-client.doc.html#163">
+<dt><dd>The RemoteException Class				
+</a><a href="rmi-client.doc.html#1620">
+<dt><dd>The Naming Class				
+</a></dl>
+<a href="rmi-server.doc.html#60">
+<dt><dd>Server Interfaces				
+</a><dl>
+<a href="rmi-server.doc.html#4597">
+<dt><dd>The RemoteObject Class				
+</a><a href="rmi-server.doc.html#5462">
+<dt><dd>The RemoteServer Class				
+</a><a href="rmi-server.doc.html#5794">
+<dt><dd>The UnicastRemoteObject Class				
+</a><a href="rmi-server.doc.html#179">
+<dt><dd>The Unreferenced Interface				
+</a><a href="rmi-server.doc.html#1638">
+<dt><dd>The RMISecurityManager Class				
+</a><a href="rmi-server.doc.html#1639">
+<dt><dd>The RMIClassLoader Class				
+</a><a href="rmi-server.doc.html#6583">
+<dt><dd>The LoaderHandler Interface				
+</a><a href="rmi-server.doc.html#4175">
+<dt><dd>The RMISocketFactory Class				
+</a><a href="rmi-server.doc.html#4381">
+<dt><dd>The RMIFailureHandler Interface				
+</a><a href="rmi-server.doc.html#1621">
+<dt><dd>The LogStream Class				
+</a><a href="rmi-server.doc.html#5845">
+<dt><dd>Stub and Skeleton Compiler				
+</a></dl>
+<a href="rmi-registry.doc.html#60">
+<dt><dd>Registry Interfaces				
+</a><dl>
+<a href="rmi-registry.doc.html#186">
+<dt><dd>The Registry Interface				
+</a><a href="rmi-registry.doc.html#6378">
+<dt><dd>The LocateRegistry Class				
+</a><a href="rmi-registry.doc.html#6564">
+<dt><dd>The RegistryHandler Interface				
+</a></dl>
+<a href="rmi-stubs.doc.html#60">
+<dt><dd>Stub/Skeleton Interfaces				
+</a><dl>
+<a href="rmi-stubs.doc.html#4526">
+<dt><dd>The RemoteStub Class				
+</a><a href="rmi-stubs.doc.html#161">
+<dt><dd>The RemoteCall Interface				
+</a><a href="rmi-stubs.doc.html#5474">
+<dt><dd>The RemoteRef Interface				
+</a><a href="rmi-stubs.doc.html#6689">
+<dt><dd>The ServerRef Interface				
+</a><a href="rmi-stubs.doc.html#5718">
+<dt><dd>The Skeleton Interface				
+</a><a href="rmi-stubs.doc.html#6598">
+<dt><dd>The Operation Class				
+</a></dl>
+<a href="rmi-dgc.doc.html#60">
+<dt><dd>Garbage Collector Interfaces				
+</a><dl>
+<a href="rmi-dgc.doc.html#6449">
+<dt><dd>The Interface DGC				
+</a><a href="rmi-dgc.doc.html#6770">
+<dt><dd>The Lease Class				
+</a><a href="rmi-dgc.doc.html#7144">
+<dt><dd>The ObjID Class				
+</a><a href="rmi-dgc.doc.html#6758">
+<dt><dd>The UID Class				
+</a><a href="rmi-dgc.doc.html#6613">
+<dt><dd>The VMID Class				
+</a></dl>
+<a href="rmi-protocol.doc.html#60">
+<dt><dd>RMI Wire Protocol				
+</a><dl>
+<a href="rmi-protocol.doc.html#3243">
+<dt><dd>Overview				
+</a><a href="rmi-protocol.doc.html#3249">
+<dt><dd>RMI Transport Protocol				
+</a><a href="rmi-protocol.doc.html#3270">
+<dt><dd>RMI's Use of Object Serialization Protocol				
+</a><a href="rmi-protocol.doc.html#3278">
+<dt><dd>RMI's Use of HTTP POST Protocol				
+</a><a href="rmi-protocol.doc.html#3474">
+<dt><dd>Application Specific Values for RMI				
+</a><a href="rmi-protocol.doc.html#3477">
+<dt><dd>RMI's Multiplexing Protocol				
+</a></dl>
+<a href="rmi-exceptions.doc.html#3601">
+<dt><dd>Exceptions In RMI				
+</a><dl>
+<a href="rmi-exceptions.doc.html#4746">
+<dt><dd>Exceptions During Remote Object Export				
+</a><a href="rmi-exceptions.doc.html#4332">
+<dt><dd>Exceptions During RMI Call				
+</a><a href="rmi-exceptions.doc.html#4940">
+<dt><dd>Exceptions or Errors During Return				
+</a><a href="rmi-exceptions.doc.html#4823">
+<dt><dd>Naming Exceptions				
+</a><a href="rmi-exceptions.doc.html#4824">
+<dt><dd>Other Exceptions				
+</a></dl>
+<a href="rmi-properties.doc.html#3601">
+<dt><dd>Properties In RMI				
+</a><dl>
+<a href="rmi-properties.doc.html#4746">
+<dt><dd>Server Properties				
+</a><a href="rmi-properties.doc.html#4332">
+<dt><dd>Other Properties				
+</a></dl>
+</dl>
+
+<hr><br>
+ 
+[TOC] [Prev] <a href="rmi-intro.doc.html">[Next]</a>
+<hr><br>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email rmi-support@java.Sun.COM -->
+<!-- -->
+<!-- Last updated: 03/18/97 12:59:09 -->
+
+</body>
+</html>

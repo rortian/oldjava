@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+ 
+<table width=600><tr>
+<td><font size=-1> 
+Contents  | Prev  | <a href="copyright.doc.html">Next</a>
+</font></td><td align=right></td>
+</tr></table>
+<hr>
+<br>
+ 
+<center>
+<h1>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</h1>
+<h3></h3>
+<h3></h3>
+<h3></h3>
+<h4>March 6, 1997</h4>
+</center>
+<hr>
+<p>
+<h3>Contents</h3><dl>
+<br>
+<dt><dd><a href="intro.doc.html">
+<font size=+2><bold>	1	 Introduction	 </bold></font>
+</a><dl>
+<dt><dd><a href="intro.doc.html#1005262">
+<bold>1.1	 What Is JDBC<font size=-1><sup>TM</sup></font>?	</bold>
+</a><dl>
+<dt><dd><a href="intro.doc.html#1005731">
+1.1.1	 What Does JDBC Do?	
+</a><dt><dd><a href="intro.doc.html#1005749">
+1.1.2	 JDBC Is a Low-level API and a Base for Higher-level APIs	
+</a><dt><dd><a href="intro.doc.html#1005754">
+1.1.3	 JDBC versus ODBC and other APIs	
+</a><dt><dd><a href="intro.doc.html#1005767">
+1.1.4	 Two-tier and Three-tier Models	
+</a><dt><dd><a href="intro.doc.html#1005806">
+1.1.5	 SQL Conformance	
+</a></dl>
+<dt><dd><a href="intro.doc.html#1005819">
+<bold>1.2	 JDBC Products	</bold>
+</a><dl>
+<dt><dd><a href="intro.doc.html#1005824">
+1.2.1	 JavaSoft Framework	
+</a><dt><dd><a href="intro.doc.html#1005870">
+1.2.2	 JDBC Driver Types	
+</a><dt><dd><a href="intro.doc.html#1005911">
+1.2.3	 Obtaining JDBC Drivers	
+</a><dt><dd><a href="intro.doc.html#1005915">
+1.2.4	 Other Products	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="connection.doc.html">
+<font size=+2><bold>	2	 Connection	 </bold></font>
+</a><dl>
+<dt><dd><a href="connection.doc.html#996856">
+<bold>2.1	 Overview	</bold>
+</a><dl>
+<dt><dd><a href="connection.doc.html#1000950">
+2.1.1	 Opening a Connection	
+</a><dt><dd><a href="connection.doc.html#1001163">
+2.1.2	 URLs in General Use	
+</a><dt><dd><a href="connection.doc.html#1001174">
+2.1.3	 JDBC URLs	
+</a><dt><dd><a href="connection.doc.html#1001002">
+2.1.4	 The "odbc" Subprotocol	
+</a><dt><dd><a href="connection.doc.html#1001012">
+2.1.5	 Registering Subprotocols	
+</a><dt><dd><a href="connection.doc.html#1001016">
+2.1.6	 Sending SQL Statements	
+</a><dt><dd><a href="connection.doc.html#1001033">
+2.1.7	 Transactions	
+</a><dt><dd><a href="connection.doc.html#1001039">
+2.1.8	 Transaction Isolation Levels	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="drivermanager.doc.html">
+<font size=+2><bold>	3	 DriverManager	 </bold></font>
+</a><dl>
+<dt><dd><a href="drivermanager.doc.html#999083">
+<bold>3.1	 Overview	</bold>
+</a><dl>
+<dt><dd><a href="drivermanager.doc.html#999050">
+3.1.1	 Keeping Track of Available Drivers	
+</a><dt><dd><a href="drivermanager.doc.html#999062">
+3.1.2	 Establishing a Connection	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="statement.doc.html">
+<font size=+2><bold>	4	 Statement	 </bold></font>
+</a><dl>
+<dt><dd><a href="statement.doc.html#1000008">
+<bold>4.1	 Overview	</bold>
+</a><dl>
+<dt><dd><a href="statement.doc.html#999770">
+4.1.1	 Creating Statement Objects	
+</a><dt><dd><a href="statement.doc.html#1000107">
+4.1.2	 Executing Statements Using Statement objects	
+</a><dt><dd><a href="statement.doc.html#1000044">
+4.1.3	 Statement Completion	
+</a><dt><dd><a href="statement.doc.html#1000047">
+4.1.4	 Closing Statement Objects	
+</a><dt><dd><a href="statement.doc.html#999828">
+4.1.5	 SQL Escape Syntax in Statement Objects	
+</a><dt><dd><a href="statement.doc.html#1000061">
+4.1.6	  Using the Method execute	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="resultset.doc.html">
+<font size=+2><bold>	5	 ResultSet	 </bold></font>
+</a><dl>
+<dt><dd><a href="resultset.doc.html#1003581">
+<bold>5.1	 Overview	</bold>
+</a><dl>
+<dt><dd><a href="resultset.doc.html#1002767">
+5.1.1	 Rows and Cursors	
+</a><dt><dd><a href="resultset.doc.html#1002772">
+5.1.2	 Columns	
+</a><dt><dd><a href="resultset.doc.html#1002785">
+5.1.3	 Data Types and Conversions	
+</a><dt><dd><a href="resultset.doc.html#1003717">
+5.1.4	 Using Streams for Very Large Row Values	
+</a><dt><dd><a href="resultset.doc.html#1003543">
+5.1.5	 NULL Result Values	
+</a><dt><dd><a href="resultset.doc.html#1003549">
+5.1.6	 Optional or Multiple Result Sets	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="preparedstatement.doc.html">
+<font size=+2><bold>	6	 PreparedStatement	 </bold></font>
+</a><dl>
+<dt><dd><a href="preparedstatement.doc.html#996870">
+<bold>6.1	 Overview	</bold>
+</a><dl>
+<dt><dd><a href="preparedstatement.doc.html#999758">
+6.1.1	 Creating PreparedStatement Objects	
+</a><dt><dd><a href="preparedstatement.doc.html#999763">
+6.1.2	 Passing IN Parameters	
+</a><dt><dd><a href="preparedstatement.doc.html#999776">
+6.1.3	 Data Type Conformance on IN Parameters	
+</a><dt><dd><a href="preparedstatement.doc.html#999785">
+6.1.4	 Using setObject	
+</a><dt><dd><a href="preparedstatement.doc.html#999802">
+6.1.5	 Sending JDBC NULL as an IN parameter	
+</a><dt><dd><a href="preparedstatement.doc.html#999805">
+6.1.6	 Sending Very Large IN Parameters	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="callablestatement.doc.html">
+<font size=+2><bold>	7	 CallableStatement	 </bold></font>
+</a><dl>
+<dt><dd><a href="callablestatement.doc.html#997085">
+<bold>7.1	 Overview	</bold>
+</a><dl>
+<dt><dd><a href="callablestatement.doc.html#998954">
+7.1.1	 Creating a CallableStatement Object	
+</a><dt><dd><a href="callablestatement.doc.html#998959">
+7.1.2	 IN and OUT Parameters	
+</a><dt><dd><a href="callablestatement.doc.html#998974">
+7.1.3	 INOUT Parameters	
+</a><dt><dd><a href="callablestatement.doc.html#998983">
+7.1.4	 Retrieve OUT Parameters after Results	
+</a><dt><dd><a href="callablestatement.doc.html#998987">
+7.1.5	 Retrieving NULL Values as OUT Parameters	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="mapping.doc.html">
+<font size=+2><bold>	8	 Mapping SQL and Java Types	 </bold></font>
+</a><dl>
+<dt><dd><a href="mapping.doc.html#996858">
+<bold>8.1	 Overview	</bold>
+</a><dt><dd><a href="mapping.doc.html#1008141">
+<bold>8.2	 Mapping SQL Data Types into Java	</bold>
+</a><dt><dd><a href="mapping.doc.html#1008158">
+<bold>8.3	 JDBC Types	</bold>
+</a><dl>
+<dt><dd><a href="mapping.doc.html#1008160">
+8.3.1	 CHAR, VARCHAR, and LONGVARCHAR	
+</a><dt><dd><a href="mapping.doc.html#1008189">
+8.3.2	 BINARY, VARBINARY, and LONGVARBINARY	
+</a><dt><dd><a href="mapping.doc.html#1008200">
+8.3.3	  BIT	
+</a><dt><dd><a href="mapping.doc.html#1008204">
+8.3.4	 TINYINT	
+</a><dt><dd><a href="mapping.doc.html#1008208">
+8.3.5	 SMALLINT	
+</a><dt><dd><a href="mapping.doc.html#1008212">
+8.3.6	 INTEGER	
+</a><dt><dd><a href="mapping.doc.html#1008216">
+8.3.7	 BIGINT	
+</a><dt><dd><a href="mapping.doc.html#1008220">
+8.3.8	 REAL	
+</a><dt><dd><a href="mapping.doc.html#1008224">
+8.3.9	 DOUBLE	
+</a><dt><dd><a href="mapping.doc.html#1008228">
+8.3.10	 FLOAT	
+</a><dt><dd><a href="mapping.doc.html#1008232">
+8.3.11	 DECIMAL and NUMERIC	
+</a><dt><dd><a href="mapping.doc.html#1008238">
+8.3.12	  DATE, TIME, and TIMESTAMP	
+</a></dl>
+<dt><dd><a href="mapping.doc.html#1006473">
+<bold>8.4	 Examples of Mapping	</bold>
+</a><dl>
+<dt><dd><a href="mapping.doc.html#1006476">
+8.4.1	 Simple SQL Statement	
+</a><dt><dd><a href="mapping.doc.html#1008288">
+8.4.2	 SQL Statement with IN Parameters	
+</a><dt><dd><a href="mapping.doc.html#1006486">
+8.4.3	 SQL Statement with INOUT Parameters	
+</a></dl>
+<dt><dd><a href="mapping.doc.html#1008372">
+<bold>8.5	 Dynamic Data Access	</bold>
+</a><dt><dd><a href="mapping.doc.html#999058">
+<bold>8.6	 Tables for Data Type Mapping	</bold>
+</a><dl>
+<dt><dd><a href="mapping.doc.html#1004864">
+8.6.1	 JDBC Types Mapped to Java Types	
+</a><dt><dd><a href="mapping.doc.html#1004752">
+8.6.2	 Java Types Mapped to JDBC Types	
+</a><dt><dd><a href="mapping.doc.html#1004791">
+8.6.3	 JDBC Types Mapped to Java Object Types	
+</a><dt><dd><a href="mapping.doc.html#1004830">
+8.6.4	 Java Object Types Mapped to JDBC Types	
+</a><dt><dd><a href="mapping.doc.html#1004845">
+8.6.5	 Conversions by setObject	
+</a><dt><dd><a href="mapping.doc.html#1006739">
+8.6.6	 JDBC Types Retrieved by ResultSet.getXXX Methods	
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="SimpleSelect.doc.html">
+<font size=+2><bold>	9	 Sample Code	 </bold></font>
+</a><br>
+<dt><dd><a href="bridge.doc.html">
+<font size=+2><bold>	10	 JDBC-ODBC Bridge Driver	 </bold></font>
+</a><dl>
+<dt><dd><a href="bridge.doc.html#997135">
+<bold>10.1	 JDBC-ODBC Bridge	</bold>
+</a><dl>
+<dt><dd><a href="bridge.doc.html#996913">
+10.1.1	 What Is the JDBC-ODBC Bridge?	
+</a><dt><dd><a href="bridge.doc.html#996914">
+10.1.2	 What Version of ODBC Is Supported?	
+</a><dt><dd><a href="bridge.doc.html#996915">
+10.1.3	 The Bridge Implementation	
+</a><dt><dd><a href="bridge.doc.html#996916">
+10.1.4	 Installation	
+</a></dl>
+<dt><dd><a href="bridge.doc.html#996917">
+<bold>10.2	 Using the Bridge	</bold>
+</a><dl>
+<dt><dd><a href="bridge.doc.html#996918">
+10.2.1	 Using the Bridge from an Applet	
+</a><dt><dd><a href="bridge.doc.html#996919">
+10.2.2	 Most Browsers Do Not Support the Bridge	
+</a><dt><dd><a href="bridge.doc.html#996920">
+10.2.3	 Tested Configurations	
+</a><dt><dd><a href="bridge.doc.html#996921">
+10.2.4	 ODBC Drivers Known to Work with the Bridge	
+</a><dt><dd><a href="bridge.doc.html#996922">
+10.2.5	 ODBC Driver Incompatibilities	
+</a><dt><dd><a href="bridge.doc.html#996923">
+10.2.6	 What Is the JDBC URL Supported by the Bridge?	
+</a><dt><dd><a href="bridge.doc.html#996924">
+10.2.7	 Debugging	
+</a></dl>
+<dt><dd><a href="bridge.doc.html#996927">
+<bold>10.3	 General Notes	</bold>
+</a></dl>
+</dl>
+
+
+<br>
+<hr>
+<font size=-1> 
+Contents  | Prev  | <a href="copyright.doc.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

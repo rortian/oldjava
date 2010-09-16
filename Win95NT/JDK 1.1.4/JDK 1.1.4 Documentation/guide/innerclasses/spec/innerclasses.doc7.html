@@ -1,0 +1,117 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc6.html">Prev</a> | <a href="innerclasses.doc8.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="11050"></a>
+<h1> How do inner classes affect the organization of the Java Virtual Machine?
+</h1>
+<a name="11051"></a>
+There are no changes to the class file format as processed by the Java Virtual 
+Machine, or to the standard class libraries.  The new features are implemented 
+by the compiler.  The organization of the resulting bytecodes is specified with 
+enough precision that all 1.1-conforming compilers will produce binary 
+compatible class files.
+<p><a name="11052"></a>
+A single file of Java source code can compile to many class files. Although this 
+is not a new phenomenon, the power of the inner class notation means that the 
+programmer can end up creating a larger number of class files with relatively 
+less code.  In addition, adapter classes tend to be very simple, with few 
+methods.  This means that a Java program which uses many inner classes will 
+compile to many small class files.  Packaging technologies for such classes 
+process them reasonably efficiently.  For example, the class file for the example 
+class <code>FixedStack.Enumeration</code> occupies about three quarters of a kilobyte, 
+of which about 40% is directly required to implement its code.  This ratio is 
+likely to improve over time as file formats are tuned.  The memory usage 
+patterns in the virtual machine are comparable.
+<p><a name="11054"></a>
+<h2>		 Class name transformations
+</h2>
+<a name="11055"></a>
+Names of nested classes are transformed as necessary by the compiler to avoid 
+conflicts with identical names in other scopes. Names are encoded to the 
+virtual machine by taking their source form, qualified with dots, and changing 
+each dot `<code>.</code>' after a class name into a dollar sign `<code>$</code>'. (Mechanical translators are 
+allowed to use dollar signs in Java.)
+<p><a name="16948"></a>
+When a class name is <code>private</code> or local to a block, it is globally inaccessible.  A 
+compiler may opt to code such an inaccessible name by using an accessible 
+enclosing class name as a prefix, followed by a `<code>$</code>' separator and a locally 
+unique decimal number.  Anonymous classes must be encoded this way.
+<p><a name="16985"></a>
+So, an inner class <code>pkg.Foo.Bar</code> gets a run-time name of <code>pkg.Foo$Bar</code>, or 
+perhaps something like <code>pkg.Foo$23</code>, if Bar is a <code>private</code> member or local 
+class.  Implementations must conform to the format of names, even globally 
+inaccessible ones, so that debuggers and similar tools can recognize them.
+<p><a name="16986"></a>
+Any class file which defines or uses a transformed name also contains an 
+attribute (as supported by the 1.0 file format) recording the transformation.  
+These attributes are ignorable by the virtual machine and by 1.0 compilers.  
+The format of this attribute is described in the section on binary compatibility.
+<p><a name="17017"></a>
+<h2>		 Names of generated variables and methods
+</h2>
+<a name="11496"></a>
+As we have seen previously, if an inner class uses a variable from an enclosing 
+scope, the name expression will be transformed, into a reference either to a 
+field of an enclosing instance, or to a field of the current instance which 
+provides the value of a <code>final</code> local variable.  A reference to an enclosing 
+instance, in turn, is transformed into a reference to a field in a more accessible 
+current instance.  These techniques require that the compiler synthesize hidden 
+fields in inner classes.
+<p><a name="17214"></a>
+There is one more category of compiler-generated members.  A <code>private</code> 
+member <var>m</var> of a class <var>C</var> may be used by another class <var>D</var>, if one class encloses the 
+other, or if they are enclosed by a common class.  Since the virtual machine 
+does not know about this sort of grouping, the compiler creates a local protocol 
+of access methods in <var>C</var> to allow <var>D</var> to read, write, or call the member <var>m</var>.  These 
+methods have names of the form <code>access$0</code>, <code>access$1</code>, etc.  They are never 
+public.  Access methods are unique in that they may be added to <em>enclosing</em> 
+classes, not just inner classes.
+<p><a name="17336"></a>
+All generated variables and methods are declared in a class file attribute, so 
+that the 1.1 compilers can prevent programs from referring to them directly.
+<p><a name="17241"></a>
+<h2>		 Security implications
+</h2>
+<a name="17289"></a>
+If an inner class <var>C</var> requires access to a <code>private</code> member <var>m</var> of an enclosing 
+class <var>T</var>, the inserted access method for <var>m</var> opens up <var>T</var> to illegal access by any 
+class <var>K</var> in the same package.  There at present are no known security problems 
+with such access methods, since it is difficult to misuse a method with package 
+scope.  The compiler can be instructed to emit warnings when it creates access 
+methods, to monitor the creation of possible loopholes.
+<p><a name="17359"></a>
+If a class <var>N</var> is a <code>protected</code> member of another class <var>C</var>, then <var>N</var>'s class file 
+defines it as a <code>public</code> class.  A class file attribute correctly records the 
+protection mode bits.  This attribute is ignored by the current virtual machine, 
+which therefore will allow access to <var>N</var> by any class, and not just to subclasses 
+of <var>C</var>.  The compiler, of course, will correctly diagnose such errors, because it 
+looks at the attribute. This is not a security hole, since malicious users can 
+easily create subclasses of <var>C</var> and so gain access to <var>N</var>, <code>protected</code> or not.
+<p><a name="17362"></a>
+Likewise, if a class is a <code>private</code> member of another class, its class file defines 
+it as having package scope, and an attribute declares the true access protection, 
+so that 1.1 compilers can prevent inadvertant access, even within the package.
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc6.html">Prev</a> | <a href="innerclasses.doc8.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

@@ -1,0 +1,255 @@
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc6.html">Prev</a>  | <a href="java-reflection.doc8.html">Next</a>
+</font></td><td align=right><i>Java Core Reflection</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+
+<a name="5416"></a>
+<h1>The class java.lang.reflect.Modifier
+ </h1><pre>    <a name="5418"></a><code>package java.lang.reflect;
+</code>
+    <a name="5419"></a><code>public final class Modifier extends Object
+</code>
+</pre><a name="5420"></a>
+The <code>Modifier</code> class is an uninstantiable class that exports static methods and 
+constants that are used to decode the Java language modifiers for classes and 
+members, which are encoded in an integer.
+<p>
+<hr>
+<a name="5421"></a>
+<h2>		 Fields
+</h2>
+<a name="5422"></a>
+<em>NOTE</em>: The values for the integer modifier constants below are those defined in 
+<em>The Java Virtual Machine Specification</em>, chapter 4.
+<p>
+<a name="5423"></a>
+<h3>		 PUBLIC
+</h3>
+<pre>    <a name="5424"></a><code>public final static int PUBLIC
+</code>
+</pre><a name="5425"></a>
+The integer constant for the <code>public</code> access modifier.
+<p>
+<a name="5426"></a>
+<h3>		 PRIVATE
+</h3>
+<pre>    <a name="5427"></a><code>public final static int PRIVATE
+</code>
+</pre><a name="5428"></a>
+The integer constant for the <code>private</code> access modifier.
+<p>
+<a name="5429"></a>
+<h3>		 PROTECTED
+</h3>
+<pre>    <a name="5430"></a><code>public final static int PROTECTED
+</code>
+</pre><a name="5431"></a>
+The integer constant for the <code>protected</code> access modifier.
+<p>
+<a name="5432"></a>
+<h3>		 STATIC
+</h3>
+<pre>    <a name="5433"></a><code>public final static int STATIC
+</code>
+</pre><a name="5434"></a>
+The integer constant for the <code>static</code> modifier.
+<p>
+<a name="5435"></a>
+<h3>		 FINAL
+</h3>
+<pre>    <a name="5436"></a><code>public final static int FINAL
+</code>
+</pre><a name="5437"></a>
+The integer constant for the <code>final</code> modifier.
+<p>
+<a name="5438"></a>
+<h3>		 SYNCHRONIZED
+</h3>
+<pre>    <a name="5439"></a><code>public final static int SYNCHRONIZED
+</code>
+</pre><a name="5440"></a>
+The integer constant for the <code>synchronized</code> modifier.
+<p>
+<a name="5441"></a>
+<h3>		 VOLATILE
+</h3>
+<pre>    <a name="5442"></a><code>public final static int VOLATILE
+</code>
+</pre><a name="5443"></a>
+The integer constant for the <code>volatile</code> modifier.
+<p>
+<a name="5444"></a>
+<h3>		 TRANSIENT
+</h3>
+<pre>    <a name="5445"></a><code>public final static int TRANSIENT
+</code>
+</pre><a name="5446"></a>
+The integer constant for the <code>transient</code> modifier.
+<p>
+<a name="5447"></a>
+<h3>		 NATIVE
+</h3>
+<pre>    <a name="5448"></a><code>public final static int NATIVE
+</code>
+</pre><a name="5449"></a>
+The integer constant for the <code>native</code> modifier.
+<p>
+<a name="5450"></a>
+<h3>		 INTERFACE
+</h3>
+<pre>    <a name="5451"></a><code>public final static int INTERFACE
+</code>
+</pre><a name="5452"></a>
+The integer constant for the <code>interface</code> modifier.
+<p>
+<a name="5453"></a>
+<h3>		 ABSTRACT
+</h3>
+<pre>    <a name="5454"></a><code>public final static int ABSTRACT
+</code>
+</pre><a name="5455"></a>
+The integer constant for the <code>abstract</code> modifier.
+<p>
+<hr>
+<a name="5456"></a>
+<h2>		 Methods
+</h2>
+
+<a name="5457"></a>
+<h3>		 isPublic
+</h3>
+<pre>    <a name="5458"></a><code>public static boolean isPublic(int mod)
+</code>
+</pre><a name="5459"></a>
+Returns <code>true</code> if the specified integer includes the <code>public</code> modifier.
+<p>
+<a name="5460"></a>
+<h3>		 isPrivate
+</h3>
+<pre>    <a name="5461"></a><code>public static boolean isPrivate(int mod)
+</code>
+</pre><a name="5462"></a>
+Returns <code>true</code> if the specified integer includes the <code>private</code> modifier.
+<p>
+<a name="5463"></a>
+<h3>		 isProtected
+</h3>
+<pre>    <a name="5464"></a><code>public static boolean isProtected(int mod)
+</code>
+</pre><a name="5465"></a>
+Returns <code>true</code> if the specified integer includes the <code>protected</code> modifier.
+<p>
+<a name="5466"></a>
+<h3>		 isStatic
+</h3>
+<pre>    <a name="5467"></a><code>public static boolean isStatic(int mod)
+</code>
+</pre><a name="5468"></a>
+Returns <code>true</code> if the specified integer includes the <code>static</code> modifier.
+<p>
+<a name="5469"></a>
+<h3>		 isFinal
+</h3>
+<pre>    <a name="5470"></a><code>public static boolean isFinal(int mod)
+</code>
+</pre><a name="5471"></a>
+Returns <code>true</code> if the specified integer includes the <code>final</code> modifier.
+<p>
+<a name="5472"></a>
+<h3>		 isSynchronized
+</h3>
+<pre>    <a name="5473"></a><code>public static boolean isSynchronized(int mod)
+</code>
+</pre><a name="5474"></a>
+Returns <code>true</code> if the specified integer includes the <code>synchronized</code> modifier.
+<p>
+<a name="5475"></a>
+<h3>		 isVolatile
+</h3>
+<pre>    <a name="5476"></a><code>public static boolean isVolatile(int mod)
+</code>
+</pre><a name="5477"></a>
+Returns <code>true</code> if the specified integer includes the <code>volatile</code> modifier..
+<p>
+<a name="5478"></a>
+<h3>		 isTransient
+</h3>
+<pre>    <a name="5479"></a><code>public static boolean isTransient(int mod)
+</code>
+</pre><a name="5480"></a>
+Returns <code>true</code> if the specified integer includes the <code>transient</code> modifier..
+<p>
+<a name="5481"></a>
+<h3>		 isNative
+</h3>
+<pre>    <a name="5482"></a><code>public static boolean isNative(int mod)
+</code>
+</pre><a name="5483"></a>
+Returns <code>true</code> if the specified integer includes the <code>native</code> modifier..
+<p>
+<a name="5484"></a>
+<h3>		 isInterface
+</h3>
+<pre>    <a name="5485"></a><code>public static boolean isInterface(int mod)
+</code>
+</pre><a name="5486"></a>
+Returns true if the specified integer includes the <code>interface</code> modifier..
+<p>
+<a name="5487"></a>
+<h3>		 isAbstract
+</h3>
+<pre>    <a name="5488"></a><code>public static boolean isAbstract(int mod)
+</code>
+</pre><a name="5489"></a>
+Returns true if the specified integer includes the <code>abstract</code> modifier..
+<p>
+<a name="5490"></a>
+<h3>		 toString
+</h3>
+<pre>    <a name="5491"></a><code>public static String toString(int mod)
+</code>
+</pre><a name="5492"></a>
+Returns a string containing a space-separated list of the names of the modifiers 
+included in the specified integer. For example:
+<p><pre>    <a name="5493"></a>
+
+    <a name="5494"></a>    public final synchronized
+
+    <a name="5495"></a>    private transient volatile
+
+</pre><a name="5496"></a>
+The modifier names are returned in canonical order as specified by <em>The Java 
+Language Specification</em>.
+<p>
+
+<br>
+<hr> 
+<font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc6.html">Prev</a>  | <a href="java-reflection.doc8.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<a href="java-reflection-copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

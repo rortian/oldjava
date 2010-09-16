@@ -1,0 +1,1134 @@
+<html>
+<head>
+<title>
+How to Convert Programs to the 1.1 AWT API
+</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF">
+<font size=-1>
+<a href=index.html>Back to AWT Enhancements TOC</a>
+</font>
+<hr>
+
+<h1>
+How to Convert Programs to the 1.1 AWT API
+</h1>
+
+The architecture of the AWT has improved greatly in 1.1.  This
+improvement required making some changes that affect compatibility. 
+Specifically,
+programs that use 1.1 features
+<b>do not run</b>
+within runtime systems that are
+based on earlier releases.
+However, runtime systems
+based on 1.1
+<b>do run</b>
+programs compiled under 1.0, 1.0.1, and 1.0.2,
+as long as the programs don't depend on bugs in the earlier releases.
+(You can find a list of these possibly incompatible bug fixes
+in the document
+<a href=IncompatibleChanges.html>Incompatible Changes in the 1.1 AWT API</a>.)
+Programs that use only 1.0.X features
+but are compiled under 1.1
+appear to run in 1.0.X runtime systems,
+but this compatibility hasn't been rigorously tested
+and is not guaranteed.
+
+<p>
+
+For example, any 1.0 applet should successfully compile under 1.1.
+And whether you use the old (1.0) class files
+or recompile and use new (1.1) class files,
+the 1.0 applet will work in 1.1-based browsers.
+Also, we believe that the new (1.1) class files
+will work in old (1.0-based) browsers,
+as long as you make no changes to the applet's source.
+But if you change the applet to use any 1.1 feature,
+the applet won't run in browsers such as Netscape 3.0
+that haven't been updated to the 1.1 API.
+
+<p>
+
+So why should you update your programs to the 1.1 AWT API? 
+Three reasons:
+
+<ul>
+<li> The 1.1 version of AWT has some new features you might want to use.
+<li> The new architecture enables faster, more robust
+     implementations of the AWT,
+     which means that your updated program might work better.
+<li> Support for the old API will eventually be phased out.
+</ul>
+
+<p>
+
+The rest of this document explains
+<a href=#awtChanges>how the AWT has changed</a> and
+<a href=#awtHowTo>how to convert your program</a>.
+It then provides
+<a href=#example>an example</a>
+of converting a program to 1.1.
+
+
+<h2>
+<a name=awtChanges>
+How the AWT Has Changed 
+</a>
+</h2>
+
+The AWT has changed in three ways:
+
+<ul>
+<li> The architecture has been improved
+     to make large-scale GUI development more feasible
+     and to add basic functionality that was missing.
+     <p>
+     Architectural support has been added for event handling by
+     non-components ("delegation"), data transfer (such as
+     cut-copy-paste), desktop color schemes (to improve consistency of
+     appearance), mouseless operation, and component-specific cursors.
+     Not all of the features associated with these architecture
+     improvements have been completely implemented.  For example,
+     although the data transfer architecture makes drag-and-drop
+     possible, drag-and-drop isn't implemented in 1.1.
+     <a href=designspec/index.html><b>JDK1.1
+     - AWT Enhancements</b></a>
+     has details on exactly what is implemented
+     in the final 1.1 release.
+<p>
+<li> Method names, arguments, and functionality have been made consistent.
+     <p>
+     These changes make it possible for programs 
+     such as GUI builders and JavaBeans-using programs
+     to query components to determine the components' properties.
+     They also make it easier for programmers to learn and use the AWT API.
+<p>
+<li> Miscellaneous quality improvements have been made and new features added.
+     <p>
+     For example, image and graphics functionality has improved, and the
+     <code>PopupMenu</code> and <code>ScrollPane</code> classes have been added.  The <code>PopupMenu</code>
+     class makes it possible to have a menu that is not attached to a
+     menu bar.  The <code>ScrollPane</code> class makes implementing scrolling
+     areas easy, as well as increasing the speed of scrolling.
+</ul>
+
+<p>
+
+You can find more information on event-handling changes
+<a href=#events>later in this document</a>.
+See
+<a href=designspec/index.html><b>JDK1.1
+- AWT Enhancements</b></a>
+for more complete information about how the AWT has changed.
+
+
+<h2>
+<a name=awtHowTo>
+How to Convert Your Program
+</a>
+</h2>
+
+Converting a program to the 1.1 AWT has two major phases:
+<ul>
+<li> Converting to the new names.
+     Much of this conversion can be done automatically.
+<li> Converting to the new event scheme.
+</ul>
+
+<h3>
+General Instructions
+</h3>
+<ol>
+<li> First, save a copy of the original program -- 
+     both the Java source code and the Java bytecodes.
+     You'll need the copy until all the Java runtime systems
+     the program might execute
+     in have been converted to 1.1.  For example, licensees such as
+     Netscape and Microsoft might take a few months after the final
+     JDK 1.1 release to update their own products to include 1.1.  For
+     this reason, you might want to delay releasing a 1.1-based applet to
+     the web (or provide both 1.0 and 1.1 versions)
+     until you think that the applet's
+     intended users have upgraded to the new release.
+
+     Here's an example of saving a copy of a program on a UNIX system:
+<blockquote>
+<pre>
+% <b>cp MyClass.java MyClass.java.orig</b>
+% <b>cp MyClass.class MyClass.class.orig</b>
+</pre>
+</blockquote>
+
+<li> Convert your source code --
+     automatically if possible --
+     so that it uses the new names for methods
+     whose names have changed.
+
+     <p>
+
+     We provide a 
+     <a href=updateAWT><code>sed</code> script</a>
+     that performs much of the conversion automatically.
+     (For details on what the script converts,
+     see <a href=NameChanges.html>Simple Name Changes</a>.)
+     The script is designed for the UNIX <code>sed</code> command.
+     If you're developing on a PC,
+     you might be able to run the script
+     using a product such as MKS Toolkit,
+     which provides PC versions of UNIX tools.
+     Here's how to use the <code>sed</code> script
+     at a shell prompt on a UNIX system:
+<blockquote>
+<pre>
+% <b>updateAWT MyClass.java > tmp.java</b>
+</pre>
+</blockquote>
+     <p>
+     Check the changes to make sure nothing obviously bad happened. 
+     For example, on a UNIX system,
+     you might execute the following command:
+     <p>
+<blockquote>
+<pre>
+% <b>diff MyClass.java tmp.java</b>
+</pre>
+</blockquote>
+And then after confirming that the changes look OK:
+<blockquote>
+<pre>
+% <b>mv tmp.java MyClass.java</b>
+</pre>
+</blockquote>
+<p>
+<li> Try to compile the program under 1.1. 
+     Make <em>sure</em> you're using a 1.1 compiler.
+     Here's an example of compiling on a UNIX system:
+<blockquote>
+<pre>
+% <b>javac MyClass.java</b>
+</pre>
+</blockquote>
+     <p>
+     You might see compilation errors or warnings.
+     The most common ones 
+     warn you that your program uses a deprecated method
+     or uses a method that couldn't be found.
+     <p>
+     If your program
+     calls any deprecated methods --
+     pre-1.1 methods whose use we discourage for some reason --
+     the compiler displays a warning.
+     For example:
+
+<blockquote>
+<pre>
+% <b>javac MyClass.java</b>
+Note: MyClass.java uses a deprecated API.  Recompile with "-deprecation"
+for details.
+1 warning
+%
+</pre>
+</blockquote>
+     <p>
+
+     <strong>Note:</strong> 
+     The 1.1.1 Java compiler warns you  
+     when a program overrides a deprecated method,
+     but the 1.1 compiler does not.
+     The 1.1 compiler warns you only
+     when a program <em>calls</em> a deprecated method. 
+     For example, the 1.1 compiler won't usually warn you
+     if a program overrides the <code>action</code> method,
+     since most implementations of <code>action</code> 
+     don't call the superclass's implementation.
+
+     <p>
+     To get information about each source file's
+     use of deprecated methods,
+     use the <code>-deprecation</code> option of the Java compiler.
+     For example:
+
+<blockquote>
+<pre>
+% <b>javac -deprecation MyClass.java</b>
+MyClass.java:18: Note: The method boolean handleEvent(java.awt.Event) in
+class java.awt.Component has been deprecated, and class MyClass overrides
+it.
+    public boolean handleEvent(Event event) {
+                   ^
+MyClass.java:26: Note: The method boolean handleEvent(java.awt.Event) in
+class java.awt.Component has been deprecated.
+        return super.handleEvent(event);
+                                ^
+Note: MyClass.java uses a deprecated API.  Please consult the
+documentation for a better alternative.
+2 warnings
+</pre>
+</blockquote>
+     <p>
+     You can consult
+     <a href=DeprecatedMethods.html>Deprecated Methods in the 1.1 AWT</a>
+     for information about alternatives to each deprecated method.
+     (It refers you back to this document 
+     for information on event-related methods.)
+
+     <p>
+     If you get a compilation error saying
+     that a method couldn't be found,
+     then the <code>sed</code> script might have incorrectly changed
+     the name of a method.
+     See <a href=NameChanges.html>Simple Name Changes</a>
+     for help in correcting the problem.
+<p>
+<li> Make remaining changes by hand
+     until the program compiles without warnings.
+     Most of the changes that you're likely to make by hand
+     involve converting to the 1.1 event model.
+     This document gives you an 
+     overview of the 1.1 event model and tells you
+     how to convert event-handling code.
+<p>
+<li> Test your program by executing it.
+</ol>
+   
+
+<h3>
+<a name=events>
+How to Convert Event-Handling Code
+</a>
+</h3>
+
+First, let's review how event handling happened before 1.1.  Before
+1.1, the <code>Component handleEvent</code> method
+(along with the methods it called, such as <code>action</code>)
+was the center of event handling.  Only
+<code>Component</code> objects could handle events, and the component that handled
+an event had to be either the component in which the event occurred or a
+component above it in the component containment hierarchy.
+
+<p>
+
+In 1.1,
+event handling is no longer restricted
+to objects in the component containment hierarchy,
+and the <code>handleEvent</code> method
+is no longer the center of event handling,
+Instead, objects of any type can register as
+event listeners.  Event listeners receive notification only about the
+types of events they've registered their interest in.  Never again will you
+have to create a <code>Component</code> subclass just to handle events.
+
+<p>
+
+When upgrading to the 1.1 release,
+the simplest way to convert event-handling code
+is to leave it in the same class,
+making that class a listener for that type of event.
+
+<p>
+
+Another possibility is to centralize event-handling code
+in one or more non-Component listeners.
+This approach lets you separate the GUI of your program
+from implementation details,
+It requires that you modify your existing code 
+so that the listeners can get whatever state information
+they require from the components.
+This approach can be worth your while
+if you're trying to keep your program's architecture clean.
+
+<p>
+
+A third possibility,
+which we don't recommend unless you're already extending a Component,
+is to override one of the <code>process<em>Xxx</em></code> methods.
+This and the other event-handling approaches
+are discussed in the design document
+<a href=designspec/events.html><b>Delegation Event Model</b></a>.
+
+<p>
+
+We recommend that you do <b>not</b> mix
+the 1.0 event model 
+with the 1.1 event model in the same program.
+The results would be unpredictable
+and might be difficult to debug.
+
+<h4>
+<a name=listener>
+Making a Component a Listener
+</a>
+</h4>
+
+The biggest part of converting most 1.0 AWT-using programs
+to the 1.1 API
+is converting the event-handling code.
+The process can be straightforward,
+once you figure out which events a program handles
+and which components generate the events.
+If you're using the 1.1.1 Java compiler,
+compiling with the <code>-deprecation</code> flag
+generates a list 
+that includes all old-style event handling methods.
+(Before 1.1.1, the compiler didn't generate a complete list,
+so you had to search for "Event" in a source file.)
+While you're looking at the code,
+you should note whether any classes
+exist solely for the purpose
+of handling events;
+you might be able to eliminate such classes.
+
+<p>
+
+Here are the steps to follow
+when converting a 1.0 component 
+into a listener:
+
+<ul>
+<li> Change the source file so that it imports
+     the <code>java.awt.event</code> package:
+<blockquote>
+<pre>
+<b>import java.awt.event.*</b>
+</pre>
+</blockquote>
+<p>
+<li> Figure out which components generate each event type.
+     The <a href=#table>table</a> at the end of this document
+     can help you know what to look for.
+     For example, if you're converting event code
+     that's in an <code>action</code> method,
+     the table at the end of this document tells you to look for
+     <code>Button</code>,
+     <code>List</code>,
+     <code>MenuItem</code>,
+     <code>TextField</code>,
+     <code>Checkbox</code>, and
+     <code>Choice</code> objects.
+<p>
+<li> Change the class declaration
+     so that the class implements
+     the appropriate listener interfaces
+     (as listed by
+     the <a href=#table>table</a> at the end of this document).
+     For example, if you're trying to handle an action event
+     generated by a <code>Button</code>,
+     the table
+     tells you to implement the <code>ActionListener</code> interface.
+<blockquote>
+<pre>
+public class MyClass extends SomeComponent
+             <b>implements ActionListener</b>
+</pre>
+</blockquote>
+
+<strong>Alternative:</strong>
+Instead of implementing an interface, 
+you can declare an inner class
+that extends an event adapter class.
+Inner classes are useful 
+when you need to implement only one method
+of an interface,
+but the interface contains many other methods.
+See
+<a href="#innerClass">Using Inner Classes for Event Handling</a>
+for more information.
+
+<p>
+<li> Determine where the components that generate the events are created.
+     Just after the code that creates each one,
+     register <code>this</code> as the appropriate type of listener.
+     For example:
+
+<blockquote>
+<pre>
+<b><em>newComponentObject</em>.addActionListener(this);</b>
+</pre>
+</blockquote>
+<strong>Alternative:</strong>
+If you use an inner class to handle the events,
+register an instance of that inner class instead.
+See
+<a href="#innerClass">Using Inner Classes for Event Handling</a>
+for more information.
+
+<p>
+<li> Create empty implementations of all the methods
+     in the listener interfaces your class must implement.
+     Copy the event-handling code
+     into the appropriate methods.
+     For example, 
+     <code>ActionListener</code> has just one method,
+     <code>actionPerformed</code>.
+     So as a shortcut way of creating
+     the new method 
+     and copying the event-handling code to it, 
+     you can simply change the signature
+     of an <code>action</code> method from this:
+<blockquote>
+<pre>
+public boolean action(Event event, Object arg) {
+</pre>
+</blockquote>
+     to this:
+<blockquote>
+<pre>
+<b>public void actionPerformed(ActionEvent <em>event</em>) {</b>
+</pre>
+</blockquote>
+<strong>Alternative:</strong>
+If you use an inner class to handle the events,
+you don't need to create empty implementations of methods.
+See
+<a href="#innerClass">Using Inner Classes for Event Handling</a>
+for more information.
+
+<p>
+<li> Modify the event-handling code in these ways:
+     <ul>
+     <li> Delete all <code>return</code> statements.
+     <li> Change references to <code><em>event</em>.target</code>
+	  to be <code><em>event</em>.getSource()</code>.
+     <li> Delete any code that unnecessarily tests for 
+	  which component the event came from.
+	  (Now that events are forwarded
+	  only if the generating component has a listener,
+	  you don't have to worry about receiving events
+	  from an unwanted component.)
+     <li> Perform any other modifications required
+          to make the program compile cleanly and execute correctly.
+     </ul>
+</ul>
+
+<h4>
+<a name="innerClass">
+Using Inner Classes for Event Handling
+</a>
+</h4>
+
+Inner classes are useful
+when you need to implement an interface
+that contains many methods,
+but you want to implement only one or two of the methods.
+This section tells you how to write an event handler 
+using an inner class,
+without getting into details about inner classes in general.
+For general information about inner classes, see
+<a href="../innerclasses/index.html"><b>Inner Classes</b></a>.
+
+<p>
+
+Implementing an event-handling inner class is a variation 
+on making a class implement an event-listener interface.
+As before, you determine which interface 
+corresponds to the events your class needs to handle.
+But instead of implementing the interface,
+you create an inner class that extends
+the adapter corresponding to the interface.
+For example, instead of implementing <code>WindowListener</code>,
+you can implement an inner class 
+that extends <code>WindowAdapter</code>.
+Then you simply create an instance of your inner class
+and register it as the appropriate kind of listener --
+for example, with the <code>addWindowListener</code> method.
+Here is an example:
+
+<blockquote>
+<pre>
+public class MyClass ... {
+    ...
+    <em>//Where the window is created:</em>
+        <b>newWindow.addWindowListener(new MyInnerClass());</b>
+    ...
+    <b>class MyInnerClass extends WindowAdapter {
+        public void windowClosing(WindowEvent event) {</b>
+            if (inAnApplet) {
+                dispose();
+            } else {
+                System.exit(0);
+            }
+        <b>}
+    }</b>
+    ...
+}
+
+</pre>
+</blockquote>
+
+After compilation, the inner class bytecodes
+are put in a separate <code>.class</code> file
+named something like this:
+<code>MyClass$MyInnerClass.class.</code>
+For a complete example that uses an inner class, see 
+<a href="innerclass/DialogWindow.java"><code>innerclass/DialogWindow.java.</code></a>
+
+<h2>
+<a name=example>
+Example: Converting DialogWindow
+</a>
+</h2>
+
+This section shows how to convert a program called DialogWindow
+from the 1.0 API to the 1.1 API.
+DialogWindow is an application,
+but it can also run as an applet,
+with the help of a class named <code>AppletButton</code>.
+(Readers of
+<em><a href=http://java.sun.com/docs/books/tutorial/index.html>The
+Java Tutorial</a></em>
+might find this program familiar,
+since it's featured in the section 
+<a
+href=http://java.sun.com/docs/books/tutorial/ui/components/dialog.html>"How
+to Use Dialogs"</a>.)
+
+<p>
+
+Below is the 1.0 version of DialogWindow
+(here's a link to the <a href=1.0example/DialogWindow.java>source code</a>),
+running as an applet with the help of
+<a href=1.0example/AppletButton.java>AppletButton</a>:
+<p>
+<applet codebase=1.0example code=AppletButton.class width=450 height=60>
+<param name=windowClass value=DialogWindow>
+<param name=windowTitle value="Dialog Demo">
+<param name=buttonText value="Click here to get a window that can bring up a dialog">
+<param name=windowWidth value=500>
+<param name=windowHeight value=130>
+<hr>
+Since you can't run the applet,
+here's a snapshot of the window (<code>Frame</code>) the button brings up:
+<p>
+<img src=images/DialogWindow-f.gif width=500 height=172>
+<p>
+And here's a snapshot of the dialog for the window:
+<p>
+<img src=images/DialogWindow-d.gif width=350 height=125>
+<hr>
+</applet>
+
+<p>
+
+<h3>
+Step 1: Make Copies
+</h3>
+
+Move the 1.0 source and bytecode files to a safe place,
+keeping a copy of the source file that you can modify.
+For example, on a UNIX system:
+<blockquote>
+<pre>
+% <b>mkdir 1.0example</b>
+% <b>mv DialogWindow.class 1.0example</b>
+% <b>cp DialogWindow.java 1.0example</b>
+</pre>
+</blockquote>
+
+<h3>
+Step 2: Convert Automatically
+</h3>
+
+Perform as much automatic conversion as possible.
+For example:
+
+<blockquote>
+<pre>
+% <b>updateAWT DialogWindow.java &gt; tmp.java</b>
+% <b>diff DialogWindow.java tmp.java</b>
+33c33
+&lt;         dialog.show();
+---
+&gt;         dialog.setVisible(true);
+38c38
+&lt;         textArea.appendText(text + "\n");
+---
+&gt;         textArea.append(text + "\n");
+47c47
+&lt;         window.show();
+---
+&gt;         window.setVisible(true);
+87c87
+&lt;         hide();
+---
+&gt;         setVisible(false);
+% <b>mv tmp.java DialogWindow.java</b>
+</pre>
+</blockquote>
+
+<h3>
+Step 3: Compile 
+</h3>
+Compile DialogWindow,
+making sure to use the 1.1 compiler.
+For example:
+
+<blockquote>
+<pre>
+% <b>which javac</b>
+/usr/local/java/jdk1.1.1/solaris/bin/javac
+% <b>javac DialogWindow.java</b>
+Note: DialogWindow.java uses a deprecated API.  Recompile with
+"-deprecation" for details.
+1 warning
+%
+</pre>
+</blockquote>
+
+<blockquote>
+<pre>
+% <b>javac -deprecation DialogWindow.java</b>
+DialogWindow.java:18: Note: The method boolean handleEvent(java.awt.Event) in
+class java.awt.Component has been deprecated, and class DialogWindow overrides
+it.
+    public boolean handleEvent(Event event) {
+                   ^
+DialogWindow.java:26: Note: The method boolean handleEvent(java.awt.Event) in
+class java.awt.Component has been deprecated.
+        return super.handleEvent(event);
+                                ^
+DialogWindow.java:29: Note: The method boolean action(java.awt.Event,
+java.lang.Object) in class java.awt.Component has been deprecated, and class
+DialogWindow overrides it.
+    public boolean action(Event event, Object arg) {
+                   ^
+DialogWindow.java:81: Note: The method boolean action(java.awt.Event,
+java.lang.Object) in class java.awt.Component has been deprecated, and class
+SimpleDialog overrides it.
+    public boolean action(Event event, Object arg) {
+                   ^
+Note: DialogWindow.java uses a deprecated API.  Please consult the
+documentation for a better alternative.
+5 warnings
+%
+</pre>
+</blockquote>
+
+As you can see,
+the class compiles successfully,
+but it calls or overrides methods that have been deprecated
+(<code>handleEvent</code> and
+<code>action</code>).
+
+<p>
+
+<h3>
+Step 4: Make Changes by Hand
+</h3>
+
+<p>
+For the DialogWindow program,
+this step consists solely of converting the event-handling code,
+as described previously in
+<a href=#listener>Making a Component a Listener</a>.
+Searching for "Event" in <code>DialogWindow.java</code>
+lets you find the event-handling code
+in the two classes
+(<code>DialogWindow</code> and <code>SimpleDialog</code>)
+that comprise the program.
+
+<p>
+
+Here's an overview of event handling in the DialogWindow program:
+<p>
+<ul>
+<li> <code>DialogWindow</code> handles window destroy events
+     for itself.
+<li> <code>DialogWindow</code> handles action events
+     for the components it contains.
+     Upon closer inspection, 
+     we can see that it contains only one component 
+     that can generate action events: a <code>Button</code>.
+<li> <code>SimpleDialog</code> handles action events 
+     for the components it contains.
+     Upon closer inspection, 
+     we can see that it contains three components
+     that can generate action events:
+     two <code>Button</code>s (Cancel and Set)
+     and a <code>TextField</code>.
+<li> Both <code>DialogWindow</code> and <code>SimpleDialog</code> 
+     contain non-event-handling code,
+     so you can't eliminate them
+     by moving their event-handling code elsewhere.
+</ul>
+
+<p>
+
+The current locations of the event-handling code make sense.
+Another way that might make sense is
+to have <code>DialogWindow</code> handle all events,
+since it is the controlling class in this application.
+Yet another possibility
+is to introduce a non-<code>Component</code> controlling class
+that handles all action events.
+To convert the DialogWindow program,
+we'll keep its event-handling code in the same components as before
+but make the components implement listener interfaces. 
+
+<p>
+
+The following example gives the highlights of the event-related code
+in the <a href=DialogWindow.java>converted DialogWindow</a> program.
+Significant changes are in <b>bold</b>.
+
+<blockquote>
+<pre>
+<b>import java.awt.event.*;</b>
+
+public class DialogWindow extends Frame 
+			  <b>implements WindowListener,
+				     ActionListener</b> {
+    ...
+    public DialogWindow() {
+	...
+        Button button = new Button("Click to bring up dialog");
+	<b>button.addActionListener(this);</b>
+	...
+	<b>addWindowListener(this);</b>
+    }
+
+    <b>public void windowClosed(WindowEvent event) {
+    }
+
+    public void windowDeiconified(WindowEvent event) {
+    }
+
+    public void windowIconified(WindowEvent event) {
+    }
+
+    public void windowActivated(WindowEvent event) {
+    }
+
+    public void windowDeactivated(WindowEvent event) {
+    }
+
+    public void windowOpened(WindowEvent event) {
+    }
+
+    public void windowClosing(WindowEvent event) {</b>
+        if (inAnApplet) {
+            dispose();
+        } else {
+            System.exit(0);
+        }
+    }
+
+    <b>public void actionPerformed(ActionEvent event) {</b>
+        if (dialog == null) {
+            dialog = new SimpleDialog(this, "A Simple Dialog");
+        }
+        dialog.setVisible();
+    }
+    ...
+}
+
+class SimpleDialog extends Dialog <b>implements ActionListener</b> {
+    ...
+    SimpleDialog(Frame dw, String title) {
+	...
+        field = new TextField(40);
+	<b>field.addActionListener(this);</b>
+	...
+        Button b = new Button("Cancel");
+	<b>b.addActionListener(this);</b>
+        setButton = new Button("Set");
+	<b>setButton.addActionListener(this);</b>
+	...
+    }
+
+    <b>public void actionPerformed(ActionEvent event) {</b>
+	<b>Object source = event.getSource();</b>
+        if ( (source == setButton)
+           | (source == field)) {
+            parent.setText(field.getText());
+        }
+        field.selectAll();
+        setVisible(false);
+    }
+}
+</pre>
+</blockquote>
+
+Instead of implementing the <code>WindowListener</code> interface,
+<code>DialogWindow</code> could simply contain an inner class
+that extends <code>WindowAdapter.</code> 
+Here are the highlights of 
+<a href="innerclass/DialogWindow.java"><code>DialogWindow</code>
+implemented with an inner class</a>.
+Significant changes from the 1.0 version are in <b>bold</b>.
+
+<blockquote>
+<pre>
+<b>import java.awt.event.*;</b>
+
+public class DialogWindow extends Frame 
+			  <b>implements ActionListener {</b>
+    ...
+    public DialogWindow() {
+	...
+        Button button = new Button("Click to bring up dialog");
+	<b>button.addActionListener(this);</b>
+	...
+	<b>addWindowListener(new DWAdapter());</b>
+    }
+
+    <b>class DWAdapter extends WindowAdapter {
+        public void windowClosing(WindowEvent event) {</b>
+            if (inAnApplet) {
+                dispose();
+            } else {
+                System.exit(0);
+            }
+        }
+    <b>}</b>
+
+    <b>public void actionPerformed(ActionEvent event) {</b>
+        if (dialog == null) {
+            dialog = new SimpleDialog(this, "A Simple Dialog");
+        }
+        dialog.setVisible(true);
+    }
+    ...
+}
+</pre>
+</blockquote>
+
+<h3>
+Step 5: Test
+</h3>
+
+Since the DialogWindow program is an application,
+we test it by executing it in the Java interpreter.
+For example:
+
+<blockquote>
+<pre>
+% <b>java DialogWindow</b>
+</pre>
+</blockquote>
+
+By using the DialogWindow application,
+you can see that it handles all events properly.
+
+<p>
+
+<hr>
+
+<h2>
+<a name=table>
+Event Conversion Table
+</a>
+</h2>
+
+The following table maps 1.0 events
+to their 1.1 counterparts.
+The first column lists each 1.0 event type,
+along with the name of the method (if any)
+that's specific to the event.
+Where no method is listed,
+the event is always handled in the 
+<code>handleEvent</code> method.
+The second column lists the 1.0 components
+that can generate the event type.
+The third column lists the listener interface
+that helps you handle the 1.1 equivalents of the listed events.
+The fourth column lists the methods
+in each listener interface.
+
+<p>
+
+<table border>
+<tr>
+<th colspan=2>1.0<th colspan=2>1.1
+<tr><th>Event/Method<th>Generated By<th>Interface<th>Methods
+
+<tr>
+<td rowspan=2><code>ACTION_EVENT/action</code>
+<td><a href=../../api/java.awt.Button.html><code>Button</code></a>,
+    <a href=../../api/java.awt.List.html><code>List</code></a>,
+    <a href=../../api/java.awt.MenuItem.html><code>MenuItem</code></a>,
+    <a href=../../api/java.awt.TextField.html><code>TextField</code></a>
+<td><a href=../../api/java.awt.event.ActionListener.html><code>ActionListener</code></a>
+<td><code>
+    actionPerformed(ActionEvent)
+    </code>
+
+<tr>
+<td><a href=../../api/java.awt.Checkbox.html><code>Checkbox</code></a>,
+    <a href=../../api/java.awt.CheckboxMenuItem.html><code>CheckboxMenuItem</code></a>,
+    <a href=../../api/java.awt.Choice.html><code>Choice</code></a>
+<td><a href=../../api/java.awt.event.ItemListener.html><code>ItemListener</code></a>
+<td><code>itemStateChanged(ItemEvent)</code>
+
+<tr>
+<td><code>WINDOW_DESTROY</code>
+    <br>
+    <code>WINDOW_EXPOSE</code>
+    <br>
+    <code>WINDOW_ICONIFY</code>
+    <br>
+    <code>WINDOW_DEICONIFY</code>
+<td><a href=../../api/java.awt.Dialog.html><code>Dialog</code></a>,
+    <a href=../../api/java.awt.Frame.html><code>Frame</code></a>
+<td><a href=../../api/java.awt.event.WindowListener.html><code>WindowListener</code></a>
+<td><code>windowClosing(WindowEvent)</code>
+    <br>
+    <code>windowOpened(WindowEvent)</code>
+    <br>
+    <code>windowIconified(WindowEvent)</code>
+    <br>
+    <code>windowDeiconified(WindowEvent)</code>
+    <br>
+    <code>windowClosed(WindowEvent)</code>
+    <font size=-1>(no 1.0 equivalent)</font>
+    <br>
+    <code>windowActivated(WindowEvent)</code>
+    <font size=-1>(no 1.0 equivalent)</font>
+    <br>
+    <code>windowDeactivated(WindowEvent)</code>
+    <font size=-1>(no 1.0 equivalent)</font>
+
+<tr>
+<td><code>WINDOW_MOVED</code>
+<td><a href=../../api/java.awt.Dialog.html><code>Dialog</code></a>,
+    <a href=../../api/java.awt.Frame.html><code>Frame</code></a>
+<td><a href=../../api/java.awt.event.ComponentListener.html><code>ComponentListener</code></a>
+<td><code>
+    componentMoved(ComponentEvent)
+    <br>
+    componentHidden(ComponentEvent)
+    <font size=-1>(no 1.0 equivalent)</font>
+    <br>
+    componentResized(ComponentEvent)
+    <font size=-1>(no 1.0 equivalent)</font>
+    <br>
+    componentShown(ComponentEvent)
+    <font size=-1>(no 1.0 equivalent)</font>
+    </code>
+
+<tr>
+<td><code>SCROLL_LINE_UP</code>
+    <br>
+    <code>SCROLL_LINE_DOWN</code>
+    <br>
+    <code>SCROLL_PAGE_UP</code>
+    <br>
+    <code>SCROLL_PAGE_DOWN</code>
+    <br>
+    <code>SCROLL_ABSOLUTE</code>
+    <br>
+    <code>SCROLL_BEGIN</code>
+    <br>
+    <code>SCROLL_END</code>
+<td><a href=../../api/java.awt.Scrollbar.html><code>Scrollbar</code></a>
+<td><a href=../../api/java.awt.event.AdjustmentListener.html><code>AdjustmentListener</code></a>
+<br>
+(or use the new 
+<code><a href=../../api/java.awt.ScrollPane.html>ScrollPane</a></code>
+class)
+<td><code>adjustmentValueChanged(AdjustmentEvent)</code>
+
+<tr>
+<td><code>LIST_SELECT</code>
+    <br>
+    <code>LIST_DESELECT</code>
+<td><a href=../../api/java.awt.Checkbox.html><code>Checkbox</code></a>,
+    <a href=../../api/java.awt.CheckboxMenuItem.html><code>CheckboxMenuItem</code></a>,
+    <a href=../../api/java.awt.Choice.html><code>Choice</code></a>,
+    <a href=../../api/java.awt.List.html><code>List</code></a>
+<td><a href=../../api/java.awt.event.ItemListener.html><code>ItemListener</code></a>
+<td><code>itemStateChanged(ItemEvent)</code>
+
+<tr>
+<td><code>MOUSE_DRAG/mouseDrag</code>
+    <br>
+    <code>MOUSE_MOVE/mouseMove</code>
+<td><a href=../../api/java.awt.Canvas.html><code>Canvas</code></a>,
+    <a href=../../api/java.awt.Dialog.html><code>Dialog</code></a>,
+    <a href=../../api/java.awt.Frame.html><code>Frame</code></a>,
+    <a href=../../api/java.awt.Panel.html><code>Panel</code></a>,
+    <a href=../../api/java.awt.Window.html><code>Window</code></a>
+<td><a href=../../api/java.awt.event.MouseMotionListener.html><code>MouseMotionListener</code></a>
+<td><code>mouseDragged(MouseEvent)</code>
+    <br>
+    <code>mouseMoved(MouseEvent)</code>
+
+<tr>
+<td><code>MOUSE_DOWN/mouseDown</code>
+    <br>
+    <code>MOUSE_UP/mouseUp</code>
+    <br>
+    <code>MOUSE_ENTER/mouseEnter</code>
+    <br>
+    <code>MOUSE_EXIT/mouseExit</code>
+<td><a href=../../api/java.awt.Canvas.html><code>Canvas</code></a>,
+    <a href=../../api/java.awt.Dialog.html><code>Dialog</code></a>,
+    <a href=../../api/java.awt.Frame.html><code>Frame</code></a>,
+    <a href=../../api/java.awt.Panel.html><code>Panel</code></a>,
+    <a href=../../api/java.awt.Window.html><code>Window</code></a>
+<td><a href=../../api/java.awt.event.MouseListener.html><code>MouseListener</code></a>
+<td><code>mousePressed(MouseEvent)</code>
+    <br>
+    <code>mouseReleased(MouseEvent)</code>
+    <br>
+    <code>mouseEntered(MouseEvent)</code>
+    <br>
+    <code>mouseExited(MouseEvent)</code>
+    <br>
+    <code>mouseClicked(MouseEvent)</code>
+    <font size=-1>(no 1.0 equivalent)</font>
+
+<tr>
+<td><code>KEY_PRESS/keyDown</code>
+    <br>
+    <code>KEY_RELEASE/keyUp</code>
+    <br>
+    <code>KEY_ACTION/keyDown</code>
+    <br>
+    <code>KEY_ACTION_RELEASE/keyUp</code>
+<td><a href=../../api/java.awt.Component.html><code>Component</code></a>
+<td><a href=../../api/java.awt.event.KeyListener.html><code>KeyListener</code></a>
+<td><code>keyPressed(KeyEvent)</code>
+    <br>
+    <code>keyReleased(KeyEvent)</code>
+    <br>
+    <code>keyTyped(KeyEvent)</code>
+    <font size=-1>(no 1.0 equivalent)</font>
+
+<tr>
+<td><code>GOT_FOCUS/gotFocus</code>
+    <br>
+    <code>LOST_FOCUS/lostFocus</code>
+<td><a href=../../api/java.awt.Component.html><code>Component</code></a>
+<td><a href=../../api/java.awt.event.FocusListener.html><code>FocusListener</code></a>
+<td><code>focusGained(FocusEvent)</code>
+    <br>
+    <code>focusLost(FocusEvent)</code>
+
+<tr>
+<td colspan=2> <em>No 1.0 equivalent.</em>
+<td><a href=../../api/java.awt.event.ContainerListener.html><code>ContainerListener</code></a>
+<td><code>componentAdded(ContainerEvent)</code>
+    <br>
+    <code>componentRemoved(ContainerEvent)</code>
+
+<tr>
+<td colspan=2> <em>No 1.0 equivalent.</em>
+<td><a href=../../api/java.awt.event.TextListener.html><code>TextListener</code></a>
+<td><code>textValueChanged(TextEvent)</code>
+
+</table>
+
+<p>
+
+<hr>
+<font size=-1>
+<a href=index.html>Back to AWT Enhancements TOC</a>
+<hr>
+<em>
+By <a href=mailto:kwalrath@eng.sun.com>Kathy Walrath</a>
+</em>
+</font>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<html>
+<head>
+<title>JDK 1.1 Documentation</title>
+<!-- Created by: Doug Kramer, 19-Aug-1996 -->
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<CENTER><P ALIGN=LEFT>
+<IMG SRC="../images/smi.logo.gif" ALT=" Sun Microsystems, Inc " BORDER=0>
+</P></CENTER>
+
+<font size=-1><a href="../index.html">JDK Contents</a></font>
+<HR SIZE=3 NOSHADE>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<center>
+                          <h1>Introduction</h1>
+</center>
+
+
+<h3>About This Release</h3>
+<i><font size=-1>(This section is taken from the Introduction of the README file.)</font></i>
+<p>
+
+Thank you for downloading the JDK 1.1.4  release.
+<p>
+
+This is version 1.1.4  of the Java Development Kit, also known as 
+JDK 1.1.4 .  The JDK lets you write applets and applications that 
+conform to the Java 1.1 Core API.  It includes improvements in 
+functionality, performance, and quality over JDK 1.0.2, and includes 
+bug fixes since JDK 1.1.
+<p>
+
+JDK 1.1.4  is a bug-fix release.  Changes made to the JDK since 
+the first 1.1 beta release are in the file named CHANGES.
+<p>
+
+Because there are no API changes in bug-fix releases, we continue 
+to refer to this platform as the Java 1.1 Platform (rather than 1.1.4 ).   
+While bugs have been fixed in 1.1.4 , the platform hasn't changed.
+<p>
+
+JDK 1.1 offers new capabilities:  Internationalization, signed applets, 
+JAR file format, AWT (window toolkit) enhancements, JavaBeans(tm) 
+component model, networking enhancements, Math package for large 
+numbers, Remote Method Invocation, Reflection, database connectivity, 
+new Java Native Interface, Object Serialization, Inner 
+Classes, and performance enhancements.
+<p>
+
+For further description of these features, see the "New Feature 
+Summary" in the JDK documentation.
+<p>
+
+As part of our ongoing effort to improve the quality of the JDK,
+we will continue to fix bugs and develop new features.
+In order to help us prioritize our bug-fixing effort, please submit
+any bugs you find as soon as possible, using the procedure described 
+in the "Reporting Bugs" section below.
+<p>
+
+We also publish a web page of technology related to the JDK, which
+includes information about Java IDL, native threads, and
+OS platforms.  Please refer to:
+<pre>
+   http://java.sun.com/products/jdk/1.1/jdkrelatedtech.html
+</pre>
+The JDK is a product of Sun Microsystems, Inc.  
+JavaSoft is the operating company of Sun that develops the JDK.
+<p>
+<hr>
+<h2>Purpose</h2>
+The JDK allows you to:
+<ul>
+      <li>Develop applets that will run in browsers supporting Java 1.1,
+          such as HotJava version 1.0, and future versions of Netscape 
+ 	  Navigator and Microsoft Internet Explorer.
+
+      <li>Develop Java applications.
+</ul>
+
+<hr>
+<h2>Version Compatibility</h2>
+
+In general, any applet or application that ran in JDK 1.0.2 should
+run correctly in JDK 1.1.  A failure to do so is a bug, except 
+for a small number of cases where compatibility has had to be
+broken to close potential security holes, or fix implementation 
+or design bugs.  
+<p>
+Of course, applets that depend on any new 1.1 APIs will not work on 
+any browsers that support only 1.0.2, such as Internet Explorer 3.0, 
+Netscape 3.0, and the alpha and pre-beta1 versions of the HotJava 
+browser.  However, in general, applets relying only on APIs defined 
+in 1.0.2 (but compiled with the JDK 1.1 compiler) will run on 1.0.2 
+browsers.  This "downwards" compatibility has not been extensively 
+tesed and cannot be guaranteed. 
+<p>
+For more details, see the document on compatibility at:
+<pre>
+   http://java.sun.com/products/jdk/1.1/compatibility.html
+</pre>
+If you find any such incompatibilities that are not listed on the
+Compatibility web page, please report them to us as noted below
+under "Reporting Bugs," and mention that they are compatibility
+bugs.  Compatibility is critically important to us, and a cornerstone
+of Java's "Write Once Run Anywhere" promise.
+
+<p>
+<hr> 
+<h3>What This Documentation Covers</h3>
+
+<blockquote>
+NOTE - The documentation included in this download bundle covers only the new 
+features of version 1.1.  It does not attempt to cover the features that have 
+remained unchanged since 1.0.  For information about those features, see the 
+documentation available on the JavaSoft website in 
+<a href="http://java.sun.com/docs/books/tutorial/index.html">The Java Tutorial</a> 
+and in the <a href="http://java.sun.com/docs/books/index.html">Java Series of books</a>.
+</blockquote>
+
+The <a href="../">Contents page</a> of this documentation contains links to 
+all of the documentation in this release, plus links to some pages on the JavaSoft 
+website.  Note the first few entries are actually located in the <code>java</code> 
+(software) directory rather than in the <code>docs</code> (documentation) directory.  
+If you download just the documentation and not the software, you will not be 
+able to access those <code>java</code> files.
+
+<p>Please read the <a href="../../README">README</a> file for:
+<DL>
+<DT>Overview of Java
+    <DD> Introduction
+    <DD> Purpose
+    <DD> Version Compatibility
+    <DD> Bug Fixes
+    <DD> What the JDK Contains
+    <DD> Where to Find More Information
+    <DD> Submitting Comments
+    <DD> Reporting Bugs and Requesting Features
+    <DD> JavaBeans(tm) and the Beans Development Kit
+<p>
+<DT>Installing and Running Java
+    <DD> Installation Notes
+    <DD> Windows PATH and CLASSPATH
+    <DD> Windows Installation Troubleshooting
+    <DD> Solaris PATH and CLASSPATH
+    <DD> Solaris Installation Troubleshooting
+    <DD> Running Applets with the AppletViewer
+    <DD> Debugging Programs with the Java Debugger
+ </DL> 
+</ul>
+
+<p>Most of this documentation package is in HTML.  Portable Document Format (PDF) 
+and Postscript (PS) versions of sections of this document are also available 
+from the download page 
+<a href="http://java.sun.com/products/jdk/1.1/">http://java.sun.com/products/jdk/1.1</a>.
+
+<p>For the most part, this JDK documentation is standalone.
+This means once you've downloaded the JDK docs, you can disconnect from 
+the web, and browse the JDK docs locally.  Some ancillary documentation,
+such as the Java Tutorial, is available by links to the JavaSoft website.
+
+
+<!--
+<h2>Where to Go from Here</h2>
+-->
+
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+
+<IMG SRC="../images/JAVA.85.GIF" ALIGN=RIGHT>
+
+<FONT SIZE=-2>
+<A HREF="SMICopyright.html">Copyright &#169;</A> 1996, 1997 Sun Microsystems, Inc., 2550 Garcia Ave., Mountain View, CA 94043-1100 USA. All rights reserved.
+<br><br>
+</BODY>
+</HTML>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>JDK Document Installation</title>
+  </head>
+
+  <body bgcolor="ffffff">
+   <center>   <h1>Installing JDK Documentation</h1> </center>
+
+<b>Where to unpack your documentation</b><br>
+If you have already installed JDK 1.1.4, you must unpack the 
+documentation file in the <em>parent</em> directory of the 
+<b><tt>jdk1.1.4</tt></b> directory. 
+<!--
+For example, if on a Windows platform your 
+<tt>jdk1.1.4</tt> directory is located at <tt>C:\jdk1.1.4</tt>, then your 
+documentation bundle should be placed in <tt>C:\</tt> before unpacking 
+it. If on a Solaris platform your <tt>jdk1.1.4</tt> directory is located 
+at <tt>/usr/local/jdk1.1.4</tt>, then your documentation bundle should 
+be placed in <tt>/usr/local/</tt> before unpacking it.
+-->
+<p>
+You can install the documentation without first having installed 
+JDK 1.1.4. However, if you install the JDK after installing the 
+documentation, you must unpack the JDK download file in the 
+same directory level from which you unpack the documentation file.
+<p>
+
+<b>Unpacking your documentation</b><br>
+Before unpacking, make sure the documentation file is in
+the same directory from which you unpacked the JDK software file. Unpack the
+documentation using the appropriate utility: unzip, gunzip, pkunzip, 
+uncompress, tar, or <a href="http://www.winzip.com">winzip</a>. 
+Your utility must support long file names.
+<p>
+<blockquote>
+                  For <b><tt>.zip</tt></b> files:<br>
+                  <code><b>% unzip jdk114doc.zip</b></code><br>
+<p>
+                  For <b><tt>.tar.gz</tt></b> files:<br>
+                  <code><b>% gunzip jdk114doc.tar.gz</b></code><br>
+                  <code><b>% tar xvf jdk114doc.tar</b></code> <br>
+<p>
+                  For <b><tt>.tar.Z</tt></b> files:<br>
+                  <code><b>% uncompress jdk114doc.tar.Z</b></code><br>
+                  <code><b>% tar xvf jdk114doc.tar</b></code> <br>
+</blockquote>
+<p>
+Unpacking the documentation bundle creates a <tt><b>jdk1.1.4/docs/</b></tt> 
+directory containing your JDK documents.
+<p>
+
+
+<a name="tree"></a>
+<b>JDK directory tree</b><br>
+Installing the JDK software and documentation creates the 
+following directory structure:
+
+<pre>
+                          jdk1.1.4
+    _________________________|_____________________________________
+   |      |         |      |      |   |     |     |    |    |      |
+README CHANGES COPYRIGHT LICENSE bin lib include demo src docs index.html
+                                                            |
+                               _____________________________|____
+                              |       |        |       |         |
+                             api  tooldocs relnotes  guide   index.html
+                              |       |        |       |
+  
+</pre>
+<p>
+If you don't unpack the documentation in the proper directories, the 
+HTML links from <b><tt>docs/index.html</tt></b> to the README, 
+CHANGES, COPYRIGHT, LICENSE, and demo files will be broken.
+<p>
+The <b><tt>src</tt></b> directory shown above originally appears as a 
+<b><tt>src.zip</tt></b> file in the Solaris installation. You must manually 
+unzip <b><tt>src.zip</tt></b> if you want to access the Java source files.
+<p>
+A good place to start browsing your JDK documentation is from the 
+<b><tt>index.html</tt></b> file in the <b><tt>docs</tt></b> directory.
+<hr>
+      <address>Copyright &copy; 1996, 1997, Sun Microsystems, Inc.</address>
+
+  </body>
+</html>

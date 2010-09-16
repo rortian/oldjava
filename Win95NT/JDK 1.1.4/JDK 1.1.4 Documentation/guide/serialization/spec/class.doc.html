@@ -1,0 +1,124 @@
+<html><head><title>Class Descriptors	
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="input.doc.html">[Prev]</a> <a href="version.doc.html">[Next]</a>
+<hr><br>
+ 
+<h1><a name="60">
+Class Descriptors	
+
+</a></h1>
+<hr><p>
+<p>The <code>ObjectStreamClass</code> provides information about classes that are saved in 
+a Serialization stream. The descriptor provides the fully-qualified name of the 
+class and its serialization version UID. A streamVersionUID identifies the 
+unique original class version for which this class is capable of writing streams 
+and from which it can read. 
+<p><dl><pre>package java.io;
+
+public class ObjectStreamClass
+{
+	public static ObjectStreamClass lookup(Class cl);
+
+	public String getName();
+
+	public Class forClass();
+
+	public long getSerialVersionUID();
+
+	public String toString();
+}
+</pre></dl>The <code>lookup</code> method returns the <code>ObjectStreamClass</code> descriptor for the 
+specified class in the Java VM. If the class has defined serialVersionUID it is 
+retrieved from the class. If not defined by the class it is computed from the 
+class's definition in the Java Virtual Machine. <strong>null</strong> is returned if the specified 
+class is not Serializable or Externalizable. Only class descriptions for classes 
+that implement the java.io.Serializable or java.io.Externalizable interfaces can 
+be written to a stream.
+<p>The <code>getName</code> method returns the fully-qualified name of the class. The class 
+name is saved in the stream and is used when the class must be loaded.
+<p>The <code>forClass</code> method returns the Class in the local Virtual Machine if one is 
+known. Otherwise, it returns null.
+<p>The <code>getSerialVersionUID</code> method returns the serialVersionUID of this 
+class.   Refer to <a href="class.doc.html#4100">Stream Unique Identifiers</a>. If not specified by the 
+class, the value returned is a hash computed from the class's name, interfaces, 
+methods, and fields using the Secure Hash Algorithm (SHA) as defined by the 
+National Institute of Standard.
+<p>The <code>toString</code> method returns a printable representation of the class 
+descriptor including the class's name and serialVersionUID.
+<p><h1><a name="3127">
+Inspecting Serializable Classes
+</a></h1>The program <code>serialver</code> can be used to find out if a class is serializable and to 
+get its <code>serialVersionUID</code>. When invoked with -show it puts up a simple 
+user interface. To find out if a class is serializable and to find out its 
+<code>serialVersionUID,</code> enter its full class name and press either the Enter or the 
+Show button. The string printed can be copied and pasted into the evolved 
+class.
+<p><a name="5003">
+ <center><img src="class.doc.anc.gif"></center><p>
+</a>When invoked on the command line with one or more class names, serialver 
+prints the serialVersionUID for each class in a form suitable for copying into an 
+evolving class. When invoked with no arguments, it prints a usage line.
+<p><h1><a name="4100">
+Stream Unique Identifiers
+</a></h1>Each versioned class must identify the original class version for which it is 
+capable of writing streams and from which it can read. For example, a 
+versioned class must declare:
+<p><dl><pre>	static final long SerialVersionUID = 3487495895819393L;
+</pre></dl>The stream-unique identifier is a 64-bit hash of the class name, interface class 
+names, methods, and fields. The value must be declared in all versions of a 
+class except the first. It may be declared in the original class but is not 
+required. The value is fixed for all compatible classes. If the SUID is not 
+declared for a class, the value defaults to the hash for that class. Classes do not 
+need to anticipate versioning.
+<p>The serialVersionUID is computed using the signature of a stream of bytes that 
+reflect the class definition. The National Institute of Standards and Technology 
+(NIST) Secure Hash Algorithm (SHA-1) is used to compute a signature for the 
+stream. The first two 32-bit quantities are used to form a 64-bit hash. A 
+java.lang.DataOutputStream is used to convert primitive data types to a 
+sequence of bytes. The values input to the stream are defined by the Java 
+virtual machine (VM) specification for classes. The sequence of items in the 
+stream is as follows:
+<p><ol>
+<li>The class name written using UTF encoding.
+<li>The class modifiers written as a 32-bit integer.
+<li>The name of each interface sorted by name written using UTF encoding.
+<li>For each field of the class sorted by field name (except private static and 
+private transient fields):
+<ul>
+<li>The name of the field in UTF encoding.
+<li>The modifiers of the field written as an 32-bit integer.
+<li>The descriptor of the field in UTF encoding.
+</ul>
+<li>For each method including constructors sorted by method name and 
+signature, except private methods and constructors:
+<ul>
+<li>The name of the method in UTF encoding.
+<li>The modifiers of the method written as an 32-bit integer.
+<li>The descriptor of the method in UTF encoding.
+</ul>
+<li>The SHA-1 algorithm is executed on the stream of bytes produced by 
+DataOutputStream and produces five 32-bit values sha[0..4].
+<li>The hash value is assembled from the first and second 32-bit values.
+     long hash = sha[1] &lt;&lt; 32 + sha[0].
+<dl><pre>
+</pre></dl></ol>
+
+<hr><br>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="input.doc.html">[Prev]</a> <a href="version.doc.html">[Next]</a>
+<hr><br>
+ 
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email rmi-support@javasoft.com -->
+<!-- -->
+<!-- Last updated: 02/04/97 16:45:58 -->
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Networking Enhancements</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<CENTER><P ALIGN=LEFT>
+<IMG SRC="../../images/smi.logo.gif" ALT=" Sun Microsystems, Inc " BORDER=0>
+</P></CENTER>
+
+
+<font size=-1><a href="../../index.html">JDK Contents</a></font>
+<HR SIZE=3 NOSHADE>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<center>
+           <h1>Networking Enhancements </h1>
+</center>
+
+<blockquote>
+Support for selected BSD-style socket options in the <code>java.net</code>
+base classes.  With JDK 1.1, <code>Socket</code> and <code>ServerSocket</code> 
+are non-final, extendable classes.  New subclasses of <code>SocketException</code> 
+have been added for finer granularity in reporting and handling network errors.  The class <code>MulticastSocket</code> moves from <code>sun.net</code> to <code>java.net</code>.  Also includes general performance improvements and bug fixes.
+</blockquote>
+
+<font size=+2><b>Networking Guide</b></font><br>
+<font size=-1></font>
+<p>
+ Changes to the java.net package in JDK1.1
+<ul>
+<li><b><A HREF="extendingSocks.html">Extendable Socket and ServerSocket</A></b><br>
+The design, rationale, and how to do it.<br>
+
+
+<li><b><A HREF="socketOpt.html">Socket Options</A></b><br>
+New methods to support popular BSD-style options in the java base classes, (and
+     subclasses can define their own)<br>
+
+
+<li><b><A HREF="socketException.html">Socket Exceptions</A></b><br>
+New subclasses of SocketException for finer granularity of handling network errors<br>
+
+<LI><b><A HREF="miscNet.html">Miscellaneous</a></b><br>
+     Important bug fixes, new constructors, new methods, and others
+</ul>
+<br>
+<p>
+
+<font size=+2><b>Networking API Reference</b></font><br>
+<font size=-1>(javadoc)</font>
+<ul>
+   <LI><b><a href="../../api/Package-java.net.html">java.net Package</a></b>
+
+</ul>
+
+
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+
+<IMG SRC="../../images/JAVA.85.GIF" ALIGN=RIGHT>
+
+<FONT SIZE=-2>
+<A HREF="../../relnotes/SMICopyright.html">Copyright &#169;</A> 1996 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn. View, CA 94043-1100 USA. All rights reserved.
+<br><br>
+
+<FONT SIZE=-1>
+Please send comments to: <A HREF="mailto:brown@eng.sun.com">David Brown</A> 
+</FONT>
+
+
+</BODY>
+</HTML>

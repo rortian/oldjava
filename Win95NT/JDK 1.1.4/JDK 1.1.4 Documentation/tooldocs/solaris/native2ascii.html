@@ -1,0 +1,114 @@
+<html>
+<head>
+<title>Native-to-ASCII Converter</title>
+<!-- Created by: Doug Kramer, 19-Aug-1996 -->
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<H1>native2ascii - Native-to-ASCII Converter</H1>
+<blockquote>
+        Converts a file with native-encoded characters (characters which are non-Latin 1 
+	and non-Unicode) to one with 
+	Unicode-encoded characters.
+
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+<blockquote>
+<pre>
+<code><strong>native2ascii</strong> [options] [inputfile [outputfile]]</code>
+</pre>
+</blockquote>
+ 
+<h2>DESCRIPTION</h2>
+<blockquote>
+	The Java compiler and other Java tools can only process files which contain 
+	Latin-1 and/or Unicode-encoded (\udddd notation) characters.  <code>native2ascii</code>
+	converts files 
+	which contain other character encodings into files
+	containing Latin-1 and/or Unicode-encoded charaters.
+    
+<p>
+        If <code>outputfile</code> is omitted, standard output is used
+        for output.  If, in addition, <code>inputfile</code> is omitted,
+        standard input is used for input.
+</blockquote>
+
+<a name=Options></a>
+<h2>OPTIONS</h2>
+<blockquote>
+<dl>
+<dt><code><b>-reverse</b></code>
+   <dd>    Perform the reverse operation: convert a file with Latin-1 and/or Unicode encoded characters
+to one with native-encoded characters.
+<br><br>
+<dt><code><b>-encoding</b> encoding_name</code>
+   <dd>    Specify the encoding name which is used by the conversion procedure.
+           The default encoding is taken from System property <code>file.encoding</code>.
+	   This <code>encoding_name</code> string must be one that can be passed 
+	   as the argument of class <code>CharacterEncoding</code>.
+<br><br>
+<code>
+8859_1      ISO Latin-1<br>
+8859_2  ISO Latin 2<br>
+8859_3      ISO Latin-3<br>
+8859_5      ISO Latin/Cyrillic<br>
+8859_6 ISO Latin/Arabic <br>
+8859_7 ISO Latin/Greek 
+8859_8 
+ISO Latin/Hebrew <br>
+8859_9 ISO Latin-5 <br>
+Cp1250 Windows Eastern Europe / Latin-2 <br>
+Cp1251 Windows Cyrillic <br>
+Cp1252 Windows Western Europe / Latin-1 <br>
+Cp1253 Windows Greek <br>
+Cp1254 Windows Turkish <br>
+Cp1255 Windows Hebrew <br>
+Cp1256 Windows Arabic <br>
+Cp1257 Windows Baltic <br>
+Cp1258 Windows Vietnamese <br>
+Cp437 PC Original <br>
+Cp737 PC Greek<br>
+Cp775 PC Baltic <br>
+Cp850 PC Latin-1 <br>
+Cp852 PC Latin-2 <br>
+Cp855 PC Cyrillic <br>
+Cp857 PC Turkish <br>
+Cp860 PC Portuguese <br>
+Cp861 PC Icelandic <br>
+Cp862 PC Hebrew <br>
+Cp863 PC Canadian French <br>
+Cp864 PC Arabic <br>
+Cp865 PC Nordic <br>
+Cp866 PC Russian <br>
+Cp869 PC Modern Greek <br>
+Cp874 Windows Thai <br>
+EUCJIS Japanese EUC <br>
+JIS JIS <br>
+MacArabic Macintosh Arabic <br>
+MacCentralEurope <br>
+Macintosh Latin-2 <br>
+MacCroatian Macintosh Croation<br>
+MacCyrillic Macintosh Cyrillic <br>
+MacDingbat Macintosh Dingbat <br>
+MacGreek Macintosh Greek <br>
+MacHebrew Macintosh Hebrew <br>
+MacIceland Macintosh Iceland <br>
+MacRoman Macintosh Roman <br>
+MacRomania Macintosh Romania <br>
+MacSymbol Macintosh Symbol <br>
+MacThai Macintosh Thai <br>
+MacTurkish Macintosh Turkish <br>
+MacUkraine Macintosh Ukraine <br>
+SJIS PC and Windows Japanese <br>
+UTF8 Standard UTF-8<br>
+</code>
+
+</dl>
+</blockquote>
+
+</BODY>
+</HTML>

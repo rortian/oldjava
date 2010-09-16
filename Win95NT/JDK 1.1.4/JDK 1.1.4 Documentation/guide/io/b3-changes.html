@@ -1,0 +1,99 @@
+<html>
+<title>Changes to <tt>java.io</tt> after JDK 1.1 beta2</title>
+<body>
+<h1>Changes to <tt>java.io</tt> after JDK 1.1 beta2</h1>
+
+
+<p> The class <a
+href="../../api/java.lang.Throwable.html"><tt>java.lang.Throwable</tt></a> now
+supports a <a
+href="../../api/java.lang.Throwable.html#printStackTrace(java.io.PrintWriter)"><tt>printStackTrace</tt></a>
+method that takes a <a
+href="../../api/java.io.PrintWriter.html"><tt>PrintWriter</tt></a> object rather than a
+<a href="../../api/java.io.PrintStream.html"><tt>PrintStream</tt></a> object.
+
+<p> Two convenience constructors, which take <a
+href="../../api/java.io.OutputStream.html"><tt>OutputStream</tt></a> objects
+rather than <a href="../../api/java.io.Writer.html"><tt>Writer</tt></a>
+objects, have been added to the <tt>PrintWriter</tt> class:
+
+<p>
+<table width=100% border=0 cellpadding=0 cellspacing=0>
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.io.PrintWriter.html#PrintWriter(java.io.OutputStream)"><tt>PrintWriter(OutputStream out)</tt></a>
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.io.PrintWriter.html#PrintWriter(java.io.OutputStream, boolean)"><tt>PrintWriter(OutputStream out, boolean autoFlush)</tt></a>
+</table>
+
+<p> These constructors are intended to ease the transition from the <tt>PrintStream</tt>
+class to the new <tt>PrintWriter</tt> class.
+
+
+<p> The <a
+href="../../api/java.io.ByteArrayInputStream.html"><tt>ByteArrayInputStream</tt></a>
+class now supports the <a
+href="../../api/java.io.ByteArrayInputStream.html#mark(int)"><tt>mark</tt></a>
+and <a
+href="../../api/java.io.ByteArrayInputStream.html#reset()"><tt>reset</tt></a>
+methods.
+
+<p> The <tt>ByteToCharConverter</tt> and <tt>CharToByteConverter</tt> classes
+are no longer part of the public API.  They have been moved to the
+<tt>sun.io</tt> package, along with the related classes
+<tt>ConversionBufferFullException</tt>, <tt>MalformedInputException</tt>, and
+<tt>UnknownCharacterException</tt>.  An improved interface for access to
+low-level character conversion facilities is planned for a future release.
+
+<p> Since the converter classes are no longer public, a number of constructors
+and methods that previously took converter arguments now accept names of
+character encodings.  They are:
+
+<p>
+<table width=100% border=0 cellpadding=0 cellspacing=0>
+
+<tr><td width=25% align=right valign=top><tt>byte[]</tt>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.lang.String.html#getBytes(java.lang.String)"><tt>String.getBytes(String enc)</tt></a>
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.lang.String.html#String(byte[], java.lang.String)"><tt>String(byte[] buf, String enc)</tt></a>
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.lang.String.html#String(byte[], int, int, java.lang.String)"><tt>String(byte[] buf, int off, int len, String enc)</tt></a>
+
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.io.OutputStreamWriter.html#OutputStreamWriter(java.io.OutputStream, java.lang.String)"><tt>OutputStreamWriter(OutputStream out, String enc)</tt></a>
+
+<tr><td width=25% align=right valign=top>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.io.InputStreamReader.html#InputStreamReader(java.io.InputStream, java.lang.String)"><tt>InputStreamReader(InputStream in, String enc)</tt></a>
+
+<tr><td width=25% align=right valign=top><tt>String</tt>&nbsp;&nbsp;
+    <td width=75% align=left valign=top><a href="../../api/java.io.ByteArrayOutputStream.html#toString(java.lang.String)"><tt>ByteArrayOutputStream.toString(String enc)</tt></a>
+
+</table>
+
+
+<p> The <a
+href="../../api/java.io.InputStreamReader.html"><tt>InputStreamReader</tt></a> and <a
+href="../../api/java.io.OutputStreamWriter.html"><tt>OutputStreamWriter</tt></a> classes
+no longer commit to buffering the underlying byte stream.  Hence the
+constructors that allow the byte-buffer size to be specified have been removed.
+The <tt>getCharacterEncoding</tt> method of these classes has been renamed to <a
+href="../../api/java.io.InputStreamReader.html#getEncoding()"><tt>getEncoding</tt></a>.
+
+
+<p> The <a
+href="../../api/java.io.StreamTokenizer.html#StreamTokenizer(java.io.InputStream)"><tt>StreamTokenizer(InputStream)</tt></a>
+constructor had been changed to use the default character encoding rather than
+assume ASCII.  This turned out to break binary compatibility, so the original
+behavior has been restored and the constructor has been deprecated.
+
+
+<p>
+<hr noshade>
+<table border=0 width=100% cellpadding=0 cellspacing=0>
+<tr><td valign=top align=left>
+    Comments to: <a href="mailto:java-io@java.sun.com"><i>java-io@java.sun.com</i></a>
+    </td>
+    <td valign=top align=right>Mark Reinhold / 4 February 1997</td></tr>
+</table>
+
+</body>
+</html>

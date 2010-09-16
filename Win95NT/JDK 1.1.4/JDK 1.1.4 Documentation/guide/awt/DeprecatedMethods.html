@@ -1,0 +1,516 @@
+<html>
+<head>
+<title>
+Deprecated Methods in the 1.1 AWT
+</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF">
+<font size=-1>
+<a href=HowToUpgrade.html>Back to "How to Convert..."</a>
+</font>
+<hr>
+
+<h1>
+Deprecated Methods in the 1.1 AWT
+</h1>
+
+<p>
+
+This document consists of three sections
+to help you deal with 
+deprecated methods in the 1.1 AWT.
+
+<ul>
+<li> <a href="#overview">Overview</a>
+     <br>
+     Introduces you to the wonderful world of deprecation,
+     as it pertains to the AWT.
+<li> <a href="#override">Overriding Deprecated Methods</a>
+     <br>
+     Discusses how to override a method 
+     that has been deprecated
+     without sacrificing backwards compatibility
+     and without seeing unnecessary compilation warnings.
+<li> <a href="#table">Table of AWT 1.1 Deprecated Methods</a>
+     <br>
+     Lists AWT methods that have been deprecated 
+     and gives the recommended replacements.
+</ul>
+
+<h2>
+<a name="overview">
+Overview
+</a>
+</h2>
+
+The AWT changed significantly between the 1.0.2 and 1.1 releases.
+Certain old ways of doing things 
+are <em>deprecated</em> --
+no longer recommended --
+and might not be supported in a future major release.
+To help you convert your programs well ahead of time,
+the Java compiler warns you
+whenever you compile a program 
+that uses deprecated API.
+
+<p>
+
+<blockquote>
+<hr>
+<strong>For the curious:</strong>
+The AWT marks deprecated API 
+using the <code>@deprecated</code> tag
+in documentation comments
+in the AWT source code.
+These tags were not present in the beta 1.1 releases.
+<hr>
+</blockquote>
+
+<p>
+
+When you use the 1.1 compiler
+to compile a class that calls deprecated API,
+you'll see a warning like the following:
+
+<blockquote>
+<pre>
+% <b>javac Test.java</b>
+Note: Test.java uses a deprecated API.  Recompile with "-deprecation"
+for details.
+1 warning
+%
+</pre>
+</blockquote>
+
+To see a list of everywhere your program uses deprecated API,
+use <code>javac -deprecation</code>.
+You might see many warnings.
+<em>Don't panic!</em>
+Your program will continue to work for a long time.
+However, you might want to make plans to convert it.
+And any <em>new</em> code you write
+should use the new API,
+if at all possible.
+
+<p>
+
+For complete information on how and why to convert your AWT programs,
+see <a href=HowToUpgrade.html>How to Convert
+Programs to the 1.1 AWT API</a>.
+
+<blockquote>
+<hr>
+<strong>Note:</strong>
+As of 1.1.1, the Java compiler warns you
+whenever a program calls or overrides a deprecated method
+(with one exception described in the following section).
+The 1.1 compiler, on the other hand,
+only warned when deprecated methods were <em>called</em> --
+not when they were overridden.
+For example, the 1.1 compiler wouldn't usually warn you
+if a program overrode the <code>action</code> method,
+since most implementations of <code>action</code>
+don't call the superclass's implementation.
+<hr>
+</blockquote>
+
+
+<h2>
+<a name="override">
+Overriding Deprecated Methods
+</a>
+</h2>
+
+You might find yourself in the following situation:
+
+<ul> 
+<li> You're writing 1.1-based code.
+<li> It can be called by 1.0 code.
+<li> You need to override a method that has been deprecated.
+</ul>
+
+In this situation,
+you might wonder which version of the method you should override --
+the deprecated method or its replacement.
+If you simply override the replacement,
+then your code won't work correctly
+with 1.0 code that calls it.
+(If no 1.0 code will call the method,
+then this solution is fine.)
+If you simply override the deprecated version,
+then you'll see compilation warnings
+and you'll have 1.0 dependencies 
+embedded in your code.
+
+<p>
+
+The solution is to override <em>both</em> methods.
+Override the deprecated method so that
+it calls the replacement method,
+and override the replacement method
+to provide the appropriate functionality.
+In your implementation of the deprecated method,
+use the <code>@deprecated</code> documentation tag
+to indicate that you are intentionally overriding the method
+to provide backwards compatibility.
+For example:
+
+<blockquote>
+<pre>
+/** @deprecated */
+public Dimension preferredSize() {
+    return getPreferredSize();
+}
+
+public Dimension getPreferredSize() {
+    <em>...//implementation goes here</em>
+}
+</pre>
+</blockquote>
+
+This solution takes advantage of a loophole:
+The compiler doesn't warn you when you override
+a deprecated method
+<em>and</em>
+you mark the overriding method as deprecated.
+For example, the preceding code results in no warnings when compiled.
+However, if code that <em>calls</em> the preceding code
+is compiled,
+a deprecation warning occurs.
+
+<p>
+
+The solution described in this section
+helps you write code that 
+is backwards compatible,
+compiles cleanly, and
+is easy to understand.
+When you no longer have to provide 1.0 compatibility,
+it'll be easy to find and remove the deprecated code.
+
+
+<h2>
+<a name="table">
+Table of AWT 1.1 Deprecated Methods
+</a>
+</h2>
+
+This section lists all the deprecated AWT methods
+and their 1.1 replacements.
+A script named <code>updateAWT</code> can 
+make the simplest replacements for you.
+See <a href=HowToUpgrade.html>How to Convert
+Programs to the 1.1 AWT API</a>
+for instructions and examples of using the script.
+
+<p>
+
+A table similar to this one is in
+<a href=NameChanges.html>Simple Name Changes</a>.
+That table contains a bit less information than this one,
+and it's alphabetized by the 1.1 column
+to help you easily undo incorrect changes
+that the script has made.
+
+<p>
+
+In the following table, 
+method names in <b>bold font</b>
+are the preferred method names.
+Some of the valid 1.1 substitutes for event-handling methods
+are less preferable
+than other 1.1 solutions.
+For example, 
+although <code>gotFocus</code>
+can be replaced by <code>processFocusEvent</code>,
+we'd rather you replaced it with
+<code>focusGained</code> implemented in a <code>FocusListener</code>,
+as described in
+<a href=HowToUpgrade.html#events>How to Convert Event-Handling Code</a>.
+
+<p>
+
+<table border=1>
+<tr>
+    <th>Deprecated Method
+    <th>Class Where Deprecated
+    <th>1.1 Replacement
+<tr>
+    <td><code>action</code>
+    <td><code>Component</code>
+    <td> See <a href=HowToUpgrade.html#events>How
+	 to Convert Event-Handling Code</a>
+	 for examples of handling action events.
+<tr>
+    <td><code>allowsMultipleSelections</code>
+    <td><code>List</code>
+    <td><code><b>isMultipleMode</b></code>
+<tr>
+    <td><code>appendText</code>
+    <td><code>TextArea</code>
+    <td><code><b>append</b></code>
+<tr>
+    <td><code>bounds</code>
+    <td><code>Component</code>
+    <td><code><b>getBounds</b></code>
+<tr>
+    <td><code>clear</code>
+    <td><code>List</code>
+    <td><code><b>removeAll</b></code>
+<tr>
+    <td><code>countComponents</code>
+    <td><code>Container</code>
+    <td><code><b>getComponentCount</b></code>
+<tr>
+    <td><code>countItems</code>
+    <td><code>Choice, List, Menu</code>
+    <td><code><b>getItemCount</b></code>
+<tr>
+    <td><code>countMenus</code>
+    <td><code>MenuBar</code>
+    <td><code><b>getMenuCount</b></code>
+<tr>
+    <td><code>deliverEvent</code>
+    <td><code>Component, Container</code>
+    <td><code><b>dispatchEvent</b></code>
+<tr>
+    <td><code>disable()</code>
+    <td><code>MenuItem</code>
+    <td><code><b>setEnabled(false)</b></code>
+<tr>
+    <td><code>enable()</code>
+    <td><code>Component, MenuItem</code>
+    <td><code><b>setEnabled(true)</b></code>
+<tr>
+    <td><code>enable(<em>expression</em>)</code>
+    <td><code>Component</code>
+    <td><code><b>setEnabled(<em>expression</em>)</b></code>
+<tr>
+    <td><code>getBoundingBox</code>
+    <td><code>Polygon</code>
+    <td><code><b>getBounds</b></code>
+<tr>
+    <td><code>getClipRect</code>
+    <td><code>Graphics</code>
+    <td><code><b>getClipBounds</b></code>
+<tr>
+    <td><code>getCurrent</code>
+    <td><code>CheckboxGroup</code>
+    <td><code><b>getSelectedCheckbox</b></code>
+<tr>
+    <td><code>getCursorType</code>
+    <td><code>Frame</code>
+    <td><code><b>getCursor</b></code> method in <code>Component</code>
+<tr>
+    <td><code>getLineIncrement</code>
+    <td><code>Scrollbar</code>
+    <td><code><b>getUnitIncrement</b></code>
+<tr>
+    <td><code>getPageIncrement</code>
+    <td><code>Scrollbar</code>
+    <td><code><b>getBlockIncrement</b></code>
+<tr>
+    <td><code>getPeer</code>
+    <td><code>Component</code>
+    <td><em>No replacement.</em>
+<tr>
+    <td><code>getVisible</code>
+    <td><code>Scrollbar</code>
+    <td><code><b>getVisibleAmount</b></code>
+<tr>
+    <td><code>gotFocus</code>
+    <td><code>Component</code>
+    <td><code>processFocusEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>
+	    for information 
+	    on preferred ways to handle events.
+<tr>
+    <td><code>handleEvent</code>
+    <td><code>Component</code>
+    <td><code>processEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>
+	    for information 
+	    on preferred ways to handle events.
+<tr>
+    <td><code>hide</code>
+    <td><code>Component</code>
+    <td><code><b>setVisible(false)</b></code>
+<tr>
+    <td><code>insertText</code>
+    <td><code>TextArea</code>
+    <td><code><b>insert</b></code>
+<tr>
+    <td><code>insets</code>
+    <td><code>Container</code>
+    <td><code><b>getInsets</b></code>
+<tr>
+    <td><code>inside</code>
+    <td><code>Component, Polygon, Rectangle</code>
+    <td><code><b>contains</b></code>
+<tr>
+    <td><code>isSelected</code>
+    <td><code>List</code>
+    <td><code><b>isIndexSelected</b></code>
+<tr>
+    <td><code>keyDown</code>
+    <td><code>Component</code>
+    <td><code>processKeyEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>keyUp</code>
+    <td><code>Component</code>
+    <td><code>processKeyEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>layout</code>
+    <td><code>Component, Container, ScrollPane</code>
+    <td><code><b>doLayout</b></code>
+<tr>
+    <td><code>locate</code>
+    <td><code>Component, Container</code>
+    <td><code><b>getComponentAt</b></code>
+<tr>
+    <td><code>location</code>
+    <td><code>Component</code>
+    <td><code><b>getLocation</b></code>
+<tr>
+    <td><code>lostFocus</code>
+    <td><code>Component</code>
+    <td><code>processFocusEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>minimumSize</code>
+    <td><code>Component, Container, TextArea, TextField</code>
+    <td><code><b>getMinimumSize</b></code>
+<tr>
+    <td><code>mouseDown</code>
+    <td><code>Component</code>
+    <td><code>processMouseEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>mouseDrag</code>
+    <td><code>Component</code>
+    <td><code>processMouseMotionEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>mouseEnter</code>
+    <td><code>Component</code>
+    <td><code>processMouseEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>mouseExit</code>
+    <td><code>Component</code>
+    <td><code>processMouseEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>mouseMove</code>
+    <td><code>Component</code>
+    <td><code>processMouseMotionEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>mouseUp</code>
+    <td><code>Component</code>
+    <td><code>processMouseEvent</code>
+	<br>
+	    See <a href=HowToUpgrade.html#events>How
+	    to Convert Event-Handling Code</a>.
+<tr>
+    <td><code>move</code>
+    <td><code>Component, Rectangle</code>
+    <td><code><b>setLocation</b></code>
+<tr>
+    <td><code>nextFocus</code>
+    <td><code>Component, Container, Window</code>
+    <td><code><b>transferFocus</b></code>
+<tr>
+    <td><code>postEvent</code>
+    <td><code>Component, Window</code>
+    <td><code><b>dispatchEvent</b></code>
+<tr>
+    <td><code>preferredSize</code>
+    <td><code>Component, Container, TextArea, TextField</code>
+    <td><code><b>getPreferredSize</b></code>
+<tr>
+    <td><code>replaceText</code>
+    <td><code>TextArea</code>
+    <td><code><b>replaceRange</b></code>
+<tr>
+    <td><code>reshape</code>
+    <td><code>Component, Rectangle</code>
+    <td><code><b>setBounds</b></code>
+<tr>
+    <td><code>resize</code>
+    <td><code>Component, Rectangle</code>
+    <td><code><b>setSize</b></code>
+<tr>
+    <td><code>setCurrent</code>
+    <td><code>CheckboxGroup</code>
+    <td><code><b>setSelectedCheckbox</b></code>
+<tr>
+    <td><code>setCursor</code>
+    <td><code>Frame</code>
+    <td><code><b>setCursor</b></code> method in <code>Component</code>
+<tr>
+    <td><code>setEchoCharacter</code>
+    <td><code>TextField</code>
+    <td><code><b>setEchoChar</b></code>
+<tr>
+    <td><code>setLineIncrement</code>
+    <td><code>Scrollbar</code>
+    <td><code><b>setUnitIncrement</b></code>
+<tr>
+    <td><code>setMultipleSelections</code>
+    <td><code>List</code>
+    <td><code><b>setMultipleMode</b></code>
+<tr>
+    <td><code>setPageIncrement</code>
+    <td><code>Scrollbar</code>
+    <td><code><b>setBlockIncrement</b></code>
+<tr>
+    <td><code>show()</code>
+    <td><code>Component</code>
+    <td><code><b>setVisible(true)</b></code>
+<tr>
+    <td><code>show(<em>expression</em>)</code>
+    <td><code>Component</code>
+    <td><code><b>setVisible(<em>expression</em>)</b></code>
+<tr>
+    <td><code>size</code>
+    <td><code>Component</code>
+    <td><code><b>getSize</b></code>
+</table>
+
+<p>
+
+<hr>
+<font size=-1>
+<a href=HowToUpgrade.html>Back to "How to Convert..."</a>
+<hr>
+<em>
+By <a href=mailto:kwalrath@eng.sun.com>Kathy Walrath</a>
+</em>
+</font>
+</body>
+</html>
+

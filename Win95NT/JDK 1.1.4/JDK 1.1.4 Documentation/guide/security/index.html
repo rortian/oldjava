@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+<title>Security and Signed Applets</title>
+</head>
+ 
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000ff" VLINK="#000077" ALINK="#ff0000">
+<CENTER><P ALIGN=LEFT>
+<IMG SRC="../../images/smi.logo.gif" ALT=" Sun Microsystems, Inc " BORDER=0>
+</P></CENTER>
+ 
+ 
+<font size=-1><a href="../../index.html">JDK Contents</a></font>
+<HR SIZE=3 NOSHADE>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<center>
+           <h1>Security and Signed Applets</h1>
+</center>
+ 
+<blockquote> 
+
+The Java Security API allows developers to incorporate
+both low-level and high-level security functionality into their Java
+applications.  The first release of Java Security in JDK 1.1 contains
+a subset of this functionality, including APIs for digital signatures
+and message digests.  In addition, there are abstract interfaces for
+key management, certificate management and access control.  Specific
+APIs to support X.509 v3 certificates and other certificate formats,
+and richer functionality in the area of access control, will follow in
+subsequent JDK releases.
+ 
+<p>JDK 1.1 also provides a tool named <code>javakey</code>, which is
+used to sign Java ARchive (JAR) files.  A JAR file is a Java archive
+that can contain Java classes and other data, such as images and
+sounds. The appletviewer allows any downloaded applets in JAR files
+signed (using the tool) by a trusted entity to run with the same full
+rights as local applications. That is, such applets are not subject to
+the sandbox restrictions of the Java security model.  Note that the
+appletviewer is a debugging aid for people experimenting with digital
+signature technology, and people writing applets; it is not a browser
+that people typically use for browsing the World Wide Web.  JavaSoft
+is committed to the safety and security features that people have come
+to expect from the Java security model and the sandbox.  
+
+<p>
+
+Subsequent releases of the JDK will provide ways for you to externally
+configure policy files for fine-grain access control.  The <a
+href="http://java.sun.com/security/index.html">security</a> page has a copy of
+JavaSoft Security Architect Li Gong's <a
+href="http://java.sun.com/javaone/sessions/slides/TT03/index.html">slides
+from JavaOne</a> that describe the direction we are headed, as well as
+a one-page <a href="http://java.sun.com/security/handout.html">handout</a> that
+summarizes coming features.
+
+<p>
+
+There is some confusion abroad in the land about the distinction
+between fine-grain access control implemented on top of the sandbox,
+and, a binary trusted/not-trusted model.  The two models are quite
+different.  It is possible with the Java sandbox to implement
+fine-grain access control <i>because</i> such access can be safely
+controlled in the context of the sandbox.  It is not possible in some
+C/C++ based embedded content models to implement secure fine-grain
+access control -- the only option open to some of these systems is a binary
+trusted/not-trusted model.  Check out the <a
+href="http://java.sun.com/security/index.html">Java security page</a> and our <a
+href="http://jserv.javasoft.com/hypermail/java-security-archive/index.html">hypermail
+Q &A</a> for more information.
+
+
+</blockquote>
+ 
+<font size="+2"><b>Security Guides</b></font><br>
+<ul>
+   <LI><b><a href="JavaSecurityOverview.html">Security API Overview</a></b> 
+   <LI><b><a href = "CryptoSpec.html">Java Cryptography Architecture API 
+Specification and Reference</a></b>
+   <LI><b><a href="HowToImplAProvider.html">How to Integrate Your
+Cryptography Algorithms into Java Security</a></b> 
+</ul>
+<br>
+
+<font size="+2"><b>Security Example</b></font><br>
+<ul>
+<b>Located on the JavaSoft website:</b>
+  <li><b><a href="http://java.sun.com/security/signExample/index.html">Signed Applet Example</a></b>
+</ul>
+<br>
+
+<font size="+2"><b>Security API Reference</b></font><br>
+<font size=-1>(javadoc)</font>
+<ul>
+   <LI><b><a href="../../api/Package-java.security.html">java.security Package</a></b>
+   <LI><b><a href="../../api/Package-java.security.acl.html">java.security.acl Package</a></b>
+   <LI><b><a href="../../api/Package-java.security.interfaces.html">java.security.interfaces Package</a></b>
+</ul>
+<br>
+ 
+<font size="+2"><b>Security Tools</b></font><br>
+<ul>
+   <LI><b>javakey</b> - Java security tool - 
+(<a href="../../tooldocs/solaris/javakey.html">for Solaris</a>) (<a href="../../tooldocs/win32/javakey.html">for Windows</a>)
+</ul>
+<br>
+
+<font size="+2"><b>For More Information</b></font><br>
+<ul>
+<b>Located on the JavaSoft website:</b>
+<p>
+   <li><b><a href="http://java.sun.com/security/index.html">JavaSoft Security Page</a></b>
+
+	<li> <b>The hypermail <a
+	      href="http://jserv.javasoft.com/hypermail/java-security-archive/index.html">Q
+	      &amp; A archive</a>, for questions sent to the <a
+	      href="mailto:java-security@java.sun.com">java-security@java.sun.com</a> mailing list.
+	    Note that this mailing list is not a subscription list, but a one-way
+	    channel for sending questions to the Java team.
+
+</ul>
+<br>
+ 
+ 
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+ 
+<IMG SRC="../../images/JAVA.85.GIF" ALIGN=RIGHT>
+ 
+<FONT SIZE=-2>
+<A HREF="../../relnotes/SMICopyright.html">Copyright &#169;</A> 
+1996, 1997 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn. View, CA 94043-1100 USA. All rights
+reserved.
+</FONT>
+
+<br><br>
+<FONT SIZE=-1>
+Please send comments to: <a href="mailto:java-security@java.sun.com">
+java-security@java.sun.com</a>
+</FONT>
+ 
+ 
+</BODY>
+</HTML>

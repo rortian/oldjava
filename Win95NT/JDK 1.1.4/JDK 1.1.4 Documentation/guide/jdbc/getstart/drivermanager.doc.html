@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="connection.doc.html">Prev</a>  | <a href="statement.doc.html">Next</a>
+</font></td><td align=right><i>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="999037"></a>
+<h1>3  - DriverManager</h1>
+<a name="999046"></a>
+This overview is excerpted from <em>JDBC<font size=-1><sup>TM</sup></font> Database Access from Java<font size=-1><sup>TM</sup></font>:  A Tutorial 
+and Annotated Reference,</em> currently in progress at JavaSoft.  This book, both a tutorial and the definitive reference manual for JDBC, will be published in the spring of 
+1997 by Addison-Wesley Publishing Company as part of the Java series.
+<p>
+<a name="999083"></a>
+<h2>3.1	 &nbsp;&nbsp; Overview</h2>
+<a name="999086"></a>
+The <code>DriverManager</code> class is the management layer of JDBC, working between 
+the user and the drivers. It keeps track of the drivers that are available and handles 
+establishing a connection between a database and the appropriate driver. In addition, 
+the <code>DriverManager</code> class attends to things like driver login time limits and the printing of log and tracing messages.  
+<p><a name="999049"></a>
+For simple applications, the only method in this class that a general programmer needs to use directly is <code>DriverManager.getConnection</code>.  As its name implies, 
+this method establishes a connection to a database.   JDBC allows the user to call 
+the <code>DriverManager</code> methods <code>getDriver</code>, <code>getDrivers</code>, and <code>registerDriver</code> as well 
+as the <code>Driver</code> method <code>connect</code>, but in most cases it is better to let the <code>DriverManager</code> class manage the details of establishing a connection.
+<p>
+
+<a name="999050"></a>
+<h3>3.1.1	 &nbsp; &nbsp; Keeping Track of Available Drivers</h3>
+<a name="999103"></a>
+The <code>DriverManager</code> class maintains a list of <code>Driver</code> classes that have registered 
+themselves by calling the method <code>DriverManager.registerDriver</code>.  All <code>Driver</code> 
+classes should be written with a static section that creates an instance of the class 
+and then registers it with the <code>DriverManager</code> class when it is loaded. Thus, a user 
+would not normally call <code>DriverManager.registerDriver</code> directly; it should be 
+called automatically by a driver when it is loaded.  A <code>Driver</code> class is loaded, and 
+therefore automatically registered with the <code>DriverManager</code>, in two ways:
+<p><ol>
+<a name="999052"></a>
+<li>By calling the method <code>Class.forName</code>.   This explicitly loads the driver class.  
+Since it does not depend on any external setup, this way of loading a driver is 
+recommended. The following code loads the class <code>acme.db.Driver</code>:
+
+
+<pre><a name="999053"></a>    Class.forName("acme.db.Driver");
+</pre><a name="999054"></a>
+If  <code>acme.db.Driver</code> has been written so that loading it causes an instance to be 
+created and also calls <code>DriverManager.registerDriver</code> with that instance as 
+the parameter (as it should do), then it is in the <code>DriverManager</code>'s list of drivers 
+and available for creating a connection.
+<p>
+<a name="999056"></a>
+<li>By adding the driver to the <code>java.lang.System</code> property <code>jdbc.drivers</code>.  This is 
+a list of driver classnames, separated by colons, that the <code>DriverManager</code> class 
+loads.   When the <code>DriverManager</code> class is intialized, it looks for the system 
+property <code>jdbc.drivers</code>, and if the user has entered one or more drivers, the 
+<code>DriverManager</code> class attempts to load them.  The following code illustrates 
+how a programmer might enter three driver classes in  <code>~/.hotjava/properties</code> 
+(HotJava loads these into the system properties list on startup):
+
+</ol>
+<pre><a name="999057"></a>    jdbc.drivers=foo.bah.Driver:wombat.sql.Driver:bad.test.ourDriver;
+</pre><a name="999058"></a>
+The first call to a <code>DriverManager</code> method will automatically cause these driver 
+classes to be loaded. 
+<p>
+<a name="999059"></a>
+Note that this second way of loading drivers requires a preset environment 
+that is persistent.  If there is any doubt about that being the case, it is safer to call 
+the method <code>Class.forName</code> to explicitly load each driver.  This is also the method 
+to use to bring in a particular driver since once the <code>DriverManager</code> class has been 
+initialized, it will never recheck the <code>jdbc.drivers</code> property list.
+<p>
+<a name="999060"></a>
+     In both of the cases listed above, it is the responsibility of the newly-loaded 
+<code>Driver</code> class to register itself by calling <code>DriverManager.registerDriver</code>.  As 
+mentioned above, this should be done automatically when the class is loaded.
+<p>
+<a name="999061"></a>
+For security reasons, the JDBC management layer will keep track of which 
+class loader provided which driver. Then when the <code>DriverManager</code> class is opening a connection, it will use only drivers that come from the local file system or 
+from the same class loader as the code issuing the request for a connection.
+<p>
+
+<a name="999062"></a>
+<h3>3.1.2	 &nbsp; &nbsp; Establishing a Connection</h3>
+<a name="999106"></a>
+Once the <code>Driver</code> classes have been loaded and registered with the <code>DriverManager</code> 
+class, they are available for establishing a connection with a database. When a 
+request for a connection is made with a call to the <code>DriverManager.getConnection</code> 
+method, the <code>DriverManager</code> tests each driver in turn to see if it can establish a connection.  
+<p><a name="999064"></a>
+It may sometimes be the case that more than one JDBC driver is capable of 
+connecting to a given URL.  For example, when connecting to a given remote 
+database, it might be possible to use a JDBC-ODBC bridge driver, a JDBC-to-
+generic-network-protocol driver, or a driver supplied by the database vendor.  In 
+such cases, the order in which the drivers are tested is significant because the 
+<code>DriverManager</code> will use the first driver it finds that can successfully connect to the 
+given URL.
+<p>
+<a name="999065"></a>
+First the <code>DriverManager</code> tries to use each of the drivers in the order they were 
+registered.  (The drivers listed in <code>jdbc.drivers</code> are always registered first.)  It will 
+skip any drivers which are untrusted code, unless they have been loaded from the 
+same source as the code that is trying to open the connection.
+<p>
+<a name="999066"></a>
+It tests the drivers by calling the method <code>Driver.connect</code> on each one in turn, 
+passing them the URL that the user originally passed to the method <code>DriverManager.getConnection</code>.  The first driver that recognizes the URL  makes the connection.  
+<p>
+<a name="999067"></a>
+At first glance this may seem inefficient, but it requires only a few procedure 
+calls and string comparisons per connection since it is unlikely that dozens of 
+drivers will be loaded concurrently. 
+<p>
+<a name="999068"></a>
+The following code is an example of all that is normally needed to set up a 
+connection with a driver such as a JDBC-ODBC bridge driver:
+<p>
+<pre><a name="999069"></a>    Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");  //loads the driver
+<a name="999070"></a>    String url = "jdbc:odbc:fred";
+<a name="999071"></a>    DriverManager.getConnection(url, "userID", "passwd");
+<a name="998237"></a>    
+</pre>
+
+<br>
+<hr>
+<font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="connection.doc.html">Prev</a>  | <a href="statement.doc.html">Next</a>
+</font>
+<hr>
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

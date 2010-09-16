@@ -1,0 +1,433 @@
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+ 
+<table width=600><tr>
+<td><font size=-1> 
+Contents  | Prev  | <a href="java-reflection-copyright.doc.html">Next</a>
+</font></td><td align=right></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="412"></a>
+<center>
+<h1>Java<font size=-1><sup>TM</sup></font> Core Reflection
+</h1>
+<h3>API and Specification</h3>
+<h3></h3>
+<h3></h3>
+<h4>February 4, 1997</h4>
+</center>
+<hr><p><dl>
+<br>
+<dt><dd><a href="java-reflection.doc.html">
+<font size=+2><bold>     Overview                </bold></font>
+</a><dl>
+<dl>
+<dt><dd><a href="java-reflection.doc.html#8591">
+     Applications                
+</a></dl>
+</dl>
+<dl>
+<dt><dd><a href="java-reflection.doc.html#18290">
+<bold>     Reflection Model                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc.html#4607">
+     Member Interface                
+</a><dt><dd><a href="java-reflection.doc.html#1359">
+     Field Objects                
+</a><dt><dd><a href="java-reflection.doc.html#8596">
+     Method Objects                
+</a><dt><dd><a href="java-reflection.doc.html#8597">
+     Constructor Objects                
+</a><dt><dd><a href="java-reflection.doc.html#1379">
+     Array and Modifier Classes                
+</a><dt><dd><a href="java-reflection.doc.html#16479">
+     Representation of Primitive Java Types                
+</a></dl>
+<dt><dd><a href="java-reflection.doc.html#5891">
+<bold>     Security Model                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc.html#1626">
+     Java Language Policy                
+</a><dt><dd><a href="java-reflection.doc.html#1628">
+     JDK 1.1 Security Policy                
+</a></dl>
+<dt><dd><a href="java-reflection.doc.html#1702">
+<bold>     Data Conversions                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc.html#1705">
+     Wrapping and Unwrapping Conversions                
+</a><dt><dd><a href="java-reflection.doc.html#1746">
+     Widening Conversions                
+</a></dl>
+<dt><dd><a href="java-reflection.doc.html#1774">
+<bold>     Packaging                </bold>
+</a></dl>
+<br>
+<dt><dd><a href="java-reflection.doc1.html">
+<font size=+2><bold>     The class java.lang.Class                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc1.html#1786">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc1.html#1796">
+     toString                
+</a><dt><dd><a href="java-reflection.doc1.html#1800">
+     forName                
+</a><dt><dd><a href="java-reflection.doc1.html#1805">
+     newInstance                
+</a><dt><dd><a href="java-reflection.doc1.html#4835">
+     isInstance                
+</a><dt><dd><a href="java-reflection.doc1.html#4839">
+     isAssignableFrom                
+</a><dt><dd><a href="java-reflection.doc1.html#4844">
+     isInterface                
+</a><dt><dd><a href="java-reflection.doc1.html#4847">
+     isArray                
+</a><dt><dd><a href="java-reflection.doc1.html#4850">
+     isPrimitive                
+</a><dt><dd><a href="java-reflection.doc1.html#4865">
+     getName                
+</a><dt><dd><a href="java-reflection.doc1.html#4868">
+     getModifiers                
+</a><dt><dd><a href="java-reflection.doc1.html#4872">
+     getClassLoader                
+</a><dt><dd><a href="java-reflection.doc1.html#4875">
+     getSuperclass                
+</a><dt><dd><a href="java-reflection.doc1.html#4878">
+     getInterfaces                
+</a><dt><dd><a href="java-reflection.doc1.html#4881">
+     getComponentType                
+</a><dt><dd><a href="java-reflection.doc1.html#4884">
+     getDeclaringClass                
+</a><dt><dd><a href="java-reflection.doc1.html#4887">
+     getClasses                
+</a><dt><dd><a href="java-reflection.doc1.html#4890">
+     getFields                
+</a><dt><dd><a href="java-reflection.doc1.html#4897">
+     getMethods                
+</a><dt><dd><a href="java-reflection.doc1.html#4903">
+     getConstructors                
+</a><dt><dd><a href="java-reflection.doc1.html#4908">
+     getField                
+</a><dt><dd><a href="java-reflection.doc1.html#4916">
+     getMethod                
+</a><dt><dd><a href="java-reflection.doc1.html#4924">
+     getConstructor                
+</a><dt><dd><a href="java-reflection.doc1.html#4931">
+     getDeclaredClasses                
+</a><dt><dd><a href="java-reflection.doc1.html#4936">
+     getDeclaredFields                
+</a><dt><dd><a href="java-reflection.doc1.html#4942">
+     getDeclaredMethods                
+</a><dt><dd><a href="java-reflection.doc1.html#4948">
+     getDeclaredConstructors                
+</a><dt><dd><a href="java-reflection.doc1.html#4953">
+     getDeclaredField                
+</a><dt><dd><a href="java-reflection.doc1.html#4960">
+     getDeclaredMethod                
+</a><dt><dd><a href="java-reflection.doc1.html#4968">
+     getDeclaredConstructor                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc2.html">
+<font size=+2><bold>     The interface java.lang.reflect.Member                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc2.html#4979">
+<bold>     Fields                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc2.html#4980">
+     PUBLIC                
+</a><dt><dd><a href="java-reflection.doc2.html#4984">
+     DECLARED                
+</a></dl>
+<dt><dd><a href="java-reflection.doc2.html#4988">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc2.html#4989">
+     getDeclaringClass                
+</a><dt><dd><a href="java-reflection.doc2.html#4992">
+     getName                
+</a><dt><dd><a href="java-reflection.doc2.html#4995">
+     getModifiers                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc3.html">
+<font size=+2><bold>     The class java.lang.reflect.Field                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc3.html#5006">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc3.html#5007">
+     getDeclaringClass                
+</a><dt><dd><a href="java-reflection.doc3.html#5010">
+     getName                
+</a><dt><dd><a href="java-reflection.doc3.html#5013">
+     getModifiers                
+</a><dt><dd><a href="java-reflection.doc3.html#5017">
+     getType                
+</a><dt><dd><a href="java-reflection.doc3.html#5020">
+     equals                
+</a><dt><dd><a href="java-reflection.doc3.html#5024">
+     hashCode                
+</a><dt><dd><a href="java-reflection.doc3.html#5028">
+     toString                
+</a><dt><dd><a href="java-reflection.doc3.html#5036">
+     get                
+</a><dt><dd><a href="java-reflection.doc3.html#5047">
+     getBoolean                
+</a><dt><dd><a href="java-reflection.doc3.html#5053">
+     getByte                
+</a><dt><dd><a href="java-reflection.doc3.html#5059">
+     getChar                
+</a><dt><dd><a href="java-reflection.doc3.html#5065">
+     getShort                
+</a><dt><dd><a href="java-reflection.doc3.html#5071">
+     getInt                
+</a><dt><dd><a href="java-reflection.doc3.html#5077">
+     getLong                
+</a><dt><dd><a href="java-reflection.doc3.html#5083">
+     getFloat                
+</a><dt><dd><a href="java-reflection.doc3.html#5089">
+     getDouble                
+</a><dt><dd><a href="java-reflection.doc3.html#5095">
+     set                
+</a><dt><dd><a href="java-reflection.doc3.html#5109">
+     setBoolean                
+</a><dt><dd><a href="java-reflection.doc3.html#5115">
+     setByte                
+</a><dt><dd><a href="java-reflection.doc3.html#5121">
+     setChar                
+</a><dt><dd><a href="java-reflection.doc3.html#5127">
+     setShort                
+</a><dt><dd><a href="java-reflection.doc3.html#5133">
+     setInt                
+</a><dt><dd><a href="java-reflection.doc3.html#5139">
+     setLong                
+</a><dt><dd><a href="java-reflection.doc3.html#5145">
+     setFloat                
+</a><dt><dd><a href="java-reflection.doc3.html#5151">
+     setDouble                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc4.html">
+<font size=+2><bold>     The class java.lang.reflect.Method                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc4.html#5164">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc4.html#5165">
+     getDeclaringClass                
+</a><dt><dd><a href="java-reflection.doc4.html#5168">
+     getName                
+</a><dt><dd><a href="java-reflection.doc4.html#5171">
+     getModifiers                
+</a><dt><dd><a href="java-reflection.doc4.html#5175">
+     getReturnType                
+</a><dt><dd><a href="java-reflection.doc4.html#5178">
+     getParameterTypes                
+</a><dt><dd><a href="java-reflection.doc4.html#5181">
+     getExceptionTypes                
+</a><dt><dd><a href="java-reflection.doc4.html#5184">
+     equals                
+</a><dt><dd><a href="java-reflection.doc4.html#5188">
+     hashCode                
+</a><dt><dd><a href="java-reflection.doc4.html#5192">
+     toString                
+</a><dt><dd><a href="java-reflection.doc4.html#5200">
+     invoke                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc5.html">
+<font size=+2><bold>     The class java.lang.reflect.Constructor                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc5.html#5225">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc5.html#5226">
+     getDeclaringClass                
+</a><dt><dd><a href="java-reflection.doc5.html#5229">
+     getName                
+</a><dt><dd><a href="java-reflection.doc5.html#5232">
+     getModifiers                
+</a><dt><dd><a href="java-reflection.doc5.html#5236">
+     getParameterTypes                
+</a><dt><dd><a href="java-reflection.doc5.html#5239">
+     getExceptionTypes                
+</a><dt><dd><a href="java-reflection.doc5.html#5242">
+     equals                
+</a><dt><dd><a href="java-reflection.doc5.html#5246">
+     hashCode                
+</a><dt><dd><a href="java-reflection.doc5.html#5250">
+     toString                
+</a><dt><dd><a href="java-reflection.doc5.html#5257">
+     newInstance                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc6.html">
+<font size=+2><bold> The class java.lang.reflect.Array                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc6.html#5278">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc6.html#5279">
+     newInstance                
+</a><dt><dd><a href="java-reflection.doc6.html#5287">
+     newInstance                
+</a><dt><dd><a href="java-reflection.doc6.html#5298">
+     getLength                
+</a><dt><dd><a href="java-reflection.doc6.html#5304">
+     get                
+</a><dt><dd><a href="java-reflection.doc6.html#5315">
+     getBoolean                
+</a><dt><dd><a href="java-reflection.doc6.html#5321">
+     getByte                
+</a><dt><dd><a href="java-reflection.doc6.html#5327">
+     getChar                
+</a><dt><dd><a href="java-reflection.doc6.html#5333">
+     getShort                
+</a><dt><dd><a href="java-reflection.doc6.html#5339">
+     getInt                
+</a><dt><dd><a href="java-reflection.doc6.html#5345">
+     getLong                
+</a><dt><dd><a href="java-reflection.doc6.html#5351">
+     getFloat                
+</a><dt><dd><a href="java-reflection.doc6.html#5357">
+     getDouble                
+</a><dt><dd><a href="java-reflection.doc6.html#5363">
+     set                
+</a><dt><dd><a href="java-reflection.doc6.html#5376">
+     setBoolean                
+</a><dt><dd><a href="java-reflection.doc6.html#5381">
+     setByte                
+</a><dt><dd><a href="java-reflection.doc6.html#5386">
+     setChar                
+</a><dt><dd><a href="java-reflection.doc6.html#5391">
+     setShort                
+</a><dt><dd><a href="java-reflection.doc6.html#5396">
+     setInt                
+</a><dt><dd><a href="java-reflection.doc6.html#5401">
+     setLong                
+</a><dt><dd><a href="java-reflection.doc6.html#5406">
+     setFloat                
+</a><dt><dd><a href="java-reflection.doc6.html#5411">
+     setDouble                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc7.html">
+<font size=+2><bold>     The class java.lang.reflect.Modifier                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc7.html#5421">
+<bold>     Fields                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc7.html#5423">
+     PUBLIC                
+</a><dt><dd><a href="java-reflection.doc7.html#5426">
+     PRIVATE                
+</a><dt><dd><a href="java-reflection.doc7.html#5429">
+     PROTECTED                
+</a><dt><dd><a href="java-reflection.doc7.html#5432">
+     STATIC                
+</a><dt><dd><a href="java-reflection.doc7.html#5435">
+     FINAL                
+</a><dt><dd><a href="java-reflection.doc7.html#5438">
+     SYNCHRONIZED                
+</a><dt><dd><a href="java-reflection.doc7.html#5441">
+     VOLATILE                
+</a><dt><dd><a href="java-reflection.doc7.html#5444">
+     TRANSIENT                
+</a><dt><dd><a href="java-reflection.doc7.html#5447">
+     NATIVE                
+</a><dt><dd><a href="java-reflection.doc7.html#5450">
+     INTERFACE                
+</a><dt><dd><a href="java-reflection.doc7.html#5453">
+     ABSTRACT                
+</a></dl>
+<dt><dd><a href="java-reflection.doc7.html#5456">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc7.html#5457">
+     isPublic                
+</a><dt><dd><a href="java-reflection.doc7.html#5460">
+     isPrivate                
+</a><dt><dd><a href="java-reflection.doc7.html#5463">
+     isProtected                
+</a><dt><dd><a href="java-reflection.doc7.html#5466">
+     isStatic                
+</a><dt><dd><a href="java-reflection.doc7.html#5469">
+     isFinal                
+</a><dt><dd><a href="java-reflection.doc7.html#5472">
+     isSynchronized                
+</a><dt><dd><a href="java-reflection.doc7.html#5475">
+     isVolatile                
+</a><dt><dd><a href="java-reflection.doc7.html#5478">
+     isTransient                
+</a><dt><dd><a href="java-reflection.doc7.html#5481">
+     isNative                
+</a><dt><dd><a href="java-reflection.doc7.html#5484">
+     isInterface                
+</a><dt><dd><a href="java-reflection.doc7.html#5487">
+     isAbstract                
+</a><dt><dd><a href="java-reflection.doc7.html#5490">
+     toString                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc8.html">
+<font size=+2><bold>     The class java.lang.reflect.InvocationTargetException                </bold></font>
+</a><dl>
+<dt><dd><a href="java-reflection.doc8.html#5502">
+<bold>     Constructors                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc8.html#5503">
+     InvocationTargetException                
+</a><dt><dd><a href="java-reflection.doc8.html#5506">
+     InvocationTargetException                
+</a></dl>
+<dt><dd><a href="java-reflection.doc8.html#5509">
+<bold>     Methods                </bold>
+</a><dl>
+<dt><dd><a href="java-reflection.doc8.html#5510">
+     getTargetException                
+</a></dl>
+</dl>
+<br>
+<dt><dd><a href="java-reflection.doc9.html">
+<font size=+2><bold>     Acknowledgements                </bold></font>
+</a><br>
+<dt><dd><a href="java-reflection.doc10.html">
+<font size=+2><bold>     References                </bold></font>
+</a></dl>
+
+
+<br>
+<hr>
+<font size=-1> 
+Contents  | Prev  | <a href="java-reflection-copyright.doc.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<a href="java-reflection-copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

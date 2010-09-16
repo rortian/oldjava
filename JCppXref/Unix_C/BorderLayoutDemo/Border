@@ -1,0 +1,7 @@
+Border*resizable:                  TRUE
+
+Border*btn1.labelString:      Button 1
+Border*btn2.labelString:      Button 2
+Border*btn3.labelString:      Button 3
+Border*btn4.labelString:      Button 4
+Border*btn5.labelString:      Button 5

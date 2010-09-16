@@ -1,0 +1,12 @@
+cafe.symantec.com
+java.sun.com
+microsoft.com
+www.asymetrix.com
+www.borland.com
+www.gamelan.com
+www.hp.com
+www.interex.org
+www.javaworld.com
+www.prenhall.com
+www.search.com
+www.sun.com

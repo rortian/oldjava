@@ -1,0 +1,195 @@
+<html>
+<head>
+<title>javap - The Java Class File Disassembler</title>
+</head>
+<BODY BGCOLOR="#FFFFFF">
+
+<h1>javap - The Java Class File Disassembler</h1>
+<blockquote>
+Disassembles class files.
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+<blockquote>
+<pre>
+javap [ <a href="javap.html#Options">options</a> ] class. . .
+</pre>
+</blockquote>
+
+<h2>DESCRIPTION</h2
+<blockquote>
+The <b>javap</b> command disassembles a class file. Its output depends on 
+the options used. If no options are used, <b>javap</b> prints out the public
+fields and methods of the classes passed to it. <b>javap</b> prints its output
+to stdout. For example, compile the following class declaration:
+<blockquote>
+
+<pre>
+import java.awt.*;
+import java.applet.*;
+
+public class DocFooter extends Applet {
+        String date;
+        String email;
+
+        public void init() {
+                resize(500,100);
+
+                date = getParameter("LAST_UPDATED");
+                email = getParameter("EMAIL");
+        }
+
+        public void paint(Graphics g) {
+                g.drawString(date + " by ",100, 15);
+                g.drawString(email,290,15);
+        }
+}
+</pre>
+</blockquote>
+The output from <b>javap DocFooter</b> yields:
+<blockquote>
+<pre>
+Compiled from DocFooter.java
+public class DocFooter extends java.applet.Applet {
+    java.lang.String date;
+    java.lang.String email;
+    public void init();
+    public void paint(java.awt.Graphics);
+    public DocFooter();
+}
+</pre>
+</blockquote>
+</blockquote>
+
+<a name=Options>
+<h2>OPTIONS</h2>
+</a>
+<blockquote>
+<dl>
+<dt><b>-l</b>
+<dd>
+Prints out line and local variable tables.
+<p>
+
+<dt><b>-b</b>
+<dd>
+Ensures backward compatibility with <b>javap</b> in JDK 1.1.
+<p>
+
+<dt><b>-public</b>
+<dd>
+Shows only public classes and members.
+<p>
+
+<dt><b>-protected</b>
+<dd>
+Shows only protected and public classes and members.
+<p>
+
+<dt><b>-package</b>
+<dd>
+Shows only package, protected, and public classes and members.  This is the 
+default.
+<p>
+
+<dt><b>-private</b>
+<dd>
+Shows all classes and members.
+<p>
+
+<dt><b>-J <i>flag</i></b>
+<dd>
+Pass <i>flag</i> directly to the runtime system.
+
+<p>
+
+<dt><b>-s</b>
+<dd>
+Prints internal type signatures.
+
+<p>
+
+<dt><b>-c</b>
+<dd>
+Prints out disassembled code, i.e., the instructions that comprise the 
+Java bytecodes, for each of the methods in the class. 
+<p>
+
+<dt><b>-classpath <i>path</i></b>
+<dd>
+Specifies the path <b>javap</b> uses to look up classes. Overrides the default 
+or the CLASSPATH environment variable if it is set. Directories are 
+separated by 
+colons. Thus the general format for <i>path</i> is:
+<p>
+<blockquote>
+<pre>
+.:&lt;your_path&gt;
+</pre>
+</blockquote>
+For example:
+<blockquote>
+<pre>
+.:/home/avh/classes:/usr/local/java/classes
+</pre>
+</blockquote>
+
+<dt><b>-h</b>
+<dd>
+Generate code which can be put into a C language header file.
+<p>
+
+<dt><b>-verbose</b>
+<dd>
+Prints stack size, number of <code>locals</code> and <code>args</code> for 
+methods.
+<p>
+
+<dt><b>-verify</b> 
+<dd> 
+Performs a partial verification of the class file. Because this 
+option does not perform many portions of a full verification, its 
+use is not recommended. Instead, <b>java -verify</b> should be used to 
+verify class files. The <b>-verify</b> option of <b>javap</b> will be removed 
+in the next release of the JDK.
+<p> 
+
+<dt><b>-version</b>  
+<dd> 
+Prints out the <b>javap</b> version string.
+<p>  
+
+
+
+
+</dl>
+</blockquote>
+
+<h2>ENVIRONMENT VARIABLES</h2>
+<blockquote>
+<dl>
+<dt>CLASSPATH
+<dd>Used to provide the system a path to user-defined classes. Directories are
+separated by colons, for example,
+For example:
+<blockquote>
+<pre>
+.:/home/avh/classes:/usr/local/java/classes
+</pre>
+</dl>
+</blockquote>
+</dl>
+
+<h2>SEE ALSO</h2>
+<blockquote>
+<a href="javac.html">javac</a>,
+<a href="java.html">java</a>,
+<a href="jdb.html">jdb</a>,
+<a href="javah.html">javah</a>,  
+<a href="javadoc.html">javadoc</a>,
+<a href="classpath.html">CLASSPATH</a>
+</blockquote>
+
+</body>
+</html>
+ 

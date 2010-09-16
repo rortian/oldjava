@@ -1,0 +1,189 @@
+<html>
+<head>
+<title> </title>
+</head>
+<body BGCOLOR=#eeeeff text=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+ 
+<table width=600><tr>
+<td><a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc1.html">Prev</a> | <a href="innerclasses.doc3.html">Next</a> 
+</td><td align=right><i>Inner Classes Specification</i></td>
+</tr></table>
+
+<hr><br>
+ 
+<a name="19784"></a>
+<h1> How do inner classes work?
+</h1>
+<a name="14472"></a>
+Inner class code is typically defined relative to some enclosing class instance, 
+so the inner class instance needs to be able to determine the enclosing instance.
+<p><a name="14829"></a>
+The JavaSoft Java 1.1 compiler arranges this by adding an extra <code>private</code> 
+instance variable which links the inner class to the enclosing class.  This 
+variable is initialized from an extra argument passed to the inner class 
+constructor.  That argument, in turn, is determined by the expression which 
+creates the inner class instance; by default it is the object doing the creation.
+<p><a name="14838"></a>
+The Java 1.1 Language Specification specifies that the name of a type which is 
+a class member, when transformed into Java 1.0 code for the purpose of 
+generating Java virtual machine bytecodes, consists of the fully qualified name 
+of the inner class, except that each `<code>.</code>' character following a class name is 
+replaced by a `<code>$</code>'.  In addition, each inner class constructor receives the 
+enclosing instance in a prepended argument.  Here is how the transformed 
+source code of the <code>FixedStack</code> example might look: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="10037"></a>public class FixedStack {
+    <a name="10042"></a>    ... <em>(the methods omitted here are unchanged</em>)
+    <a name="10057"></a>    public java.util.Enumeration elements() {
+    <a name="10058"></a>        return new FixedStack$Enumerator(this);
+    <a name="10059"></a>    }
+    <a name="10060"></a>}
+    <a name="10061"></a>
+    <a name="14889"></a>class FixedStack$Enumerator implements java.util.Enumeration {
+    <a name="14890"></a>    private FixedStack this$0; // saved copy of FixedStack.this
+    <a name="14891"></a>    FixedStack$Enumerator(FixedStack this$0) {
+    <a name="10065"></a>        this.this$0 = this$0;
+    <a name="10066"></a>        this.count = this$0.top;
+    <a name="10067"></a>    }
+    <a name="14908"></a>
+    <a name="10069"></a>    int count;
+    <a name="10071"></a>    public boolean hasMoreElements() {
+    <a name="10072"></a>        return count &gt; 0;
+    <a name="10073"></a>    }
+    <a name="10075"></a>    public Object nextElement() {
+    <a name="10076"></a>        if (count == 0)
+    <a name="10077"></a>            throw new NoSuchElementException("FixedStack");
+    <a name="10078"></a>        return this$0.array[--count];
+    <a name="10079"></a>    }
+    <a name="10080"></a>}
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="14905"></a>
+Anyone who has already programmed with Java or C++ adapter classes has 
+written code similar to this, except that the link variables must be manually 
+defined and explicitly initialized in top-level adapter classes, whereas the Java 
+1.1 compiler creates them automatically for inner classes.
+<p><a name="15008"></a>
+When the <code>Enumerator</code> needs to refer to the <code>top</code> or <code>array</code> fields of the 
+enclosing instance, it indirects through a <code>private</code> link called <code>this$0</code>.  The 
+spelling of this name is a mandatory part of the transformation of inner classes 
+to the Java 1.0 language, so that debuggers and similar tools can recognize 
+such links easily.  (Most programmers are happily unaware of such names.)
+<p><a name="20612"></a>
+(Note:  There is a limitation in some implementations of Java 1.1, under which 
+the initialization of <code>this$0</code> is delayed until after any superclass constructor is 
+run.  This means that up-level references made by a subclass method may fail 
+if the method happens to be executed by the superclass constructor.)
+<p><a name="20614"></a>
+<h2>		 References to local variables
+</h2>
+<a name="18060"></a>
+A class definition which is local to a block may access local variables.  This 
+complicates the compiler's job.  Here is the previous example of a local class: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="18063"></a>    Enumeration myEnumerate(final Object array[]) {
+    <a name="18065"></a>        class E implements Enumeration {
+    <a name="19823"></a>            int count = 0;
+    <a name="18066"></a>            public boolean hasMoreElements()
+    <a name="18067"></a>                { return count &lt; array.length; }
+    <a name="18068"></a>            public Object nextElement() {
+    <a name="18069"></a>                { return array[count++]; }
+    <a name="18070"></a>        }
+    <a name="18071"></a>        return new E();
+    <a name="18072"></a>    }
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="10536"></a>
+In order to make a local variable visible to a method of the inner class, the 
+compiler must copy the variable's value into a place where the inner class can 
+access it.  References to the same variable may use different code sequences in 
+different places, as long as the same value is produced everywhere, so that the 
+name consistently appears to refer to the same variable in all parts of its scope.
+<p><a name="14964"></a>
+By convention, a local variable like <code>array</code> is copied into a <code>private</code> field 
+<code>val$array</code> of the inner class.  (Because <code>array</code> is <code>final</code>, such copies never 
+contain inconsistent values.)  Each copied value is passed to the inner class 
+constructor as a separate argument of the same name.
+<p><a name="14955"></a>
+Here is what the resulting transformed code looks like: 
+<Table Border="0">
+<caption></caption>
+<tr><td><br><pre>    <a name="10588"></a>    Enumeration myEnumerate(final Object array[]) {
+    <a name="10590"></a>        return new MyOuterClass$19(array);
+    <a name="10591"></a>    }
+    <a name="10594"></a>...
+    <a name="10643"></a>class MyOuterClass$19 implements Enumeration {
+    <a name="10633"></a>    private Object val$array[];
+    <a name="19860"></a>    int count;
+    <a name="10638"></a>    MyOuterClass$19(Object val$array[])
+    <a name="10639"></a>        { this.val$array = val$array; count = 0; }
+    <a name="10626"></a>    public boolean hasMoreElements()
+    <a name="10600"></a>        { return count &lt; val$array.length; }
+    <a name="10602"></a>    public Object nextElement()
+    <a name="10603"></a>        { return val$array[count++]; }
+    <a name="10605"></a>}
+</pre>
+
+</Table>
+
+<!--
+<Table>
+<tr><td>
+</Table>
+-->
+<p><a name="15081"></a>
+A compiler may avoid allocating an inner class field to a variable, if it can 
+determine that the variable is used only within the inner class constructors.
+<p><a name="15128"></a>
+Notice that a class defined by a block, like <code>E</code>, is not a member of its enclosing 
+class, and so it cannot be named outside of its block.  This is the same scoping 
+restriction as applies to local variables, which also cannot be named outside of 
+their blocks.  In fact, any class contained in a block (whether directly or inside 
+an intervening local class) cannot be named outside the block. All such classes 
+are called <em>inaccessible</em>.  For purposes of linking, the compiler must generate a 
+unique externally visible name for every inaccessible class.  The overall form of 
+these names is a class name, followed by additional numbers or names, 
+separated by <code>$</code> characters.
+<p><a name="19882"></a>
+Also, variable names synthesized by the compiler beginning with <code>this$</code> and 
+<code>val$</code> must follow the usage patterns described here.
+<p><a name="20251"></a>
+These names and conventions must be recognized by 1.1-compliant tools, and 
+are strongly suggested for most compilation purposes.  They are discussed 
+further in the section on binary compatibility.
+<p><a name="20582"></a>
+It must be emphasized that these oddly-named "<code>this$</code>" and "<code>val$</code>" fields 
+and extra constructor arguments are added by the compiler to the generated 
+bytecodes, and cannot be directly referenced by Java source code.  Likewise, 
+bytecode-level class names like <code>MyOuterClass$19</code> cannot be used by source 
+code (except under pre-1.1 compilers, which know nothing of inner classes).
+<p>
+
+<hr>
+<!-- This inserts footnotes--><p>
+<a href="innerclasses.doc.html">Contents</a> | <a href="innerclasses.doc1.html">Prev</a> | <a href="innerclasses.doc3.html">Next</a> 
+
+<p>
+<font size=-1>Inner Classes Specification (HTML generated by dkramer on March 15, 1997)<br>
+<i><a href="copyright.doc.html">Copyright &#169 1996, 1997 Sun Microsystems, Inc.</a>
+All rights reserved</i>
+<br>
+Please send any comments or corrections to <a href="mailto:john.rose@eng.sun.com">john.rose@eng.sun.com</a>
+</font>
+</body></html>

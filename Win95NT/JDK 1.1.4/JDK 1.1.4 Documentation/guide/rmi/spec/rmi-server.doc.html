@@ -1,0 +1,531 @@
+<html><head><title>Server Interfaces
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-client.doc.html">[Prev]</a> <a href="rmi-registry.doc.html">[Next]</a>
+<hr><br>
+ 
+<a name="60">
+<h1>Server Interfaces
+</h1>
+</a>
+<hr><p><a name="64">
+
+<p>
+</a>When implementing a server, the client interfaces are available and extended 
+with those that allow the definition, creation, and export of remote objects.
+<p><h3><a name="3210">
+Topics:
+</a></h3><ul><li><a href="rmi-server.doc.html#4597">The RemoteObject Class</a>
+<li><a href="rmi-server.doc.html#5462">The RemoteServer Class</a>
+<li><a href="rmi-server.doc.html#5794">The UnicastRemoteObject Class</a>
+<li><a href="rmi-server.doc.html#179">The Unreferenced Interface</a>
+<li><a href="rmi-server.doc.html#1638">The RMISecurityManager Class</a>
+<li><a href="rmi-server.doc.html#1639">The RMIClassLoader Class</a>
+<li><a href="rmi-server.doc.html#6583">The LoaderHandler Interface</a>
+<li><a href="rmi-server.doc.html#4175">The RMISocketFactory Class</a>
+<li><a href="rmi-server.doc.html#4381">The RMIFailureHandler Interface</a>
+<li><a href="rmi-server.doc.html#1621">The LogStream Class</a>
+<li><a href="rmi-server.doc.html#5845">Stub and Skeleton Compiler</a>
+</ul><h1><a name="4597">
+The RemoteObject Class
+</a></h1>The <code>java.rmi.server.RemoteObject</code> class implements the 
+<code>java.lang.Object</code> behavior for remote objects. The <code>hashCode</code> and <code>equals</code> 
+methods are implemented to allow remote object references to be stored in 
+hashtables and compared. The <code>equals</code> method returns true if two <code>Remote</code> 
+objects refer to the same remote object. It compares the remote object references 
+of the remote objects.
+<p>The <code>toString</code> method returns a string describing the remote object. The 
+contents and syntax of this string is implementation-specific and can vary.
+<p>All of the other methods of <code>java.lang.Object</code> retain their original 
+implementations.
+<p><dl><a name="4601"><pre>package java.rmi.server;
+public abstract class RemoteObject
+	implements java.rmi.Remote, java.io.Serializable
+{
+	public int hashCode();
+	public boolean equals(Object obj);
+	public String toString();
+}
+</pre></a></dl><h1><a name="5462">
+The RemoteServer Class
+</a></h1>The <code>java.rmi.server.RemoteServer</code> class is the common superclass to all 
+server implementations and provides the framework to support a wide range 
+of remote reference semantics.   At present the only subclass supported is 
+<code>UnicastRemoteObject</code>.
+<p><dl><a name="3358"><pre>package java.rmi.server;
+public abstract class RemoteServer
+	extends RemoteObject {
+
+	public static String getClientHost()
+		throws ServerNotActiveException;
+
+	public static void setLog(java.io.OutputStream out);
+</pre></a><a name="4613"><pre>
+	public static java.io.PrintStream getLog();
+}
+</pre></a></dl>The <code>getClientHost</code> method allows an active method to determine the host 
+that initiated the remote method active in the current thread. The 
+<code>ServerNotActiveException</code> is thrown if no remote method is active on the 
+current thread. The <code>setLog</code> method logs RMI calls to the specified output 
+stream. If the output stream is null, call logging is turned off. The <code>getLog</code> 
+method returns the stream for the RMI call log, so that application-specific 
+information can be written to the call log in a synchronized manner.
+<p><h1><a name="5794">
+The UnicastRemoteObject Class
+</a></h1>The <code>java.rmi.server.UnicastRemoteObject</code> class provides support for 
+point-to-point active object references using TCP-based streams. The class 
+implements a remote server object with the following characteristics:
+<p><ul><li>References are valid only for, at most, the life of the process that creates the 
+remote object.
+<li>A TCP connection-based transport is used.
+<li>Invocations, parameters, and results use a stream protocol for 
+communicating between client and server.
+<dl><a name="274"><pre>package java.rmi.server;
+public class UnicastRemoteObject extends RemoteServer {
+
+	protected UnicastRemoteObject()
+		throws java.rmi.RemoteException;
+
+	public Object clone()
+		throws java.lang.CloneNotSupportedException;
+
+	public static RemoteStub exportObject(java.rmi.Remote obj)
+		throws java.rmi.RemoteException;
+}
+</pre></a></dl></ul><h2><a name="2175">
+Constructing a New Remote Object
+</a></h2>In a Java virtual machine running as a server, remote objects defined by the 
+developer can be created by the server application. When a remote object class 
+extends <code>UnicastRemoteObject</code>, the constructor creates and exports a remote 
+object. The constructor is invoked from the corresponding constructor of the 
+remote object class. The default constructor creates a new unicast remote object 
+using an anonymous port.
+<p>The clone method is used to create a unicast remote object with initially the 
+same contents, but is exported to accept remote calls and is distinct from the 
+original object.
+<p><h2><a name="728">
+Exporting an Implementation Not Extended From RemoteObject
+</a></h2>The &#32;<code>exportObject</code> method is used to export a simple peer-to-peer remote 
+object that is not implemented by extending the <code>UnicastRemoteObject</code> class. 
+The <code>exportObject</code> method is called with the object to be exported on an 
+anonymous port. The object <em>must</em> be exported prior to the first time it is passed 
+in an RMI call as either a parameter or return value; otherwise, a 
+<code>java.rmi.server.</code><code>StubNotFoundException</code> is thrown when a remote call 
+is attempted in which an "unexported" remote object is passed as an argument 
+or return value.
+<p>Once exported, the object can be passed as an argument in an RMI call or 
+returned as the result of an RMI call. When a remote object is passed, during 
+marshaling a lookup is performed to find the matching remote stub for the 
+remote object implementation and that stub is passed or returned instead.
+<p>The <code>exportObject</code> method returns a <code>RemoteStub</code> which is the stub object for 
+the remote object, obj, that is passed in place of the remote object in an RMI 
+call.
+<p><h2><a name="6811">
+Passing a UnicastRemoteObject in an RMI Call
+</a></h2>As stated above, when an object of type <code>UnicastRemoteObject</code> is passed as 
+a parameter or return value in an RMI call, the object is replaced by the remote 
+object's stub. A remote object implementation remains in the virtual machine 
+in which it was created and does not move (even by value) from that virtual 
+machine. In other words, a remote object is passed by reference in an RMI call; 
+remote objects cannot be passsed by value.
+<p><h2><a name="6785">
+Serializing a UnicastRemoteObject
+</a></h2>Information contained in <code>UnicastRemoteObject</code> is transient and is not saved 
+if an object of that type is written to a user-defined <code>ObjectOutputStream</code> (for 
+example, if the object is written to a file using serialization). An object that is 
+an instance of a user-defined subclass of <code>UnicastRemoteObject</code>, however, 
+may have non-transient data that can be saved when the object is serialized.
+<p>When a <code>UnicastRemoteObject</code> is read from an <code>ObjectInputStream</code>, it is 
+automatically exported to the RMI runtime so that it may receive RMI calls. If 
+exporting the object fails for some reason, deserializing the object will 
+terminate with an exception.
+<p><h1><a name="179">
+The Unreferenced Interface
+</a></h1><dl><a name="182"><pre>package java.rmi.server;
+public interface Unreferenced {
+	public void unreferenced();
+}
+</pre></a></dl>The <code>java.rmi.server.Unreferenced</code> interface allows a server object to 
+receive notification that there are no clients holding remote references to it. The 
+distributed garbage collection mechanism maintains for each remote object, the 
+set of client virtual machines that hold references that remote object. As long as 
+some client holds a remote reference to the remote object, the RMI runtime 
+keeps a local reference to the remote object. When the "reference" set becomes 
+empty, the <code>Unreferenced.unreferenced</code> method is invoked (if the server 
+implements the <code>Unreferenced</code> interface). A remote object is <em>not</em> required to 
+support the <code>Unreferenced</code> interface.
+<p>As long as some local reference to the remote object exists it may be passed in 
+remote calls or returned to clients. The process that receives the reference is 
+added to the reference set for the reference. When the reference set becomes 
+empty, <code>Unreferenced</code> will be invoked. As such, the <code>Unreferenced</code> method 
+can be called more than once (each time the set is newly emptied). Remote 
+objects are only collected when no more references, either local references or 
+those held by clients, still exist.
+<p><h1><a name="1638">
+The RMISecurityManager Class
+</a></h1><dl><a name="6741"><pre>package java.rmi;
+
+public class RMISecurityManager extends java.lang.SecurityManager {
+
+	// Constructor
+	public RMISecurityManager();
+
+	// Returns implementation specific security context 
+	public Object getSecurityContext();
+
+	// Disallow creating classloaders or execute ClassLoader methods
+	public synchronized void checkCreateClassLoader()
+		throws RMISecurityException;
+
+	// Disallow thread manipulation
+	public synchronized void checkAccess(Thread t)
+		throws RMISecurityException;
+
+	// Disallow thread group manipulation.
+	public synchronized void checkAccess(ThreadGroup g)
+		throws RMISecurityException;
+
+	// Disallow exiting the VM
+	public synchronized void checkExit(int status)
+		throws RMISecurityException;
+
+	// Disallow forking of processes
+	public synchronized void checkExec(String cmd)
+		throws RMISecurityException;
+
+	// Disallow linking dynamic libraries
+	public synchronized void checkLink(String lib)
+		throws RMISecurityException;
+
+	// Disallow accessing of all properties except those labeled OK
+	public synchronized void checkPropertiesAccess()
+		throws RMISecurityException;
+</pre></a><a name="6730"><pre>
+	// Access system property key only if key.stub is set to true
+	public synchronized void checkPropertyAccess(String key)
+		throws RMISecurityException;
+
+	// Check if a stub can read a particular file.
+	public synchronized void checkRead(String file)
+		throws RMISecurityException;
+
+	// No file reads are valid from a stub
+	public void checkRead(String file, Object context)
+		throws RMISecurityException;
+
+	// Check if a Stub can write a particular file.
+	public synchronized void checkWrite(String file)
+		throws RMISecurityException;
+
+	// Check if the specified system dependent file can be deleted.
+	public void checkDelete(String file)
+		throws RMISecurityException;
+
+	// Disllow opening file descriptor for reading unless via socket
+	public synchronized void checkRead(FileDescriptor fd)
+		throws RMISecurityException;
+
+	// Disallow opening file descriptor for writing unless via socket
+	public synchronized void checkWrite(FileDescriptor fd)
+		throws RMISecurityException;
+
+	// Disallow listening on any port.
+	public synchronized void checkListen(int port)
+		throws RMISecurityException;
+
+	// Disallow accepting connections on any port.
+	public synchronized void checkAccept(String host, int port)
+		throws RMISecurityException;
+
+	// Disallow stubs from using IP multicast.
+	public void checkMulticast(InetAddress maddr)
+		throws RMISecurityException;
+
+	// Disallow stubs from using IP multicast
+	public void checkMulticast(InetAddress maddr, byte ttl)
+		throws RMISecurityException;
+
+	// Downloaded classes (including stubs) can make connections if
+	// called through the RMI transport.
+	public synchronized void checkConnect(String host, int port)
+		throws RMISecurityException;
+
+	// Downloaded classes (including stubs) can make connections if
+	// called through the RMI transport.
+	public void checkConnect(String host, int port, Object context)
+		throws RMISecurityException;
+
+	// Allow caller to create top-level windows.
+	// Allow stubs to create windows with warnings.
+	public synchronized boolean checkTopLevelWindow(Object window)
+		throws RMISecurityException;
+
+	// Check if a stub can access a package.
+	public synchronized void checkPackageAccess(String pkg)
+		throws RMISecurityException;
+
+	// Check if a stub can define classes in a package.
+	public synchronized void checkPackageDefinition(String pkg)
+		throws RMISecurityException;
+
+	// Check if a stub can set a networking-related object factory.
+	public synchronized void checkSetFactory()
+		throws RMISecurityException;
+
+	// Disallow printing from stubs.
+	public void checkPrintJobAccess()
+		throws RMISecurityException;
+
+	// Disallow stubs from accessing system clipboard.
+	public void checkSystemClipboardAccess()
+		throws RMISecurityException;
+
+	// Disallow stubs from accessing AWT event queue.
+	public void checkAwtEventQueueAccess()
+		throws RMISecurityException;
+
+	// Checks to see if client code can access class members.
+	// Allow access to all public information. Allow non-stubs to
+	// access default, package, and private declarations and data).
+	public void checkMemberAccess(Class clazz, int which)
+		throws RMISecurityException;
+
+	// Stubs cannot perform security provider operations.
+	public void checkSecurityAccess(String provider)
+		throws RMISecurityException;
+}
+</pre></a></dl>The <code>RMISecurityManager</code> can be used when the application does not require 
+specialized security functions but does need the protection it provides. This 
+simple security manger disables all functions except class definition and 
+access, so that other classes for remote objects, their arguments, and returns 
+can be loaded as needed. A downloaded class is allowed to make a connection 
+if the connection was initiated via the RMI transport.
+<p>If no security manager has been set, stub loading is disabled. This ensures that 
+some security manager is responsible for the actions of loaded stubs and 
+classes as part of any remote method invocation. A security manager is set 
+using <code>System.setSecurityManager</code>.
+<p><h1><a name="1639">
+The RMIClassLoader Class
+</a></h1>The<code> java.rmi.server.RMIClassLoader</code> is a utility class that can be used 
+by applications to load classes via a URL.
+<p><dl><a name="6620"><pre>package java.rmi.server;
+
+public class RMIClassLoader {
+
+    public static Class loadClass(String name)
+	    throws MalformedURLException, ClassNotFoundException;
+
+    public static synchronized Class loadClass(URL codebase,
+		String name) throws MalformedURLException, 
+		ClassNotFoundException;
+
+	public static Object getSecurityContext(ClassLoader loader);
+}
+</pre></a></dl>The first <code>loadClass</code> method loads the specified class name via the URL 
+defined by the <code>java.rmi.server.codebase</code> property. The class is loaded, 
+defined, and returned.
+<p>The second form of the <code>loadClass</code> method loads the specified class name via 
+the URL parameter codebase.
+<p>The <code>getSecurityContext</code> method returns the security context of the given 
+class loader, loader. The security context is obtained by querying the 
+<code>LoaderHandler</code>'s <code>getSecurityContext</code> method.
+<p><em>The RMI runtime uses its own class loader to load stubs, skeletons, and 
+other classes needed by the stubs and skeletons. These classes, and the way 
+they are used, support the safety properties of the Java RMI runtime. This class 
+loader always loads locally-available classes first. Only if a security manager is 
+in force will stubs be loaded from either the local machine or from a network 
+source. 
+
+The class loader keeps a cache of loaders for individual Uniform Resource 
+Locators (URLs) and the classes that have been loaded from them. When a stub 
+or skeleton has been loaded, any class references that occur as parameters or 
+returns will be loaded (from their originating codebase host) and are subject to 
+the same security restrictions. 
+
+Server processes must declare to the RMI runtime the location of the classes 
+(stubs and parameters/returns) that will be available to its clients. The 
+<code>java.rmi.server.codebase</code> property should be a URL from which stub 
+classes and classes used by stubs will be loaded, using the normal protocols, 
+such as http and ftp.
+</em><p><h1><a name="6583">
+The LoaderHandler Interface
+</a></h1><dl><a name="6586"><pre>package java.rmi.server;
+
+public interface LoaderHandler {
+
+    Class loadClass(String name)
+	    throws MalformedURLException, ClassNotFoundException;
+
+    Class loadClass(URL codebase,String name) 
+		throws MalformedURLException, ClassNotFoundException;
+
+	Object getSecurityContext(ClassLoader loader);
+}
+</pre></a></dl>The <code>LoaderHandler</code> interface must be implemented by a class named 
+<code>LoaderHandler</code>. The <code>LoaderHandler</code> class must be defined in the package 
+specified by the property <code>java.rmi.loader.packagePrefix</code>. The methods 
+of <code>LoaderHandler</code> are used by the <code>java.rmi.server.RMIClassLoader</code> 
+class to carry out its operations.
+<p><h1><a name="4175">
+The RMISocketFactory Class
+</a></h1>The<code> java.rmi.server.RMISocketFactory </code>abstract class provides an 
+interface for specifying how the transport should obtain sockets.
+<p><dl><a name="4329"><pre>package java.rmi.server;
+public abstract class RMISocketFactory {
+
+	public abstract java.net.Socket createSocket(String h,int p)
+		throws IOException;
+
+	public abstract java.net.ServerSocket createServerSocket(int p)
+		throws IOException;
+
+	public static void setSocketFactory(RMISocketFactory fac)
+		throws IOException;
+
+	public static RMISocketFactory getSocketFactory();
+
+	public static void setFailureHandler(RMIFailureHandler fh);
+
+	public static RMIFailureHandler getFailureHandler();
+}
+</pre></a></dl>The static method <code>setSocketFactory</code> is used to set the socket factory from 
+which RMI obtains sockets. The application may invoke this method with its 
+own <code>RMISocketFactory</code> instance only once. An application-defined 
+implementation of <code>RMISocketFactory</code> could, for example, do preliminary 
+filtering on the requested connection and throw exceptions, or return its own 
+extension of the <code>java.net.Socket</code> or <code>java.net.ServerSocket</code> classes, 
+such as ones that provide a secure communication channel. Note that the 
+RMISocketFactory may only be set if the current security manager allows 
+setting a socket factory; if setting the socket factory is disallowed, a 
+<code>SecurityException</code> will be thrown.
+<p>The static method <code>getSocketFactory</code> returns the socket factory used by 
+RMI. The method returns null if the socket factory is not set.
+<p>The transport layer invokes the <code>createSocket</code> and <code>createServerSocket</code> 
+methods on the <code>RMISocketFactory</code> returned by the <code>getSocketFactory</code> 
+method when the transport needs to create sockets. For example:
+<p><dl><a name="4524"><pre>RMISocketFactory.getSocketFactory().createSocket(myhost, myport)
+</pre></a></dl>The method <code>createSocket</code> should create a client socket connected to the 
+specified host and port. The method <code>createServerSocket</code> should create a 
+server socket on the specified port. The default transport's implementation of 
+<code>RMISocketFactory</code> provides for transparent RMI through firewalls using 
+HTTP as follows:
+<p><ul><li>On <code>createSocket</code>, the factory automatically attempts HTTP connections to 
+hosts that cannot be contacted with a direct socket.
+<li>On <code>createServerSocket</code>, the factory returns a server socket that 
+automatically detects if a newly accepted connection is an HTTP POST 
+request. If so, it returns a socket that will transparently expose only the body 
+of the request to the transport and format its output as an HTTP response.
+</ul>The method <code>setFailureHandler</code> sets the failure handler to be called by the 
+RMI runtime if the creation of a server socket fails. The failure handler returns 
+a boolean to indicate if retry should occur. The default failure handler returns 
+false, meaning that by default recreation of sockets is not attempted by the 
+runtime.
+<p>The method <code>getFailureHandler</code> returns the current handler for socket 
+creation failure, or null if the failure handler is not set.
+<p><h1><a name="4381">
+The RMIFailureHandler Interface
+</a></h1>The <code>java.rmi.server.RMIFailureHandler</code> interface provides a method 
+for specifying how the RMI runtime should respond when server socket 
+creation fails.
+<p><dl><a name="4384"><pre>package java.rmi.server;
+</pre></a><a name="4393"><pre>public interface RMIFailureHandler {
+	public boolean failure(Exception ex);
+}
+</pre></a></dl>The <code>failure</code> method is invoked with the exception that prevented the RMI 
+runtime from creating a <code>java.net.Socket</code> or <code>java.net.ServerSocket</code>. 
+The method returns true if the runtime should attempt to retry and false 
+otherwise.
+<p>Before this method can be invoked, a failure handler needs to be registered via 
+the <code>RMISocketFactory.setFailureHandler</code> call. If the failure handler is 
+not set, creation is not attempted.
+<p><h1><a name="1621">
+The LogStream Class
+</a></h1>The class <code>LogStream</code> presents a mechanism for logging errors that are of 
+possible interest to those monitoring the system. This class is used internally 
+for server call logging.
+<p><dl><a name="4830"><pre>package java.rmi.server;
+
+public class LogStream extends java.io.PrintStream {
+
+	public static LogStream log(String name);
+
+	public static synchronized PrintStream getDefaultStream();
+
+	public static synchronized void setDefaultStream(
+</pre></a><a name="6209"><pre>		PrintStream newDefault);
+
+	public synchronized OutputStream getOutputStream();
+
+	public synchronized void setOutputStream(OutputStream out);
+
+	public void write(int b);
+
+	public void write(byte b[], int off, int len);
+
+	public String toString();
+
+	public static int parseLevel(String s);
+
+	// constants for logging levels
+	public static final int SILENT  = 0;
+	public static final int BRIEF   = 10;
+	public static final int VERBOSE = 20;
+}
+</pre></a></dl>The method <code>log</code> returns the LogStream identified by the given name. If a log 
+corresponding to name does not exist, a log using the default stream is created.
+<p>The method <code>getDefaultStream</code> returns the current default stream for new 
+logs.
+<p>The method <code>setDefaultStream</code> sets the default stream for new logs.
+<p>The method <code>getOutputStream</code> returns current stream to which output from 
+this log is sent.
+<p>The method <code>setOutputStream</code> sets the stream to which output from this log 
+is sent.
+<p>The first form of the method <code>write</code> writes a byte of data to the stream. If it is 
+not a new line, then the byte is appended to the internal buffer. If it is a new 
+line, then the currently buffered line is sent to the log's output stream with the 
+appropriate logging prefix. The second form of the method <code>write</code> writes a 
+subarray of bytes.
+<p>The method <code>toString</code> returns log name as string representation.
+<p>The method <code>parseLevel</code> converts a string name of a logging level to its 
+internal integer representation.
+<p><h1><a name="5845">
+Stub and Skeleton Compiler
+</a></h1>The <code>rmic</code> stub and skeleton compiler is used to compile the appropriate stubs 
+and skeletons for a specific remote object implementation. The compiler is 
+invoked with the package qualified class name of the remote object class. The 
+class must previously have been compiled successfully.
+<p><ul><li>The location of the imported classes may be specified either with the 
+CLASSPATH environment variable or with the -classpath argument.
+<li>The compiled class files are placed in the current directory unless the -d 
+argument is specified following the same mechanism for writing class files 
+as <code>javac</code>.
+<li>The -keepgenerated argument retains the generated java source files for the 
+stubs and skeletons.
+<li>The -show option displays a graphical user interface for the program.
+<li>All other <code>javac</code> command line arguments are applicable and can be used 
+with <code>rmic</code>.
+</ul>
+<hr><br>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-client.doc.html">[Prev]</a> <a href="rmi-registry.doc.html">[Next]</a>
+<hr><br>
+ 
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email  -->
+<!-- -->
+<!-- Last updated: 03/18/97 12:59:59 -->
+
+</body>
+</html>

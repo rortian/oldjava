@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="drivermanager.doc.html">Prev</a>  | <a href="resultset.doc.html">Next</a>
+</font></td><td align=right><i>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="999752"></a>
+<h1>4  - Statement</h1>
+<a name="999971"></a>
+This overview is excerpted from <em>JDBC<font size=-1><sup>TM</sup></font> Database Access from Java<font size=-1><sup>TM</sup></font>:  A Tutorial 
+and Annotated Reference,</em> currently in progress at JavaSoft.  This book, both a tutorial and the definitive reference manual for JDBC, will be published in the spring of 
+1997 by Addison-Wesley Publishing Company as part of the Java series.
+<p>
+<a name="1000008"></a>
+<h2>4.1	 &nbsp;&nbsp; Overview</h2>
+<a name="999768"></a>
+A <code>Statement</code> object is used to send SQL statements to a database.  There are actually three kinds of <code>Statement</code> objects, all of which act as containers for executing 
+SQL statements on a given connection:  <code>Statement</code>, <code>PreparedStatement</code>, which 
+inherits from <code>Statement</code>, and <code>CallableStatement</code>, which inherits from <code>PreparedStatement</code>.  They are specialized for sending particular types of SQL statements:   a 
+<code>Statement</code> object is used to execute a simple SQL statement with no parameters; a 
+<code>PreparedStatement</code> object is used to execute a precompiled SQL statement with or 
+without IN parameters; and a <code>CallableStatement</code> object is used to execute a call to 
+a database stored procedure.  
+<p><a name="999769"></a>
+The <code>Statement</code> interface provides basic methods for executing statements and 
+retrieving results.  The <code>PreparedStatement</code> interface adds methods for dealing 
+with IN parameters; <code>CallableStatement</code> adds methods for dealing with OUT 
+parameters.
+<p>
+
+<a name="999770"></a>
+<h3>4.1.1	 &nbsp; &nbsp; Creating Statement Objects</h3>
+<a name="999771"></a>
+Once a connection to a particular database is established, that connection can be 
+used to send SQL statements.  A <code>Statement</code> object is created with the <code>Connection</code> 
+method <code>createStatement</code>, as in the following code fragment:
+<p><pre><a name="999772"></a>    Connection con = DriverManager.getConnection(<code>url</code>, "sunny", "");
+<a name="999773"></a>    Statement stmt = con.createStatement();
+</pre><a name="999774"></a>
+The SQL statement that will be sent to the database is supplied as the argument to one of the methods for executing a <code>Statement</code> object:
+<p>
+<pre><a name="999775"></a>    ResultSet rs = stmt.executeQuery("SELECT a, b, c FROM Table2");
+</pre>
+<a name="1000107"></a>
+<h3>4.1.2	 &nbsp; &nbsp; Executing Statements Using Statement objects</h3>
+<a name="1000108"></a>
+The <code>Statement</code> interface provides three different methods for executing SQL statements, <code>executeQuery</code>, <code>executeUpdate</code>, and <code>execute</code>. The one to use is determined 
+by what the SQL statement produces.  
+<p><a name="1000109"></a>
+The method <code>executeQuery</code> is designed for statements that produce a single 
+result set, such as <code>SELECT</code> statements.
+<p>
+<a name="1000110"></a>
+The method <code>executeUpdate</code> is used to execute <code>INSERT</code>, <code>UPDATE</code>, or <code>DELETE</code> 
+statements and also SQL DDL (Data Definition Language) statements like <code>CREATE</code> 
+<code>TABLE</code> and <code>DROP</code> <code>TABLE.</code>  The effect of an <code>INSERT</code>, <code>UPDATE</code>, or <code>DELETE</code> statement is a 
+modification of one or more columns in zero or more rows in a table. The return<em> 
+</em>value of <code>executeUpdate</code> is an integer indicating the number of rows that were 
+affected (referred to as the update count).  For statements such as <code>CREATE</code> <code>TABLE</code> or 
+<code>DROP</code> <code>TABLE</code>, which do not operate on rows, the return value of <code>executeUpdate</code> is 
+always zero.
+<p>
+<a name="1000111"></a>
+The method <code>execute</code> is used to execute statements that return more than one 
+result set, more than one update count, or a combination of the two.  Because it is 
+an advanced feature that most programmers will never need, it is explained in its 
+own section later in this overview.
+<p>
+<a name="1000112"></a>
+All of the methods for executing statements close the calling <code>Statement</code> 
+object's current result set if there is one open.  This means that one needs to complete any processing of the current <code>ResultSet</code> object before re-executing a <code>Statement</code> object.  
+<p>
+<a name="1000113"></a>
+It should be noted that the <code>PreparedStatement</code> interface, which inherits all of 
+the methods in the  <code>Statement</code> interface, has its own versions of the methods <code>executeQuery</code>, <code>executeUpdate</code> and <code>execute</code>.  <code>Statement</code> objects do not themselves 
+contain an SQL statement; therefore, one must be provided as the argument to the 
+<code>Statement.execute</code> methods.   <code>PreparedStatement</code> objects do not  supply an SQL 
+statement as a parameter to these methods because they already contain a precompiled SQL statement.  <code>CallableStatement</code> objects inherit the <code>PreparedStatement</code> 
+forms of these methods.  Using a query parameter with the <code>PreparedStatement</code> or 
+<code>CallableStatement</code> versions of these methods will cause an <code>SQLException</code> to be 
+thrown.
+<p>
+
+<a name="1000044"></a>
+<h3>4.1.3	 &nbsp; &nbsp; Statement Completion</h3>
+<a name="1000045"></a>
+When a connection is in auto-commit mode, the statements being executed within it 
+are committed or rolled back when they are completed.  A statement is considered 
+complete when it has been executed and all its results have been returned.  For the 
+method <code>executeQuery</code>, which returns one result set, the statement is completed 
+when all the rows of the <code>ResultSet</code> object have been retrieved.  For the method <code>executeUpdate</code>, a statement is completed when it is executed.  In the rare cases where 
+the method <code>execute</code> is called, however, a statement is not complete until all of the  
+result sets or update counts it generated have been retrieved.  
+<p><a name="1000046"></a>
+Some DBMSs treat each statement in a stored procedure as a separate statement; others treat the entire procedure as one compound statement.  This difference becomes important when auto-commit is enabled because it affects when the 
+method <code>commit</code> is called.  In the first case, each statement is individually committed; in the second, all are committed together. 
+<p>
+
+<a name="1000047"></a>
+<h3>4.1.4	 &nbsp; &nbsp; Closing Statement Objects</h3>
+<a name="1000048"></a>
+<code>Statement</code> objects will be closed automatically by the Java garbage collector.  Nevertheless, it is recommended as good programming practice that they be closed 
+explicitly when they are  no longer needed.  This frees DBMS resources immediately and helps avoid potential memory problems. 
+<p>
+<a name="999828"></a>
+<h3>4.1.5	 &nbsp; &nbsp; SQL Escape Syntax in Statement Objects </h3>
+<a name="999829"></a>
+<code>Statement</code> objects may contain SQL statements that use SQL escape syntax.  
+Escape syntax signals the driver that the code within it should be handled differently.  The driver will scan for any escape syntax and translate it into code that the 
+particular database understands.  This makes escape syntax DBMS-independent and 
+allows a programmer to use features that might not otherwise be available.  
+<p><a name="999830"></a>
+An escape clause is demarcated by curly braces and a key word:
+<p>
+<pre><a name="999831"></a>      {keyword . . . parameters . . . }
+</pre><a name="999832"></a>
+The keyword indicates the kind of escape clause, as shown below.
+<p>
+<a name="999833"></a>
+
+<p>
+
+<ul><a name="999834"></a>
+<li><code>escape</code> for <code>LIKE</code> escape characters
+<br><br>
+</ul><blockquote><a name="999835"></a>
+
+<p>
+<a name="999836"></a>
+The characters "%" and "_" work like wild cards in SQL <code>LIKE</code> clauses 
+("%" matches zero or more characters, and "_" matches exactly one character).  In order to interpret them literally, they can be preceded by a backslash 
+("\"), which is a special escape character in strings.  One can specify which 
+character to use as the escape character by including the following syntax at 
+the end of a query:
+<p>
+</blockquote><pre><a name="999837"></a>    <code>  {escape 'escape-character'}
+</code></pre><blockquote><a name="999838"></a>
+For example, the following query, using the backslash character as an 
+escape character, finds identifier names that begin with an underbar:
+<p>
+</blockquote><pre><a name="999839"></a>    stmt.executeQuery("SELECT name FROM Identifiers 
+<a name="999840"></a>           WHERE Id LIKE `\_%' {escape `\'};
+</pre><blockquote><a name="999841"></a>
+
+<p>
+</blockquote>
+<ul><a name="999842"></a>
+<li><code>fn</code> for scalar functions
+<br><br>
+</ul><blockquote><a name="999843"></a>
+
+<p>
+<a name="999844"></a>
+Almost all DBMSs have numeric, string, time, date, system, and conversion functions on scalar values. One of these functions can be used by putting 
+it in escape syntax with the keyword <code>fn</code> followed by the name of the desired 
+function and its arguments.  For example, the following code calls the function <code>concat</code> with two arguments to be concatenated:
+<p>
+</blockquote><pre><a name="999845"></a>      {fn concat("Hot", "Java")};
+</pre><blockquote><a name="999846"></a>
+The name of the current database user can be obtained with the following 
+syntax:
+<p>
+</blockquote><pre><a name="999847"></a>      {fn user()};
+</pre><blockquote><a name="999848"></a>
+Scalar functions may be supported by different DBMSs with slightly different syntax, and they may not be supported by all drivers.  Various <code>DatabaseMetaData</code> methods will list the functions that are supported.  For example, 
+the method <code>getNumericFunctions</code> returns a comma-separated list of the 
+names of numeric functions,  the method <code>getStringFunctions</code> returns string 
+functions, and so on.
+<p>
+<a name="999849"></a>
+The driver will either map the escaped function call into the appropriate 
+syntax or implement the function directly itself.
+<p>
+</blockquote><a name="999850"></a>
+
+<p>
+
+<ul><a name="999851"></a>
+<li><code>d</code>, <code>t</code>, and <code>ts</code> for date and time literals
+<br><br>
+</ul><blockquote><a name="999852"></a>
+
+<p>
+<a name="999853"></a>
+DBMSs differ in the syntax they use for date, time, and timestamp literals.  JDBC supports ISO standard format for the syntax of these literals, using 
+an escape clause that the driver must translate to the DBMS representation.
+<p>
+<a name="999854"></a>
+For example, a date is specified in a JDBC SQL statement with the following syntax:
+<p>
+</blockquote><pre><a name="999855"></a>    <code>  {d `yyyy-mm-dd'}
+</code></pre><blockquote><a name="999856"></a>
+In this syntax, <code>yyyy</code> is the year, <code>mm</code> is the month, and <code>dd</code> is the day.  The 
+driver will replace the escape clause with the equivalent DBMS-specific representation.  For example, the driver might replace <code>{d 1999-02-28}</code> with  <code>'28-
+FEB-99'</code> if that is the appropriate format for the underlying database.
+<p>
+<a name="999857"></a>
+There are analogous escape clauses for <code>TIME</code> and <code>TIMESTAMP</code>:
+<p>
+</blockquote><pre><a name="999858"></a>        {t `hh:mm:ss'}
+<a name="999859"></a>        {ts `yyyy-mm-dd hh:mm:ss.f . . .'}
+</pre><blockquote><a name="999860"></a>
+The fractional seconds (<code>.f . . .</code>) portion of the <code>TIMESTAMP</code> can be omitted.
+<p>
+</blockquote><a name="999861"></a>
+
+<p>
+
+<ul><a name="999862"></a>
+<li><code>call</code> or  <code>? = call</code>  for stored procedures
+<br><br>
+</ul><a name="999863"></a>
+
+<p>
+<blockquote><a name="999864"></a>
+If a database supports stored procedures, they can be invoked from JDBC 
+with the following syntax:
+<p>
+</blockquote><pre><a name="999865"></a>      {call procedure_name[(?, ?, . . .)]}
+</pre><blockquote><a name="999866"></a>
+or, where a procedure returns a result parameter:
+<p>
+</blockquote><pre><a name="999867"></a>      {? = call procedure_name[(?, ?, . . .)]}
+</pre><blockquote><a name="999868"></a>
+The square brackets indicate that the material enclosed between them is 
+optional.  They are not part of the syntax.
+<p>
+<a name="999996"></a>
+Input arguments may be either literals or parameters.  See Section <a href="callablestatement.doc.html#998919">7</a>, 
+"CallableStatement," of this <em>JDBC Guide</em> for more information.
+<p>
+<a name="999869"></a>
+One can call the method <code>DatabaseMetaData.supportsStoredProcedures</code> 
+to see if the database supports stored procedures.
+<p>
+</blockquote><pre><a name="999870"></a>    
+</pre>
+<ul><a name="999871"></a>
+<li><code>oj</code> for outer joins
+<br><br>
+</ul><a name="999872"></a>
+
+<p>
+<blockquote><a name="999873"></a>
+The syntax for an outer join is
+<p>
+</blockquote><pre><a name="999874"></a>      {oj outer-join}
+</pre><blockquote><a name="999875"></a>
+where <code>outer-join</code> is of the form
+<p>
+</blockquote><pre><a name="999876"></a>      table LEFT OUTER JOIN {table | outer-join} ON search-condition
+</pre><blockquote><a name="999877"></a>
+Outer joins are an advanced feature, and one can check the SQL grammar 
+for an explanation of them.  JDBC provides three <code>DatabaseMetaData</code> methods 
+for determining the kinds of outer joins a driver supports: <code>supportsOuterJoins</code>, <code>supportsFullOuterJoins</code>, and <code>supportsLimitedOuterJoins</code>.
+<p>
+</blockquote><a name="999878"></a>
+
+<p>
+<blockquote><a name="999879"></a>
+The method <code>Statement.setEscapeProcessing</code> turns escape processing on 
+or off; the default is for it to be on.  A programmer might turn it off to cut 
+down on processing time when performance is paramount, but it would normally be turned on.  It should be noted that <code>setEscapeProcessing</code> does not 
+work for <code>PreparedStatement</code> objects because the statement may have already 
+been sent to the database before it can be called.  See <code>PreparedStatement</code> 
+regarding precompilation.
+<p>
+</blockquote>
+<a name="1000061"></a>
+<h3>4.1.6	 &nbsp; &nbsp;  Using the Method execute</h3>
+<a name="1000062"></a>
+The <code>execute</code> method should be used only when it is possible that a statement may 
+return more than one <code>ResultSet</code> object, more than one update count, or a combination of <code>ResultSet</code> objects and update counts.  These multiple possibilities for 
+results, though rare, are possible when one is executing certain stored procedures or 
+dynamically executing an unknown SQL string (that is, unknown to the application 
+programmer at compile time).  For example, a user might execute a stored procedure 
+(using a <code>CallableStatement</code> object-see <a href="callablestatement.doc.html#">CallableStatement on page 135</a>), and that 
+stored procedure could perform an update, then a select, then an update, then a 
+select, and so on.  Typically someone using a stored procedure will know what it 
+returns.  
+<p><a name="1000066"></a>
+Because the method <code>execute</code> handles the cases that are out of the ordinary, it 
+is no surprise that retrieving its results requires some special handling.  For 
+instance, suppose it is known that a procedure returns two result sets.  After using 
+the method <code>execute</code> to execute the procedure, one must call the method <code>getResultSet</code> to get the first result set and then the appropriate <code>getXXX</code> methods to 
+retrieve values from it.  To get the second result set, one needs to call <code>getMoreResults</code> and then <code>getResultSet</code> a second time.  If it is known that a procedure 
+returns two update counts, the method <code>getUpdateCount</code> is called first, followed by 
+<code>getMoreResults</code> and a second call to <code>getUpdateCount</code>.
+<p>
+<a name="1000067"></a>
+Those cases where one does not know what will be returned present a more 
+complicated situation. The method <code>execute</code> returns <code>true</code> if the result is a <code>ResultSet</code> object and <code>false</code> if it is a Java <code>int</code>.  If it returns an <code>int</code>, that means that the 
+result is either an update count or that the statement executed was a DDL command. The first thing to do after calling the method <code>execute</code>, is to call either 
+<code>getResultSet</code> or <code>getUpdateCount</code>.  The  method <code>getResultSet</code> is called to get 
+what might be the first of two or more <code>ResultSet</code> objects; the method <code>getUpdateCount</code> is called to get what might be the first of two or more update counts.  
+<p>
+<a name="1000068"></a>
+When the result of an SQL statement is not a result set, the  method <code>getResultSet</code> will return <code>null</code>.  This can mean that the result is an update count or that 
+there are no more results.  The only way to find out what the <code>null</code> really means in 
+this case is to call the method <code>getUpdateCount</code>, which will return an integer.   This 
+integer will be  the number of rows affected by the calling statement or <code>-1</code> to indicate either that the result is a result set or that there are no results.  If the method 
+<code>getResultSet</code> has already returned <code>null</code>, which means that the result is not a 
+<code>ResultSet</code> object, then a return value of <code>-1</code> has to mean that there are no more 
+results.  In other words, there are no results (or no more results) when  the following is true:
+<p>
+<pre><a name="1000069"></a>    ((stmt.getResultSet() == null) &amp;&amp; (stmt.getUpdateCount() == -1))
+</pre><a name="1000070"></a>
+If one has called the method <code>getResultSet</code> and processed the <code>ResultSet</code> 
+object it returned, it is necessary to call the method <code>getMoreResults</code> to see if there 
+is another result set or update count.  If <code>getMoreResults</code> returns <code>true</code>, then one 
+needs to again call <code>getResultSet</code> to actually retrieve the next result set.  As 
+already stated above, if <code>getResultSet</code> returns <code>null</code>, one has to call <code>getUpdateCount</code> to find out whether <code>null</code> means that the result is an update count or that 
+there are no more results.  
+<p>
+<a name="1000071"></a>
+When <code>getMoreResults</code> returns <code>false</code>, it means that the SQL statement 
+returned an update count or that there are no more results.  So one needs to call the 
+method <code>getUpdateCount</code> to find out which is the case.  In this situation, there are 
+no more results when the following is true:
+<p>
+<pre><a name="1000072"></a>    ((stmt.getMoreResults() == false) &amp;&amp; (stmt.getUpdateCount() == -1))
+</pre><a name="1000073"></a>
+The code below demonstrates one way to be sure that one has accessed all the 
+result sets and update counts generated by a call to the method <code>execute</code>: 
+<p>
+<pre><a name="1000074"></a>    
+<a name="1000075"></a>    stmt.execute(<code>queryStringWithUnknownResults</code>);
+<a name="1000076"></a>    while (true)  {
+<a name="1000077"></a>      int rowCount = stmt.getUpdateCount();
+<a name="1000078"></a>      if (rowCount &gt; 0) {    //  this is an update count
+<a name="1000079"></a>        System.out.println("Rows changed = " + count);
+<a name="1000080"></a>        stmt.getMoreResults();
+<a name="1000081"></a>        continue;
+<a name="1000082"></a>      }
+<a name="1000083"></a>      if (rowCount == 0) {    // DDL command or 0 updates
+<a name="1000084"></a>        System.out.println(" No rows changed or statement was DDL
+<a name="1000085"></a>                                    command");
+<a name="1000086"></a>        stmt.getMoreResults();
+<a name="1000087"></a>        continue;
+<a name="1000088"></a>      }
+<a name="1000089"></a>    
+<a name="1000090"></a>    // if we have gotten this far, we have either a result set 
+<a name="1000091"></a>    // or no more results
+<a name="1000092"></a>    
+<a name="1000093"></a>      ResultSet rs = stmt.getResultSet; 
+<a name="1000094"></a>      if (rs != null) {
+<a name="1000095"></a>        . . .  // use metadata to get info about result set columns
+<a name="1000096"></a>        while (rs.next())  {
+<a name="1000097"></a>        . . .  // process results
+<a name="1000098"></a>        stmt.getMoreResults();
+<a name="1000099"></a>        continue;
+<a name="1000100"></a>      }
+<a name="1000101"></a>      break;      // there are no more results
+</pre><blockquote><a name="1000058"></a>
+
+<p>
+</blockquote>
+
+<br>
+<hr>
+<font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="drivermanager.doc.html">Prev</a>  | <a href="resultset.doc.html">Next</a>
+</font>
+<hr>
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

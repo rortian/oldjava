@@ -1,0 +1,774 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+<title>javakey-The Java Security Tool</TITLE>
+</head>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1>javakey - The Java Security Tool</H1>
+<blockquote>
+Manages a database of entities (people, companies, etc.) and their public 
+and private keys and certificates. Also generates and verifies signatures 
+for archive files.
+</blockquote>
+
+<h2>SYNOPSIS</h2>
+<blockquote>
+<pre>
+<strong>javakey</strong> [ <a href="javakey.html#Options">options</a> ]
+</pre>
+</blockquote>
+
+<h2>DESCRIPTION</h2>
+
+<blockquote>
+
+<b>javakey</b> is the SUN security provider command-line tool 
+whose primary use is to generate digital signatures for archive files. 
+A signature verifies that a file came from a specified entity (a 
+"<i>signer</i>"). In order to generate a signature for a particular file, 
+the signer must first have a public/private key pair associated with it, 
+and also one or more certificates authenticating its public key. Thus, 
+<b>javakey</b> is also used to build and manage a persistent database of 
+entities and their keys and certificates, as well as indications as to 
+whether or not each entity is considered "trusted."
+
+
+<h3>Identities, Signers, and Keys</h3>
+
+<blockquote>
+
+<p>There are two types of entities managed by <b>javakey</b>: 
+<i>identities</i> and <i>signers</i>. 
+
+<p><i>Identities</i> are real-world entities such as people, companies or
+organizations that have a public key associated with them.
+An identity may also have associated with it one or more certificates 
+authenticating its public key. A certificate is a digitally signed statement
+from one entity, saying that the public key of some other entity has a 
+particular value. (See <a href = "#Certificates">Certificates</a>.)
+
+<p><i>Signers</i> are entities that have private keys in addition to 
+corresponding public keys. Private keys differ from public keys in that 
+they can be used for signing. Prior to signing any files, a signer must 
+have a public and private key pair associated with it, and at least one 
+certificate authenticating its public key.
+
+<p>In <b>javakey</b>, you can either import existing keys or generate new 
+ones for association with identities and signers. Similarly, you can either 
+import existing certificates or generate new ones.
+
+
+<h4>Database usernames for identities and signers</h4>
+
+<p>All entities (identities and signers) have a <i>username</i> local to 
+the database managed by <b>javakey</b>. A username is specified when you 
+add the entity to the database using the <b>-c</b> (create identity) or 
+<b>-cs</b> (create signer) option. Subsequent <b>javakey</b> commands must 
+use this same username to refer to the entity. For example, suppose a 
+trusted signer is created and assigned <tt>duke</tt> as a username, via 
+the following command: 
+
+<pre>
+    javakey -cs duke true
+</pre>
+
+Then to generate a DSA public/private key pair using a key size of 512 bits 
+for this signer, you would use the following command:
+
+<pre>
+    javakey -gk duke DSA 512
+</pre>
+
+<h4>Associating trust with identities and signers</h4>
+
+<p>In JDK 1.1, the client (e.g., end user or system administrator) can 
+use <b>javakey</b> to declare certain entities to be trusted. 
+
+<p>The appletviewer allows any downloaded applets in JAR files signed (using 
+<b>javakey</b>) by a trusted entity to run with the same full rights 
+as local applications. That is, such applets are not subject to the 
+"sandbox" restrictions of the original Java security model. (Fine point:
+The database managed by <b>javakey</b> must also hold a copy of a certificate 
+for the public key of the entity that signed the JAR file, so that the
+signature can be authenticated.) Later releases will provide greater 
+granularity in the allowable trust levels.
+
+<p>The database managed by <b>javakey</b> stores the entity usernames, their
+<a href = "#Certificates">certificates</a>, and each entity's trust 
+level. When you add an entity to the database, you can declare
+it at that time to be either trusted or untrusted (the default).   
+
+<pre>
+    javakey -cs duke true
+
+    javakey -cs bob false
+
+    javakey -cs morty 
+</pre>
+
+The first example creates the signer named <code>duke</code> as a 
+trusted entity.   The next two create the signers <code>bob</code>
+and <code>morty</code> as untrusted.  If you don't specify a trust level,
+then by default, the entity is untrusted. 
+
+<p>You can later on declare a previously untrusted entity
+to be trusted: 
+
+<pre>
+    javakey -t morty true
+</pre>
+
+You can also declare a previously trusted entity to be untrusted: 
+
+<pre>
+    javakey -t duke false
+</pre>
+
+Use
+
+<pre>
+    javakey -ld
+</pre>
+
+to see the state of the entire entity database. 
+
+Use
+
+<pre>
+    javakey -li morty
+</pre>
+
+to see the state of one entity (in this case, <code>morty</code>) in 
+the database.
+
+</blockquote>
+
+<h3>Database Location</h3>
+
+<blockquote>
+
+The database managed by javakey is by default stored in a file named 
+<i>identitydb.obj</i>.
+
+Since the database may contain private keys, it should be kept in a
+secure location. The default is for the database to be stored in the 
+JDK installation directory. If a different
+location is desired, it can be specified by setting the value of the 
+<code>identity.database</code> property in the master security properties 
+file, called <tt>java.security</tt>. That file resides in the JDK security
+properties directory, in <code><i>java.home</i>\lib\security</code>, where 
+<i>java.home</i> is the directory where the JDK is installed. 
+
+<p>For example, you could specify the location via the following:
+
+<pre>
+	identity.database=C:\\a\\safe\\directory\\identitydb.obj 
+</pre>
+
+<b>Note:</b> The directory separators in the above example cannot be the single backslashes normally used as directory separators when specifying file pathnames in Win95 or Windows NT. Rather, <b>javakey</b> requires them to be either the double backslashes shown or single slashes, as in
+
+<pre>
+	identity.database=C:/a/safe/directory/identitydb.obj 
+</pre>
+
+</blockquote>
+
+
+
+<h3><a name=Certificates>Certificates</a></h3>
+
+<blockquote>
+
+<p><b>javakey</b> lets you import, create, display, and save certificates. 
+A certificate is a digitally signed statement from one entity (a signer), 
+saying that the public key of some other entity has a particular value.
+If you trust the entity that signed a certificate, you trust that the 
+association in the certificate between the specified public key and another 
+particular entity is authentic.
+
+<b>javakey</b> currently handles X.509 certificates.  The remainder
+of the examples in this section pertain to X.509 certificates.
+
+
+<h4><a name=CertificateGeneration>Generating a certificate</a></h4>
+
+<p>In order to generate a certificate, you must first create a directive file
+in which you supply 
+
+<ul>
+
+<li>information about the issuer (the signer signing the certificate), 
+<li>information about the subject (the entity whose public key is being 
+authenticated by the certificate),
+<li>information about the certificate itself, and, optionally,
+<li>the name of the signature algorithm to be used (if you don't want DSA).
+<li>the name of a file to which to store a copy of the certificate.
+
+</ul>
+
+Generate a certificate by using the <code><a href = "#gcOption">-gc</a></code> 
+option and specifying a directive file, as in
+
+<pre>
+    javakey -gc dukeCertDirFile
+</pre>
+
+
+<p><b>javakey</b> will create a certificate, using the information supplied 
+in the directive file. It also uses information stored in the database, such 
+as the public key of the entity whose key is to be certified, and the private 
+key of the issuer (required in order to sign the certificate).
+
+<p>Here is an example of a certificate directive file, followed by an 
+explanation of the arguments:
+
+<pre>
+#
+# Information about the issuer (required).
+#
+issuer.name=jsmith
+
+#
+# The certificate to use for the signing (required if this is not self-signed).
+#
+issuer.cert=1
+
+#
+# Information about the subject (required).
+#
+subject.name=mlaunay
+subject.real.name=Marie Launay
+subject.org.unit=JavaSoft
+subject.org=Sun MicroSystems
+subject.country=Switzerland
+
+#
+# Information about the certificate (required).
+#
+start.date=1 Jan 1997
+end.date=15 Jan 1997
+serial.number=1001
+
+#
+# Signature algorithm to be used (only required if you don't want DSA used).
+#
+signature.algorithm=MD5/RSA
+
+#
+# Name of the file to which to save a copy of the certificate (optional).
+#
+out.file=cert.cer
+
+</pre>
+
+<p>All certificate directive file arguments are required, unless specified 
+otherwise:
+
+<dl>
+
+<dt><tt>issuer.name</tt> and <tt>subject.name</tt> 
+
+<dd>Database usernames. <code>issuer.name</code> is the name of the signer 
+signing and issuing the certificate. <code>subject.name</code> is the name 
+of the entity (identity or signer) whose public key is being authenticated 
+by the issuer of the certificate.
+
+<dt><tt>issuer.cert</tt> 
+
+<dd>Specifies which of the issuer's certificates is to be used to
+sign the certificate file, thereby authenticating the subject's public key.
+Its value should be the number that <b>javakey</b> previously assigned to 
+the issuer's certificate when it generated it (or imported it). You can see 
+which numbers javakey assigns to certificates by viewing the output of the 
+<code><a href = "#ldOption">-ld</a></code> or 
+<code><a href = "#liOption">-li</a></code> <b>javakey</b> option. Note: 
+This <i>issuer.cert</i> property is only required if the certificate being
+generated is <i>not</i> self-signed. (A self-signed certificate is one for
+which <i>issuer.name</i> equals <i>subject.name</i>.)
+
+<dt><tt>subject.real.name, subject.org.unit, subject.org, and 
+subject.country</tt>
+
+<dd>X.500 distinguished name components.  These components refer to the 
+subject's common name, organizational unit, organization, and country, respectively.
+
+<dt><tt>start.date</tt> and <tt>end.date</tt>
+
+<dd>Strings specifying the certificate's validity start and expiration 
+dates (and optionally times). The certificate is valid from the start date 
+and time to the end date and time. The start and end date strings can be 
+any strings accepted by the <code>java.util Date</code> method that takes 
+a String argument. A date without a time specified is interpreted as 
+meaning the start of the specified date.
+
+<dt><tt>serial.number</tt>
+
+<dd>The serial number. For a given issuer, this number must be unique, to 
+distinguish this certificate from other certificates signed by the issuer.
+
+<dt><tt>signature.algorithm</tt>
+
+<dd>The name of the signature algorithm to be used to sign the certificate. 
+This argument is optional. If there is no <code>signature.algorithm</code> 
+specified, DSA (Digital Signature Algorithm) will be used; in that case, the 
+signer's private and public keys must be for the DSA algorithm. A non-DSA 
+algorithm can only be used if (1) the specified name is a <a 
+href="../../guide/security/CryptoSpec.html#AppA">standard
+algorithm name</a>, (2) there is a statically installed <a 
+href="../../guide/security/CryptoSpec.html#Provider">provider</a> 
+supplying an implementation for the algorithm, and (3) the signer's keys 
+are suitable for the specified algorithm. For example, if the value of 
+the <code>signature.algorithm</code> property is <code>MD5/RSA</code> or 
+<code>SHA-1/RSA</code>, then the signer's keys must be RSA keys.
+
+<dt><tt>out.file</tt>
+
+<dd>The name of a file to which to save the certificate. This argument is
+optional.
+
+</dl>
+
+
+<h4><a name=DisplayCertificate>Certificates and Files</a></h4>
+
+<p>Using <b>javakey</b>, it is possible to display, import, and export
+certificates stored as files. 
+
+To display a certificate stored in a file, use the <b>-dc</b> option, as in
+
+<pre>
+    javakey -dc certfile.cer
+</pre>
+
+<p>This displays information about the certificate stored in the file 
+<i>certfile.cer</i>, showing 
+
+<ul>
+<li>the certificate type (currently, X.509v1).
+<li>information about the subject.
+<li>information about the public key:
+    <ul>
+    <li>the algorithm and its parameters (currently, DSA and its p, q, and 
+g parameter values).
+    <li>the unparsed key bits.
+    </ul>
+<li>the certificate validity dates.
+<li>information about the issuer.
+<li>information about the signature algorithm used.
+<li>the certificate serial number, in hexadecimal.
+</ul>
+
+To import a certificate from a file, use the <b>-ic</b> option, as in
+
+<pre>
+    javakey -ic joe jcertfile.cer
+</pre>
+
+This sample command imports the certificate in the file <i>jcertfile.cer</i> 
+and associates it with <i>joe</i>.
+
+<p>To export a certificate to a file, use the <b>-ec</b> option, as in
+
+<pre>
+    javakey -ec jane 2 janecertfile.cer
+</pre>
+
+This sample command exports jane's certificate #2 to the file 
+<i>janecertfile.cer</i>. The certificate number must be the number that 
+<b>javakey</b> previously assigned to her certificate when it generated 
+it (or imported it). You can see which numbers javakey assigns to 
+certificates by viewing the output of the 
+<code><a href = "#ldOption">-ld</a></code> or the 
+<code><a href = "#liOption">-li</a></code> <b>javakey</b> option.
+
+</blockquote>
+
+
+
+<h3><a name=JARSigning>JAR Files and Digital Signatures</a></h3>
+
+<blockquote>
+
+<p>Java ARchive files (JAR files) are a new feature of JDK1.1.  This feature 
+enables the packaging of class files, images, sounds, and other digital data 
+in a single file for faster and easier distribution. JDK1.1 includes a tool
+named <a href="jar.html"><tt>jar</tt></a> that enables developers to 
+produce JAR files.
+
+<p><b>javakey</b> can be used to  sign and verify JAR files. (Note; 
+verification is not yet implemented.) Java licensees are expected to honor 
+the signature generated using <b>javakey</b>.
+
+<p>At this time, <b>javakey</b> can sign the JAR file using DSA 
+(Digital Signature Algorithm) or, in some cases, the MD5/RSA algorithm. 
+That is, if the signer's public and private keys are DSA keys, 
+<b>javakey</b> will sign the JAR file using DSA. If the signer's keys are 
+RSA keys, <b>javakey</b> will try to sign the JAR file 
+using the MD5/RSA algorithm. This is only possible if
+there is a statically installed <a 
+href="../../guide/security/CryptoSpec.html#Provider">provider</a> 
+supplying an implementation for the MD5/RSA algorithm.
+
+<p>For both the DSA and MD5/RSA algorithms, anyone who wants to sign files has 
+both a public key and a private key. The private key is
+used for signing, and a certificate of the public key is included in
+the signature file (in a PKCS #7 block).
+
+
+<h4>Signing JAR Files</h4>
+
+<p>Signing a JAR file involves generating a signature for a given signer and 
+including that signature in a given JAR file.  It requires the signer to be in 
+the database managed by <b>javakey</b>, along with an associated key pair and 
+at least one X.509 certificate. Like certificate generation, generating a signature is 
+directive-based. Each directive file contains a signer 
+<i>profile</i>. A sample directive file might look like this:<pre>
+
+#
+# JAR signing directive. This is the directive file used by javakey to 
+# sign a JAR file.
+#
+
+# Which signer to use. This signer must be in the database.
+
+signer=duke
+
+
+# Certificate number to use for this signer. This determines which
+# certificate will be included in the PKCS#7 block. This is mandatory
+# and is 1-based. Its value should be the number that javakey
+# previously assigned to the signer's certificate when it generated it 
+# (or imported it). You can see which numbers javakey assigns 
+# to certificates by viewing the output of the 
+# <code>-ld</code> or <code>-li</code> javakey option. 
+
+cert=1
+
+
+# Certificate chain depth of a chain of certificates to include. This is
+# currently not supported.
+
+chain=0
+
+# The name to give to the generated signature file and associated signature
+# block. This must be 8 characters or less.
+# The generated signature file and associated signature block will have 
+# this name, with the .SF and .DSA extensions, respectively.
+# In this example, the files will be DUKESIGN.SF and DUKESIGN.DSA.
+
+signature.file=DUKESIGN
+
+
+# (Optional) The name to give to the signed JAR file.
+
+out.file=signedJar.jar
+
+</pre>
+
+<p>Once the JAR file and the directive file have been created, the javakey command to sign a JAR file can be used. It is: 
+
+<pre>
+    javakey -gs <var>directivefile jarfile</var>
+</pre>
+
+where <i>directivefile</i> is the name (and path) of the directive file, 
+and <i>jarfile </I> is the name (and path) of the JAR file. 
+
+<p>The output of this command is a signed JAR file whose name will be 
+the name specified by the value of the <code>out.file</code> property, if any,
+specified in the directive file. If there is no <code>out.file</code> property, the signed JAR 
+file name will be the same as that of the initial JAR file, but with the suffix <code>.sig</code>.
+
+<p>The generated .SF and .DSA files will be added to the JAR file, in a
+<code>META-INF</code> directory. If the base name for these files is 
+<code>DUKESIGN</code>, as in the example above, the files added will be: <ul>
+
+<li>META-INF\DUKESIGN.SF
+<li>META-INF\DUKESIGN.DSA
+
+</ul>
+
+<p>Any files with these names in the signed JAR file will be overwritten.
+
+<p>
+
+</blockquote>
+</blockquote>
+
+
+<h2><a name=Options>OPTIONS</a></h2>
+
+<blockquote>
+
+Note: options may be specified with or without a preceding minus sign (-). 
+Only <i>one</i> option may be specified per <b>javakey</b> command.
+
+<dl>
+
+<dt><b><code>-c </code></b><var>identity</var> <code>{true|false}</code>
+<dd>
+Creates a new identity with database username <i>identity</i>. The optional 
+<code>true</code> or <code>false</code> designation specifies whether or not 
+the identity is to be considered trusted. (The default is <code>false</code>.)
+For example, the following creates an identity named <i>jane</i>, and 
+specifies that she is trusted:<P>
+
+<pre>
+    javakey -c jane true
+</pre>
+
+<dt><b><code>-cs </code></b><var>signer</var> <code>{true|false}</code>
+<dd>
+Creates a new signer with database username <i>signer</i>. The optional 
+<code>true</code> or <code>false</code> designation specifies whether or not 
+the signer is to be considered trusted. (The default is <code>false</code>.) 
+<p>
+
+<dt><b><code>-t </code></b><var>idOrSigner</var> <code>{true|false}</code>
+<dd>
+Sets (or resets) the trust level for the specified identity or signer.
+<p>
+
+<dt><b><code>-l </code></b>
+<dd>
+Lists the usernames of all entities (identities and signers) in the database 
+managed by <b>javakey</b>.
+<p>
+
+
+<dt><b><code><a name=ldOption>-ld </a></code></b>
+<dd>
+Lists and provides detailed information about all entities in the database 
+managed by <b>javakey</b>.
+<p>
+
+
+<dt><b><code><a name=liOption>-li </a></code></b><var>idOrSigner</var>
+<dd>
+Provides detailed information about the specified identity or signer.
+<p>
+
+
+<dt><b><code>-r </code></b><var>idOrSigner</var>
+<dd>
+Removes the specified identity or signer from the database.
+<p>
+
+<dt><b><code>-ik </code></b><var>identity keysrcfile</var>
+<dd>
+Imports the public key in the file <i>keysrcfile</i>, associating it with 
+the specified <i>identity</i>.  The key must be in X.509 format.
+<p>
+
+<dt><b><code>-ikp </code></b><var>signer pubfile privfile</var>
+<dd>
+Imports the key pair (the public key in the file <i>pubfile</i> and the 
+private key in the file <i>privfile</i>), associating them with the 
+specified <i>signer</i>. The keys must be in X.509 format.
+<p>
+
+<dt><b><code>-ic </code></b><var>idOrSigner certsrcfile</var>
+<dd>
+Imports the public key certificate in the file <i>certsrcfile</i>, 
+associating it with the specified entity (identity or signer). If a public 
+key has already been associated with the entity in the datase, 
+<b>javakey</b> ensures that it is the same as the public key certified in 
+<i>certsrcfile</i>, and will report an error if they're not the same. If 
+the entity does not yet have a public key associated with it, <b>javakey</b> 
+will create the association, using the public key in <i>certsrcfile</i>.
+<p>
+
+<dt><b><code>-ii </code></b><var>idOrSigner</var>
+<dd>
+Sets information for the specified identity or signer. After you type in an 
+"import information" command such as
+
+<pre>
+    javakey -ii jane
+</pre>
+
+<p>you will be instructed to type as many lines of information you want to 
+supply for <i>jane</i>, ending with a line containing a single period to 
+signal the end of the information. 
+<p>
+
+<dt><b><code>-gk </code></b><var>signer algorithm  keysize {pubfile} 
+{privfile}</var>
+<dd>
+Generates a key pair (a public key and associated private key) for the 
+specified <i>signer</i> using the specified <i>algorithm</i>, generating 
+keys of length <i>keysize</i> bits. If a file <i>pubfile</i> is specified, 
+the public key will be written to that file. If, in addition, a file 
+<i>privfile</i> is specified, the private key will be written to that file. 
+Do the latter with great care; private keys must remain private or your 
+security system is compromised.
+
+<p>The <i>keysize</i> limits for the algorithm, if any, are those described in
+<a href="../../guide/security/CryptoSpec.html#AppB">Appendix B</a> of the 
+<i>Java Cryptography Architecture API Specification & Reference</i>.
+
+<p>Note: <b>javakey</b> can always generate DSA (Digital Signature Algorithm)
+keys. It can generate keys for a different algorithm only if (1) the 
+specified name is a <a href="../../guide/security/CryptoSpec.html#AppA">
+standard key generation algorithm name</a> such as <code>RSA</code>, and 
+(2) there is a statically installed <a 
+href="../../guide/security/CryptoSpec.html#Provider">provider</a> 
+supplying an implementation for the specified key generation algorithm.
+
+<p>Please note that there is no way to supply algorithm-specific key 
+generation parameters, such as the <code>p</code>,
+<code>q</code>, or <code>g</code> parameters for the DSA algorithm.
+<p>
+
+<dt><b><code>-g </code></b><var>signer algorithm  keysize {pubfile} {privfile}</var>
+<dd>
+Shortcut for the -gk command to generate a key pair for the specified signer.
+<p>
+
+
+<dt><b><code><a name=gcOption>-gc </a></code></b><var>directivefile</var>
+<dd>
+Generates a certificate according to information supplied in the 
+<i>directivefile</i>. See <a href = "#CertificateGeneration">Generating a 
+Certificate</a>.
+<p>
+
+<dt><b><code>-dc </code></b><var>certfile</var>
+<dd>
+Displays the certificate stored in the file <i>certfile</i>. See
+<a href = "#DisplayCertificate">Certificates and Files</a>.
+<p>
+
+<dt><b><code>-ec </code></b><var>idOrSigner certnum certoutfile</var>
+<dd>
+Exports the certificate numbered <i>certnum</i> from the specified 
+<i>idOrSigner</i> to the file <i>certoutfile</i>. The certificate number 
+must be the number that <b>javakey</b> previously assigned to the
+certificate when it generated it (or imported it). To see which numbers 
+javakey assigns to certificates, view the output of the <b>-ld</b> (for
+all entities) or <b>-li</b> (for a particular entity) option.
+<p>
+
+<dt><b><code>-ek </code></b><var>idOrSigner pubfile {privfile}</var>
+<dd>
+Exports the public key for the specified identity or signer, and 
+optionally the private key (for a signer), to the specified
+file(s). The keys are encoded in X.509/DER format.
+<p>
+
+<dt><b><code>-gs </code></b><var>directivefile jarfile</var>
+<dd>
+Signs the specified JAR (Java ARchive) file according to information supplied
+in the <i>directivefile</i>. See 
+<a href = "#JARSigning">JAR Files and Digital Signatures</a>.
+<p>
+
+</dl>
+
+</blockquote>
+
+
+<h2>EXAMPLES</h2>
+
+<blockquote>
+
+To create a trusted identity called <i>jane</i> and a trusted signer called 
+<i>joe</i>, use the following commands:
+
+<pre>
+    javakey -c jane true
+    javakey -cs joe true
+</pre>
+
+<p>Suppose <i>jane</i> sends her public key by email to <i>joe</i> and 
+he stores the key in the file named <code>\tmp\jane_pubkey</code>. It must 
+be encoded in X.509/DER format. To import and associate that key with 
+<i>jane</i>'s identity in the persistent database managed by <b>javakey</b>,
+<i>joe</i> (or a system administrator) enters the following command:
+
+<pre>
+    javakey -ik jane \tmp\jane_pubkey
+</pre>
+
+<p>Let's also assume <i>joe</i> has a public and private key pair that he used 
+in another context. He now wants to associate that key pair with his own 
+username identifier in the database.  He does this with the following command, 
+assuming that the public key is stored in <code>\tmp\joe_pubkey</code> and the 
+private key in <code>\tmp\joe_privkey</code>:
+
+<pre>
+    javakey -ikp joe \tmp\joe_pubkey \tmp\joe_privkey
+</pre>
+
+<p>The keys must both be in X.509 format. They must be for the same 
+algorithm, of course.
+
+<p>To generate a new key pair for <i>joe</i> instead of using an existing 
+key pair, the following command could be used:
+
+<pre>
+    javakey -gk joe DSA 512 \tmp\joe_pubkey
+</pre>
+
+<p>This command creates a DSA key pair, with 512-bit keys, and associates it 
+with <i>joe</i>. The <b><code>-gk</code></b> command also optionally saves a 
+copy of the public key in a file. The example uses the file 
+<code>\tmp\joe_pubkey</code>. One reason <i>joe</i> might want to save 
+the public key in a file is so that he can mail a copy of it to <i>jane</i>
+or anyone else who needs it (e.g., to verify <i>joe</i>'s digital signatures 
+of files). This command also optionally lets <i>joe</i> specify a file to
+which to save the private key, if needed. However, saving the private key to 
+a file should be done with great care.
+
+<p>Before <i>joe</i> can sign any files, he must have one or more certificates 
+associated with him, authenticating his public key. In order to generate a 
+certificate for him, a directive file must first be created, specifying 
+various information about <i>joe</i> and about the certificate issuer, the 
+certificate's validity dates, etc. Suppose such a file has been generated (see
+<a href = "#Certificates">Certificates</a>), and its name is 
+<code>joeCertDirectiveFile</code>, in the <code>\tmp\</code> directory. A 
+certificate for <i>joe</i> can then be generated by the command
+
+<pre>
+    javakey -gc \tmp\joeCertDirectiveFile
+</pre>
+
+As described in <a href = "#JARSigning">JAR Files and Digital Signatures</a>, 
+signing a JAR file also requires the use of a directive file providing 
+information required for the signature, such as the signer name and the 
+number of the certificate to use for that signer. The command to sign the
+JAR file named <code>jarfileA.jar</code>, using the directive file 
+<code>joeJarDirectiveFile</code> is:
+
+<pre>
+    javakey -gs joeJarDirectiveFile jarfileA.jar
+</pre>
+
+</blockquote>
+
+
+<h2>SEE ALSO</h2>
+<blockquote>
+
+<ul>
+
+<li><a href = "http://java.sun.com/security/usingJavakey.html">
+http://java.sun.com/security/usingJavakey.html</a>: A
+short self-contained introductory tutorial.<p>
+
+<li><a href="jar.html">jar</a> tool documentation<p>
+
+<li><a href = "http://java.sun.com/security/signExample/">
+http://java.sun.com/security/signExample/</a>: A 
+simple step-by-step demo of how you can experiment with 
+code signing, using the JDK 1.1 tools (<b>javakey</b>, <b>jar</b>, and
+<b>appletviewer</b>).
+
+</ul>
+
+</blockquote>
+
+</body>
+</html>

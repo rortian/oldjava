@@ -1,0 +1,101 @@
+<html>
+<head>
+<title>RMI Documentation</title>
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<CENTER><P ALIGN=LEFT>
+<IMG SRC="../../images/smi.logo.gif" ALT=" Sun Microsystems, Inc " BORDER=0>
+</P></CENTER>
+
+
+<font size=-1><a href="../../index.html">JDK Contents</a></font>
+<HR SIZE=3 NOSHADE>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<center>
+           <h1>RMI - Remote Method Invocation </h1>
+</center>
+
+<blockquote>
+
+<P>
+ <STRONG>Note:</STRONG>
+Some of the RMI documentation on this site is temporarily unavailable. Links to all RMI pages will be redirected shortly.
+</P>
+
+
+
+
+
+RMI enables the programmer to create distributed Java-to-Java applications,
+in which the methods of remote Java objects can be invoked from other Java
+virtual machines, possibly on different hosts. A Java program can make a call
+on a remote object once it obtains a reference to the remote object, either by
+looking up the remote object in the bootstrap-naming service provided by RMI,
+or by receiving the reference as an argument or a return value. A client can call
+a remote object in a server, and that server can also be a client of other remote
+objects. RMI uses Object Serialization to marshal and unmarshal parameters
+and does not truncate types, supporting true object-oriented polymorphism. 
+</blockquote>
+<font size=+2><b>RMI Tutorial</b></font>
+<ul>
+   <LI><b><a href="getstart.doc.html">Getting Started</a></b><br>
+The RMI Tutorial shows you the steps to follow to create a distributed version of the classic Hello World program using Java Remote Method Invocation (RMI).
+The Hello World applet makes a remote method call to the server from which it was downloaded to retrieve the message "Hello World!"
+</ul>
+
+<font size=+2><b>RMI Examples</b></font><br>
+<ul>
+   <LI>When you download the JDK 1.1 documentation
+   you will find useful examples in the <code>docs/guide/rmi/examples</code>
+   directory.
+</ul>
+
+
+<font size=+2><b>RMI Specification</b></font><br>
+<ul>
+   <LI><b><a href="spec/rmiTOC.doc.html">RMI Specification</a></b>
+</ul>
+
+<font size=+2><b>RMI API Reference</b></font><br>
+<font size=-1>(javadoc)</font>
+<ul>
+   <LI><b><a href="../../api/Package-java.rmi.html">java.rmi Package</a></b>
+   <LI><b><a href="../../api/Package-java.rmi.dgc.html">java.rmi.dgc Package</a></b>
+   <LI><b><a href="../../api/Package-java.rmi.registry.html">java.rmi.registry Package</a></b>
+   <LI><b><a href="../../api/Package-java.rmi.server.html">java.rmi.server Package</a></b>
+</ul>
+
+<font size=+2><b>RMI Tools</b></font>
+<ul>
+   <LI><b>rmic</b> - Java RMI Stub Compiler - (<a href="../../tooldocs/win32/rmic.html">for Windows</a>) (<a href="../../tooldocs/solaris/rmic.html">for Solaris</a>)
+   <LI><b>rmiregistry</b> - Java Remote Object Registry - (<a href="../../tooldocs/win32/rmiregistry.html">for Windows</a>) (<a href="../../tooldocs/solaris/rmiregistry.html">for Solaris</a>)
+</ul>
+
+<font size=+2><b>Release Notes</b></font>
+<ul>
+   <LI><b><a href="release-notes.html">Release Notes</a></b> 
+</ul>
+
+
+<font size=+2><b>For More Information</b></font><br>
+<p>
+<b>Located on the JavaSoft website:</b><br>
+See the<a href="http://java.sun.com/products/jdk/rmi/index.html"> Java Distributed Systems home page</a> for an overview of the Distributed Systems Group at JavaSoft and information on some of our upcoming projects, including an interim
+plug-in for Netscape 3.0 (which is JDK 1.0.2 based) that enables RMI based applets to be run.
+
+</ul>
+
+
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<HR SIZE=3 NOSHADE>
+
+<IMG SRC="../../images/JAVA.85.GIF" ALIGN=RIGHT>
+
+<FONT SIZE=-2>
+<A HREF="../../relnotes/SMICopyright.html">Copyright &#169;</A> 1996 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn. View, CA 94043-1100 USA. All rights reserved.
+<br><br>
+
+</BODY>
+</HTML>

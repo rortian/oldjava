@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>JDK 1.1 Performance Enhancements</title>
+  </head>
+
+<BODY BGCOLOR="#FFFFFF">
+<h1>JDK 1.1 Performance Enhancements</h1>
+
+For JDK performance measurements, see <a href="http://java.sun.com/products/jdk/1.1/performance/index.html">Performance Measurements</a> on the JavaSoft website.
+<ul>
+   <li><strong>Interpreter Loop in Assembly Code on Win32 and Solaris/SPARC </strong>
+<br>Since portions of the Java VM have been rewritten in assembly
+language, the resulting VM now runs up to five times faster on certain
+operations.<br><br>
+   <li><strong>Non-Continuous Heap Support for Mac</strong><br>
+        Improved memory usage on Macintosh computers enables Java to run
+more smoothly with other applications.<br><br>
+
+   <li><strong>Monitor Speedups</strong><br>
+        Synchronized methods enable operations to run more quickly and
+efficiently.<br><br>
+
+<li><strong>Garbage Collection of Classes</strong><br>
+        This enhancement automatically discards unused classes.  Improved
+overall VM memory usage enables Java to operate more efficiently, and with
+less memory.<br><br>
+
+<li><strong>AWT Peer Class Re-Write for Win32</strong><br>
+        To achieve higher performance, AWT peer native classes have been
+completely rewritten to be hosted running on top of Win32.<br><br>
+
+<li><strong>JAR (Java Archive) bundling of resources for a single HTTP transaction</strong><br>
+        JAR is a new JDK 1.1 platform-independent file format that
+aggregates many files into one.  Java applets and their requisite
+components--such as class files, images and sounds--can be bundled into a
+compressed JAR file and downloaded to a browser in a single HTTP
+transaction to reduce download time.  In addition, applet authors can
+digitally sign individual entries in a JAR file to authenticate their
+origin.<br><br>
+
+
+
+</ul>
+
+
+</body>
+</html>

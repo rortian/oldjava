@@ -1,0 +1,239 @@
+<html><head><title>Garbage Collector Interfaces
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-stubs.doc.html">[Prev]</a> <a href="rmi-protocol.doc.html">[Next]</a>
+<hr><br>
+ 
+<a name="60">
+<h1>Garbage Collector Interfaces
+</h1>
+</a>
+<hr><p><a name="64">
+
+<p>
+</a>The interfaces and classes in this chapter are used by the distributed garbage 
+collector (DGC)for RMI.
+<p><h3><a name="3210">
+Topics:
+</a></h3><ul><li><a href="rmi-dgc.doc.html#6449">The Interface DGC</a>
+<li><a href="rmi-dgc.doc.html#6770">The Lease Class</a>
+<li><a href="rmi-dgc.doc.html#7144">The ObjID Class</a>
+<li><a href="rmi-dgc.doc.html#6758">The UID Class</a>
+<li><a href="rmi-dgc.doc.html#6613">The VMID Class</a>
+</ul><h1><a name="6449">
+The Interface DGC
+</a></h1>The DGC abstraction is used for the server side of the distributed garbage 
+collection algorithm. This interface contains the two methods: <code>dirty</code> and 
+<code>clean</code>. A <code>dirty</code> call is made when a remote reference is unmarshaled in a 
+client (the client is indicated by its <code>VMID</code>). A corresponding clean call is made 
+when no more references to the remote reference exist in the client. A failed 
+dirty call must schedule a strong clean call so that the call's sequence number 
+can be retained in order to detect future calls received out of order by the 
+distributed garbage collector.
+<p>A reference to a remote object is <em>leased</em> for a period of time by the client holding 
+the reference. The lease period starts when the dirty call is received. It is the 
+client's responsibility to renew the leases, by making additional <code>dirty</code> calls, 
+on the remote references it holds before such leases expire. If the client does 
+not renew the lease before it expires, the distributed garbage collector assumes 
+that the remote object is no longer referenced by that client.
+<p><dl><a name="6480"><pre>package java.rmi.dgc;
+import java.rmi.server.ObjID;
+
+public interface DGC extends java.rmi.Remote {
+
+	Lease dirty(ObjID[] ids, long sequenceNum, Lease lease)
+		throws java.rmi.RemoteException;
+	
+	void clean(ObjID[] ids, long seqNum, VMID vmid, boolean strong)
+		throws java.rmi.RemoteException;
+}
+</pre></a></dl>The method <code>dirty</code> requests leases for the remote object references associated 
+with the object identifiers contained in the array argument ids. The lease 
+contains a client's unique virtual machine identifier (VMID) and a requested 
+lease period. For each remote object exported in the local virtual machine, the 
+garbage collector maintains a <em>reference list </em>- a list of clients that hold 
+references to it. If the lease is granted, the garbage collector adds the client's 
+VMID to the reference list for each remote object indicated in ids. The 
+sequenceNum parameter is a sequence number that is used to detect and discard 
+late calls to the garbage collector. The sequence number should always increase 
+for each subsequent call to the garbage collector.
+<p>Some clients are unable to generate a unique VMID. This is because a VMID is 
+a universally unique identifier only if it contains a <em>true</em> host address, an 
+address which some clients are unable to obtain due to security restrictions. In 
+this case, a client can use a VMID of <code>null</code>, and the distributed garbage 
+collector will assign a VMID for the client.
+<p>The <code>dirty</code> call returns a <code>Lease</code> object that contains the VMID used and the 
+lease period granted for the remote references. (A server can decide to grant a 
+smaller lease period than the client requests.) A client must use the VMID the 
+garbage collector uses in order to make corresponding <code>clean</code> calls when the 
+client drops remote object references.
+<p>A client virtual machine need only make one initial <code>dirty</code> call for each remote 
+reference referenced in the virtual machine (even if it has multiple references to 
+the same remote object). The client must also make a <code>dirty</code> call to renew 
+leases on remote references before such leases expire. When the client no 
+longer has any references to a specific remote object, it must schedule a <code>clean</code> 
+call for the object ID associated with the reference.
+<p>The <code>clean</code> call removes the vmid from the reference list of each remote object 
+indicated in ids. The sequence number is used to detect late clean calls. If the 
+argument strong is true, then the clean call is a result of a failed <code>dirty</code> call, and 
+the sequence number for the client vmid therefore needs to be remembered.
+<p><h1><a name="6770">
+The Lease Class
+</a></h1>A lease contains a unique virtual machine identifier and a lease duration. A 
+<code>Lease</code> object is used to request and grant leases to remote object references.
+<p><dl><a name="6934"><pre>package java.rmi.dgc;
+
+public final class Lease implements java.io.Serializable {
+
+	public Lease(VMID id, long duration);
+
+	public VMID getVMID();
+
+	public long getValue();
+}
+</pre></a></dl>The <code>Lease</code> constructor creates a lease with a specific VMID and lease duration. 
+The VMID may be <code>null</code>.
+<p>The <code>getVMID</code> method returns the client VMID associated with the lease.
+<p>The <code>getValue</code> method returns the lease duration.
+<p><h1><a name="7144">
+The ObjID Class
+</a></h1>The class <code>ObjID</code> is used to identify remote objects uniquely in a virtual 
+machine over time. Each identifier contains an object number and an address 
+space identifier that is unique with respect to a specific host. An object 
+identifier is assigned to a remote object when it is exported.
+<p>An <code>ObjID</code> consists of an object number (a <code>long</code>) and a unique identifier for the 
+address space (a <code>UID</code>).
+<p><dl><a name="6752"><pre>package java.rmi.server;
+
+public final class ObjID implements java.io.Serializable {
+
+	public ObjID ();
+
+	public ObjID (int num);
+
+	public void write(ObjectOutput out) throws java.io.IOException;
+
+	public static ObjID read(ObjectInput in)
+		throws java.io.IOException;
+
+	public int hashCode() 
+
+	public boolean equals(Object obj) 
+
+	public String toString()
+}
+</pre></a></dl>The first form of the <code>ObjID</code> constructor generates a unique object identifier. 
+The second constructor generates <em>well-known</em> object identifiers (such as those 
+used by the registry and the distributed garbage collector) and takes as an 
+argument a well-known object number. A well-known object ID generated via 
+this second constructor will not clash with any object IDs generated via the 
+default constructor; to enforce this, the object number of the <code>ObjID</code> is set to the 
+"well-known" number supplied in the constructor and all <code>UID</code> fields are set to 
+zero.
+<p>The method <code>write</code> marshals the object ID's representation to an output 
+stream. 
+<p>The method <code>read</code> constructs an object ID whose contents is read from the 
+specified input stream.
+<p>The method <code>hashCode</code> returns the object number as the hashcode
+<p>The <code>equals</code> method returns true if obj is an <code>ObjID</code> with the same contents.
+<p>The <code>toString</code> method returns a string containing the object ID representation. 
+The address space identifier is included in the string representation only if the 
+object ID is from a non-local address space.
+<p><h1><a name="6758">
+The UID Class
+</a></h1>The class <code>UID</code> is an abstraction for creating identifiers that are unique with 
+respect to the host on which it is generated. A <code>UID</code> is contained in an <code>ObjID</code> as 
+an address space identifier. A UID consists of a number that is unique on the 
+host (an <code>int</code>), a time (a <code>long</code>), and a count (a <code>short</code>).
+<p><dl><a name="6760"><pre>package java.rmi.server;
+
+public final class UID implements java.io.Serializable {
+
+    public UID();
+
+    public UID(short num); 
+
+    public int hashCode();
+
+    public boolean equals(Object obj);
+
+    public String toString();
+
+    public void write(DataOutput out) throws java.io.IOException;
+
+    public static UID read(DataInput in) throws java.io.IOException;
+}
+</pre></a></dl>The first form of the constructor creates a pure identifier that is unique with 
+respect to the host on which it is generated. This <code>UID</code> is unique under the 
+following conditions: a) the machine takes more than one second to reboot, and 
+b) the machine's clock is never set backward. In order to construct a <code>UID</code> that is 
+globally unique, simply pair a <code>UID</code> with an <code>InetAddress</code>.
+<p>The second form of the constructor creates a <em>well-known</em> <code>UID</code>. There are 216 -1 
+such possible well-known IDs. An ID generated via this constructor will not 
+clash with any ID generated via the default <code>UID</code> constructor which generates a 
+genuinely unique identifier with respect to this host.
+<p>The methods <code>hashCode</code>, <code>equals</code>, and <code>toString</code> are defined for UIDs. Two 
+UIDs are considered equal if they have the same contents.
+<p>The method <code>write</code> writes the UID to the output stream.
+<p>The method <code>read</code> constructs a UID whose contents is read from the specified 
+input stream. 
+<p><h1><a name="6613">
+The VMID Class
+</a></h1>The class <code>VMID</code> provides a universally unique identifier among all Java virtual 
+machines. A <code>VMID</code> contains a <code>UID</code> and a host address. A <code>VMID</code> can be used to 
+identify client virtual machines.
+<p><dl><a name="6617"><pre>package java.rmi.dgc;
+
+public final class VMID implements java.io.Serializable {
+
+	public VMID();
+
+	public static boolean isUnique();
+
+	public int hashCode();
+
+	public boolean equals(Object obj);
+	
+	public String toString();
+}
+</pre></a></dl>The <code>VMID</code> default constructor creates a globally unique identifier among all 
+Java virtual machines under the following conditions:
+<p><ul><li>the conditions for uniqueness for objects of the class 
+<code>java.rmi.server.UID</code> are satisfied, and
+<li> an address can be obtained for the host that is unique and constant for the 
+lifetime of the <code>UID</code> object.
+</ul>A <code>VMID</code> contains the host address of the machine on which it was created. Due 
+to security restrictions, obtaining the true host address is not always possible 
+(for example, the loopback host may be used under security-restricted 
+conditions). The method <code>isUnique</code> can be called to determine if <code>VMIDs</code> 
+generated in this virtual machine are, in fact, unique among all virtual 
+machines. The method <code>isUnique</code> returns true if a valid host name can be 
+determined (other than loopback host); otherwise it returns false.
+<p>The <code>hashCode</code>, <code>equals</code> and <code>toString</code> methods are defined for <code>VMID</code>s. Two 
+VMIDs are considered equal if they have the same contents.
+<p><dl><a name="6727"><pre>
+</pre></a></dl>
+<hr><br>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-stubs.doc.html">[Prev]</a> <a href="rmi-protocol.doc.html">[Next]</a>
+<hr><br>
+ 
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email  -->
+<!-- -->
+<!-- Last updated: 03/18/97 13:00:06 -->
+
+</body>
+</html>

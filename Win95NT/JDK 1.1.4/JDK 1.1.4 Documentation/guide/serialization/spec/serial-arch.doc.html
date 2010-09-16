@@ -1,0 +1,288 @@
+<html><head><title>System Architecture
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="serialTOC.doc.html">[Prev]</a> <a href="output.doc.html">[Next]</a>
+<hr><br>
+ 
+<h1><a name="60">
+System Architecture
+
+</a></h1>
+<hr><p>
+<p><h3><a name="3541">
+Topics:
+</a></h3><ul><li><a href="serial-arch.doc.html#4895">Overview</a>
+<li><a href="serial-arch.doc.html#4176">Writing to an Object Stream</a>
+<li><a href="serial-arch.doc.html#4188">Reading from an Object Stream</a>
+<li><a href="serial-arch.doc.html#962">Object Streams as Containers</a>
+<li><a href="serial-arch.doc.html#4542">The ObjectOutput Interface</a>
+<li><a href="serial-arch.doc.html#4548">The ObjectInput Interface</a>
+<li><a href="serial-arch.doc.html#4539">The Serializable Interface</a>
+<li><a href="serial-arch.doc.html#4333">The Externalizable Interface</a>
+<li><a href="serial-arch.doc.html#4160">Protecting Sensitive Information</a>
+</ul><h1><a name="4895">
+Overview
+</a></h1>The capability to store and retrieve Java objects is essential to building all but 
+the most transient applications. The key to storing and retrieving objects is 
+representing the state of objects in a serialized form sufficient to reconstruct the 
+object(s). Objects to be saved in the stream may support either the Serializable 
+or the Externalizable Interface. For Java objects, the serialized form must be 
+able to identify and verify the Java class from which the object's contents were 
+saved and to restore the contents to a new instance. For Serializable objects, the 
+stream includes sufficient information to restore the fields in the stream to a 
+compatible version of the class. For Externalizable objects, the class is solely 
+responsible for the external format of its contents.
+<p>Objects to be stored and retrieved frequently refer to other objects. Those other 
+objects must be stored and retrieved at the same time to maintain the 
+relationships between the objects. When an object is stored, all of the objects 
+that are reachable from that object are stored as well.
+<p>The goals for serializing Java objects are to:
+<p><ul><li>Have a simple yet extensible mechanism.
+<li>Maintain the Java object type and safety properties in the serialized form.
+<li>Be extensible to support marshaling and unmarshaling as needed for remote 
+objects.
+<li>Be extensible to support persistence of Java objects.
+<li>Require per class implementation only for customization.
+<li>Allow the object to define its external format.
+</ul><h1><a name="4176">
+Writing to an Object Stream
+</a></h1>Writing objects and primitives to a stream is a straight-forward process. For 
+example:
+<p><dl><pre>// Serialize today's date to a file.
+	FileOutputStream f = new FileOutputStream("tmp");
+	ObjectOutput &#32;s &#32;= &#32;new &#32;ObjectOutputStream(f);
+	s.writeObject("Today");
+	s.writeObject(new Date());
+	s.flush();
+</pre></dl>First an <code>OutputStream</code>, in this case a <code>FileOutputStream</code>, is needed to receive 
+the bytes. Then an <code>ObjectOutputStream</code> is created that writes to the 
+<code>OutputStream</code>. Next, the string "Today" and a Date object are written to the 
+stream. More generally, objects are written with the <code>writeObject</code> method and 
+primitives are written to the stream with the methods of <code>DataOutput</code>.
+<p>The <code><a href="output.doc.html#1038">writeObject</a></code> method 
+serializes the specified object and traverses its references to other objects in the 
+object graph recursively to create a complete serialized representation of the 
+graph. Within a stream, the first reference to any object results in the object 
+being serialized or externalized and the assignment of a handle for that object. 
+Subsequent references to that object are encoded as the handle. Using object 
+handles preserves sharing and circular references that occur naturally in object 
+graphs. Subsequent references to an object use only the handle allowing a very 
+compact representation.
+<p>Special handling is required for objects of type <code>Class</code>, <code>ObjectStreamClass</code>, 
+strings, and arrays. Other objects must implement either Serializable or 
+Externalizable interfaces to be saved in or restored from a stream. 
+<p>Primitive data types are written to the stream with the methods in the 
+<code>DataOutput</code> interface, such as <code>writeInt</code>, <code>writeFloat</code>, or <code>writeUTF</code>. 
+Individual bytes and arrays of bytes are written with the methods of 
+<code>OutputStream</code>. All primitive data is written to the stream in block-data 
+records prefixed by a marker and the length. Putting the data in records allows 
+it to be skipped if necessary.
+<p><code>ObjectOutputStream</code> can be extended to customize the information about 
+classes in the stream or to replace objects to be serialized. Refer to the 
+<code>annotateClass</code> and <code>replaceObject</code> method descriptions for details.
+<p><h1><a name="4188">
+Reading from an Object Stream
+</a></h1>Reading an object from a stream, like writing, is straight-forward:
+<p><dl><pre>// Deserialize a string and date from a file.
+	FileInputStream in = new FileInputStream("tmp");
+	ObjectInputStream s = new ObjectInputStream(in);
+	String today = (String)s.readObject();
+	Date date = (Date)s.readObject();
+</pre></dl>First an <code>InputStream</code>, in this case a <code>FileInputStream</code>, is needed as the 
+source stream. Then an <code>ObjectInputStream</code> is created that reads from the 
+<code>InputStream</code>. Next, the string "Today" and a Date object are read from the 
+stream. Generally, objects are read with the <code>readObject</code> method and 
+primitives are read from the stream with the methods of <code>DataInput</code>.
+<p>The <code><a href="input.doc.html#2971">readObject</a></code> method deserializes the next object in the stream and 
+traverses its references to other objects recursively to create the complete graph 
+of objects serialized.
+<p>Primitive data types are read from the stream with the methods in the 
+<code>DataOutput</code> interface, such as <code>readInt</code>, <code>readFloat</code>, or <code>readUTF</code>. Individual 
+bytes and arrays of bytes are read with the methods of <code>InputStream</code>. All 
+primitive data is read from block-data records.
+<p>ObjectInputStream can be extended to utilize customized information in the 
+stream about classes or to replace objects that have been deserialized. Refer to 
+the <code>resolveClass</code> and <code>resolveObject</code> method descriptions for details.
+<p><h1><a name="962">
+Object Streams as Containers
+</a></h1>Object Serialization produces and consumes a stream of bytes that contain one 
+or more primitives and objects. The objects written to the stream, in turn, refer 
+to other objects which are also represented in the stream. Object Serialization 
+produces just one stream format that encodes and stores the contained objects. 
+Object Serialization has been designed to provide a rich set of features for Java 
+classes. Other container formats such as OLE or OpenDoc have different 
+stream or file system representations. 
+<p>Each object acting as a container implements an interface that allows primitives 
+and objects to be stored in or retrieved from it. These are the <code>ObjectOutput</code> 
+and <code>ObjectInput</code> interfaces which:
+<p><ul><li>Provide a stream to write to and read from
+<li>Handle requests to write primitive types and objects to the stream,
+</ul>Each object which is to be stored in a stream must explicitly allow itself to be 
+stored and must implement the protocols needed to save and restore its state. 
+Object Serialization defines two such protocols. The protocols allow the 
+container to ask the object to write and read its state. To be stored in an Object 
+Stream, each object must implement either the Serializable or the 
+Externalizable interface.
+<p>For a Serializable class, Object Serialization can automatically save and restore 
+fields of each class of an object and automatically handle classes that evolve by 
+adding fields or supertypes. A Serializable class can declare which of its fields 
+are transient (not saved or restored), and write and read optional values and 
+objects.
+<p>For an Externalizable class, Object Serialization delegates to the class complete 
+control over its external format and how the state of the supertype is saved and 
+restored.
+<p><h1><a name="4542">
+The ObjectOutput Interface
+</a></h1>The <code>ObjectOutput</code> interface provides an abstract, stream-based interface to 
+object storage. It extends DataOutput so those methods may be used for 
+writing primitive data types. Objects implementing this interface can be used 
+to store primitives and objects.
+<p><dl><pre>package java.io;
+
+public interface ObjectOutput extends DataOutput
+{
+	public void writeObject(Object obj) throws IOException;
+
+	public void write(int b) throws IOException;
+
+	public void write(byte b[]) throws IOException;
+
+	public void write(byte b[], int off, int len) throws IOException;
+
+	public void flush() throws IOException;
+
+	public void close() throws IOException;
+}
+</pre></dl>The <code>writeObject</code> method is used to write an object. The exceptions thrown 
+reflect errors while accessing the object or its fields, or exceptions that occur in 
+writing to storage. If any exception is thrown, the underlying storage may be 
+corrupted, and you should refer to the object implementing this interface for 
+details.
+<p><h1><a name="4548">
+The ObjectInput Interface
+</a></h1>The <code>ObjectInput</code> interface provides an abstract stream based interface to 
+object retrieval. It extends <code>DataInput</code> so those methods for reading primitive 
+data types are accessible in this interface.
+<p><dl><pre>package java.io;
+
+public interface ObjectInput extends DataInput
+{
+	public Object readObject()
+		throws ClassNotFoundException, IOException;
+
+    public int read() throws IOException;
+
+	public int read(byte b[]) throws IOException;
+
+    public int read(byte b[], int off, int len) throws IOException;
+
+    public long skip(long n) throws IOException;
+
+	public int available() throws IOException;
+
+    public void close() throws IOException;
+}
+</pre></dl>The <code>readObject</code> method is used to read and return an object. The exceptions 
+thrown reflect errors while accessing the objects or its fields or exceptions that 
+occur in reading from the storage. If any exception is thrown, the underlying 
+storage may be corrupted, refer to the object implementing this interface for 
+details.
+<p><h1><a name="4539">
+The Serializable Interface
+</a></h1>Object Serialization produces a stream with information about the Java classes 
+for the objects that are being saved. For Serializable objects, sufficient 
+information is kept to restore those objects even if a different (but compatible) 
+version of the class's implementation is present. The interface Serializable is 
+defined to identify classes that implement the Serializable protocol:
+<p><dl><pre>package java.io;
+
+public interface Serializable {};
+</pre></dl>A <code>Serializable</code> object:
+<p><ul><li>Must implement the <code>java.io.Serializable</code> interface.
+<li>Must mark its fields that are not to be persistent with the transient keyword.
+<li>Can implement a <code>writeObject</code> method to control what information is 
+saved, or to append additional information to the stream.
+<li>Can implement a <code>readObject</code> method so it can read the information 
+written by the corresponding <code>writeObject</code> method, or to update the state 
+of the object after it has been restored.
+</ul><code>ObjectOutputStream</code> and <code>ObjectInputStream</code> are designed and 
+implemented to allow the Serializable classes they operate on to evolve. Evolve 
+in this context means to allow changes to the classes that are compatible with 
+the earlier versions of the classes. Details of the mechanism to allow 
+compatible changes can be found in <a href="version.doc.html#6519">Compatible Java Type 
+Evolution</a>.
+<p><h1><a name="4333">
+The Externalizable Interface
+</a></h1>For Externalizable objects only the identity of class of the object is saved by the 
+container and it is the responsibility of the class to save and restore the 
+contents. The interface Externalizable is defined as:
+<p><dl><pre>package java.io;
+
+public interface Externalizable extends Serializable
+{
+	public void writeExternal(ObjectOutput out)
+		throws IOException;
+
+	public void readExternal(ObjectInput in)
+		throws IOException, java.lang.ClassNotFoundException;
+}
+</pre></dl>An <code>Externalizable</code> Object:
+<p><ul><li>Must implement the <code>java.io.Externalizable</code> interface.
+<li>Must implement a <code>writeExternal</code> method to save the state of the object. It 
+must explicitly coordinate with its supertype to save its state.
+<li>Must implement a <code>readExternal</code> method to read the data written by the 
+<code>writeExternal</code> method from the stream and restore the state of the object. 
+It must explicitly coordinate with the supertype to save its state.
+<li>If writing an externally defined format, the <code>writeExternal</code> and 
+<code>readExternal</code> methods are solely responsible for that format.
+</ul><em>The <code>writeExternal</code> and <code>readExternal</code> methods are public and raise 
+the risk that a client may be able to write or read information in the object 
+other than by using its methods and fields. These methods must be used only 
+when the information held by the object is not sensitive or when exposing it 
+would not present a security risk.
+</em><p><h1><a name="4160">
+Protecting Sensitive Information
+</a></h1>When developing a class that provides controlled access to resources, care 
+must be taken to protect sensitive information and functions. During 
+deserialization, the private state of the object is restored. For example, a file 
+descriptor contains a handle that provides access to an operating system 
+resource. Being able to forge a file descriptor would allow some forms of illegal 
+access, since restoring state is done from a stream. Therefore, the serializing 
+runtime must take the conservative approach and not trust the stream to 
+contain only valid representations of objects. To avoid compromising a class, 
+the sensitive state of an object must not be restored from the stream, or it must 
+be reverified by the class. Several techniques are available to protect sensitive 
+data in classes.
+<p>The easiest technique is to mark fields that contain sensitive data as <strong>private 
+transient</strong>. Transient and static fields are not serialized or deserialized. 
+Marking the field will prevent the state from appearing in the stream and from 
+being restored during deserialization. Since writing and reading (of private 
+fields) cannot be superseded outside of the class, the class's transient fields are 
+safe.
+<p>Particularly sensitive classes should not be serialized at all. To accomplish this, 
+the object should not implement either the Serializable or Externalizable 
+interfaces.
+<p>Some classes may find it beneficial to allow writing and reading but 
+specifically handle and revalidate the state as it is deserialized. The class 
+should implement <code>writeObject</code> and <code>readObject</code> methods to save and restore 
+only the appropriate state. If access should be denied, throwing a 
+<code>NotSerializableException</code> will prevent further access.
+<p>
+<hr><br>
+ 
+<a href="serialTOC.doc.html">[TOC]</a> <a href="serialTOC.doc.html">[Prev]</a> <a href="output.doc.html">[Next]</a>
+<hr><br>
+ 
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email rmi-support@javasoft.com -->
+<!-- -->
+<!-- Last updated: 02/04/97 16:45:49 -->
+
+</body>
+</html>

@@ -1,0 +1,416 @@
+<html><head><title>Getting Started	 Using RMI</title></head>
+<body bgcolor=#ffffff>
+
+<a name="5344">
+<h1>Getting Started	 Using RMI</h1>
+</a>
+<hr><p>
+<p>This chapter shows you the steps to follow to create a distributed version of 
+the classic Hello World program using Java Remote Method Invocation 
+(RMI).
+<p>The distributed Hello World example uses an applet to make a remote method 
+call to the server from which it was downloaded to retrieve the message "Hello 
+World!". When the applet runs, the message is displayed on the client.
+<p>To accomplish this, you will work through the following three lessons:
+<p><ul><li><a href="getstart.doc.html#7738">Write The HTML and Java Source Files</a>
+<li><a href="getstart.doc.html#7437">Compile and Deploy Class Files and HTML Files</a>
+<li><a href="getstart.doc.html#7445">Start the Remote Object Registry, Server, and Applet</a>
+</ul><h1><a name="7738">
+Write The HTML and Java Source Files
+</a></h1>There are four source files for the Hello World server and applet:
+<p><ol>
+<li>The Java remote interface.
+<li>The Java remote object (server) which implements the remote interface.
+<li>The Java applet that remotely invokes the server's method.
+<li>The HTML code for the web page that references the applet.
+</ol>
+Because the Java language requires a mapping between the fully qualified 
+package name of a class file and the directory path to that class, before you 
+begin writing Java code you need to decide on package and directory names. 
+(This mapping allows the Java compiler to know the directory in which to find 
+the class files mentioned in a Java program.) For the Hello World program 
+developed in this chapter, the package name is <code>examples.hello</code> and the root 
+directory is <code>$HOME/jdk1.1/mysrc/examples/hello</code>.
+<p>For example, to create the directory for your source files on Solaris, execute this 
+command:
+<p><dl><a name="6640"><pre>mkdir $HOME/jdk1.1/mysrc/examples/hello
+</pre></a></dl><h2><a name="5174">
+Define a Remote Interface
+</a></h2>Remote method invocations can fail in very different ways from local method 
+invocations, due to network related communication problems and server 
+problems. To indicate that it is a remote object, an object implements a remote 
+interface, which has the following characteristics:
+<p><ul><li>The remote interface must be public. Otherwise, a client will get an error 
+when attempting to load a remote object that implements the remote 
+interface.
+<li>The remote interface extends the interface <code>java.rmi.Remote</code>.
+<li>Each method must declare <code>java.rmi.RemoteException</code> in its throws 
+clause, in addition to any application-specific exceptions.
+<li>A remote object passed as an argument or return value (either directly or 
+embedded within a local object) must be declared as the remote interface, 
+not the implementation class.
+</ul>Here is the interface definition for Hello World. The interface contains just one 
+method, <code>sayHello</code>, which returns a string to the caller:
+<p><dl><a name="5180"><pre>package examples.hello;
+public interface Hello extends java.rmi.Remote {
+	String sayHello() throws java.rmi.RemoteException;
+}
+</pre></a></dl><h2><a name="5182">
+Write an Implementation Class
+</a></h2>To write a remote object, you write a class that implements one or more remote 
+interfaces. The implementation class needs to:
+<p><ol>
+<li>Specify the remote interface(s) being implemented.
+<li>Define the constructor for the remote object.
+<li>Provide implementations for the methods that can be invoked remotely.
+<li>Create and install a security manager.
+<li>Create one or more instances of a remote object.
+<li>Register at least one of the remote objects with the RMI remote object 
+registry, for bootstrapping purposes.
+</ol>
+For example, here is the source for the <code>HelloImpl.java</code> file, which contains 
+the code for the Hello World server. The code is followed by an explanation of 
+each of the preceding six steps.
+<p><dl><a name="5192"><pre>package examples.hello;
+
+import java.rmi.*;
+import java.rmi.server.UnicastRemoteObject;
+
+public class HelloImpl
+	extends UnicastRemoteObject
+	implements Hello
+{
+	private String name;
+
+	public HelloImpl(String s) throws RemoteException {
+		super();
+		name = s;
+	}
+
+	public String sayHello() throws RemoteException {
+		return  "Hello World!";
+	}
+</pre></a><a name="6994"><pre>	public static void main(String args[])
+	{
+		// Create and install a security manager
+		System.setSecurityManager(new RMISecurityManager());
+
+		try {
+			HelloImpl obj = new HelloImpl("HelloServer");
+			Naming.rebind("//myhost/HelloServer", obj);
+			System.out.println("HelloServer bound in registry");
+		} catch (Exception e) {
+			System.out.println("HelloImpl err: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+}
+</pre></a></dl><h3><a name="5193">
+Implement a Remote Interface
+</a></h3>The implementation class for the Hello World example is <code>HelloImpl</code>. An 
+implementation class specifies the remote interface(s) it is implementing. 
+Optionally, it can indicate the remote server that it is extending, which in this 
+example is <code>java.rmi.server.UnicastRemoteObject</code>. Here is the 
+<code>HelloImpl</code> class declaration:
+<p><dl><a name="5194"><pre>public class HelloImpl
+	implements Hello
+	extends java.rmi.server.UnicastRemoteObject
+</pre></a></dl>Extending <code>UnicastRemoteObject</code> indicates that the <code>HelloImpl</code> class is used 
+to create a single (nonreplicated) remote object that uses RMI's default sockets-
+based transport for communication. If you choose to extend a remote object 
+from a nonremote class, you need to explicitly export the remote object by 
+calling the method <code>UnicastRemoteObject.exportObject</code>.
+<p><h3><a name="5864">
+Define the Constructor for the Remote Object
+</a></h3>The constructor for a remote class is no different than the constructor for a 
+nonremote class: it initializes the variables of each newly created instance of 
+the class.
+<p>Here is the constructor for the <code>HelloImpl</code> class, which initializes the private 
+string variable <code>name</code> with the name of the remote object:
+<p><dl><a name="5199"><pre>private String name;
+public HelloImpl(String s) throws java.rmi.RemoteException {
+	super();
+	name = s;
+}
+</pre></a></dl>Note the following:
+<p><ul><li>The <code>super</code> method call invokes the no-arg constructor of 
+<code>java.rmi.server.UnicastRemoteObject</code>, which "exports" the remote 
+object by listening for incoming calls to the remote object on an anonymous 
+port. 
+<li>The constructor must throw <code>java.rmi.RemoteException</code>, because RMI's 
+attempt to export a remote object during construction might fail if 
+communication resources are not available.
+</ul>Although the call to the <code>super</code> no-arg constructor occurs by default if omitted, 
+it is included in this example to make clear the fact that Java constructs the 
+superclass before the class.
+<p><h3><a name="5866">
+Provide an Implementation for Each Remote Method
+</a></h3>The implementation class for a remote object contains the code that 
+implements each of the remote methods specified in the remote interface.
+<p>For example, here is the implementation for the <code>sayHello</code> method, which 
+returns the string <code>Hello World!</code> to the caller.
+<p><dl><a name="5206"><pre>public String sayHello() throws RemoteException {
+	return  "Hello World!";
+}
+</pre></a></dl>Arguments to, or return values from, remote methods can be of any Java type, 
+including objects, as long as those objects implement the interface 
+<code>java.io.Serializable</code>. Most of the core Java classes in <code>java.lang</code> and 
+<code>java.util</code> implement the <code>Serializable</code> interface.
+<p><ul><li>Local objects are passed by copy, and only the nonstatic and nontransient 
+fields are copied by default.
+<li>Remote objects are passed by reference. A reference to a remote object is 
+actually a reference to a stub, which is a client-side proxy for the remote 
+object. Stubs are described fully in <a href="getstart.doc.html#5287">Generate Stubs and 
+Skeletons</a>.
+</ul><em>	A class can define methods not specified in the remote interface, but 
+those methods can only be invoked within the virtual machine running the 
+service and cannot be invoked remotely.
+</em><p><h3><a name="5872">
+Create and Install a Security Manager
+</a></h3>The <code>main</code> method of the service first needs to create and install a security 
+manager: either the <code>RMISecurityManager</code> or one that you have defined 
+yourself. For example:
+<p><dl><a name="5210"><pre>System.setSecurityManager(new RMISecurityManager());
+</pre></a></dl>A security manager needs to be running so that it can guarantee that the 
+classes loaded do not perform "sensitive" operations. If no security manager is 
+specified, no class loading for RMI classes, local or otherwise, is allowed.
+<p><h3><a name="5908">
+Create One or More Instances of a Remote Object
+</a></h3>The <code>main</code> method of the service needs to create one or more instances of the 
+remote object which provides the service. For example:
+<p><dl><a name="5213"><pre>HelloImpl obj = new HelloImpl("HelloServer");
+</pre></a></dl>The constructor exports the remote object, which means that once created, the 
+remote object is ready to begin listening for incoming calls.
+<p><h3><a name="5912">
+Register a Remote Object
+</a></h3>For a caller (client, peer, or applet) to be able to invoke a method on a remote 
+object, that caller must first obtain a reference to the remote object. Most of the 
+time, the reference will be obtained as a parameter to, or a return value from, 
+another remote method call.
+<p>For bootstrapping, the RMI system also provides a URL-based registry that 
+allows you to bind a URL of the form <code>//host/objectname</code> to the remote 
+object, where <code>objectname</code> is a simple string name. Once a remote object is 
+registered on the server, callers can look up the object by name, obtain a remote 
+object reference, and then remotely invoke methods on the object.
+<p>For example, the following code binds the URL of the remote object named 
+<code>HelloServer</code> to a reference for the remote object:
+<p><dl><a name="5222"><pre>Naming.rebind("//myhost/HelloServer", obj);
+</pre></a></dl>Note the following about the arguments to the call:
+<p><ul><li>The host defaults to the current host if omitted from the URL, and no 
+protocol needs to be specified in the URL.
+<li>The RMI runtime substitutes a reference to the remote object's stub for the 
+actual remote object reference specified by the <code>obj</code> argument. Remote 
+implementation objects like instances of <code>HelloImpl</code> never leave the virtual 
+machine where they are created, so when a client performs a lookup in a 
+server's remote object registry, a reference to the stub is returned.
+<li>Optionally, a port number can be supplied in the URL: for example 
+//myhost:1234/HelloServer. The port defaults to 1099. It is necessary to 
+specify the port number only if a server creates a registry on a port other 
+than the default 1099.
+</ul><em>For security reasons, an application can bind or unbind only in the 
+registry running on the same host. This prevents a client from removing or 
+overwriting any of the entries in a server's remote registry. A lookup, however, 
+can be done from any host.
+</em><p><h2><a name="5228">
+Write an Applet that Uses the Remote Service 
+</a></h2>The applet part of the distributed Hello World example remotely invokes the 
+HelloServer's <code>sayHello</code> method in order to get the string "Hello World!", 
+which is displayed when the applet runs. Here is the code for the applet:
+<p><dl><a name="5235"><pre>package examples.hello;
+
+import java.awt.*;
+import java.rmi.*;
+
+public class HelloApplet extends java.applet.Applet {
+	String message = "";
+	public void init() {
+		try {
+			Hello obj = (Hello)Naming.lookup("//" +
+				getCodeBase().getHost() + "/HelloServer");
+			message = obj.sayHello();
+		} catch (Exception e) {
+			System.out.println("HelloApplet exception: " +
+				e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	public void paint(Graphics g) {
+		g.drawString(message, 25, 50);
+	}
+}
+</pre></a></dl><ol>
+<li>The applet first gets a reference to the "HelloServer" from the server's 
+registry, constructing the URL by using the <code>getCodeBase</code> method in 
+conjunction with the <code>getHost</code> method.
+<li>The applet remotely invokes the <code>sayHello</code> method of the HelloServer 
+remote object and stores the return value from the call (the string "Hello 
+World!") in a variable named <code>message</code>.
+<li>The applet invokes the <code>paint</code> method to draw the applet on the display, 
+causing the string "Hello World!" to be displayed.
+</ol>
+<em>The constructed URL must include the host. Otherwise, the applet's 
+lookup will default to the client, and the <code>AppletSecurityManager</code> will 
+throw an exception since the applet cannot access the local system, but is 
+instead limited to communicating only with the applet host.
+</em><p><h2><a name="5236">
+Write the Web Page that Contains the Applet
+</a></h2>Here is the HTML code for the web page that references the Hello World 
+applet:
+<p><dl><a name="5238"><pre>&lt;HTML&gt;
+&lt;title&gt;Hello World&lt;/title&gt;
+&lt;center&gt; &lt;h1&gt;Hello World&lt;/h1&gt; &lt;/center&gt;
+
+The message from the HelloServer is:
+&lt;p&gt;
+&lt;applet codebase="../.."
+	code="examples.hello.HelloApplet"
+	width=500 height=120&gt;
+&lt;/applet&gt;
+&lt;/HTML&gt;
+</pre></a></dl>Note the following:
+<p><ul><li>There needs to be an HTTP server running on the machine from which you 
+want to download classes. The applet's <code>codebase</code> attribute indicates the 
+URL, as shown here:
+<dl><a name="5241"><pre>codebase="../.."
+</pre></a>The codebase in this example specifies a directory two levels above the 
+directory from which the web page was itself loaded. Using this kind of 
+relative path is usually a good idea.
+<p></dl><li>The applet's <code>code</code> attribute specifies the fully package-qualified name of the 
+applet, in this example <code>examples.hello.HelloApplet</code>:
+<dl><a name="5244"><pre>code="examples.hello.HelloApplet"
+</pre></a></dl></ul><h1><a name="7437">
+Compile and Deploy Class Files and HTML Files
+</a></h1>The source code for the Hello World example is now complete and the 
+<code>$HOME/jdk1.1/mysrc/hello</code> directory has four files:
+<p><ul><li><code>Hello.java</code>, which contains the source code for the Hello remote interface.
+<li><code>HelloImpl.java</code>, which is the source code for the HelloImpl remote object 
+implementation, the server for the Hello World applet.
+<li><code>HelloApplet.java</code>, which is the source code for the applet.
+<li><code>index.html</code>, which is the web page that references the Hello World applet.
+</ul>In this section, you compile the <code>.java</code> source files to create <code>.class</code> files. You 
+then run the <code>rmic</code> compiler to create stubs and skeletons. A stub is a client-
+side proxy for a remote object which forwards RMI calls to the server-side 
+skeleton, which in turn forwards the call to the actual remote object 
+implementation.
+<p>When you use the <code>javac</code> and <code>rmic</code> compilers, you must specify where the 
+resulting class files should reside. For applets, all files should be in the applet's 
+codebase directory. In this chapter, this is <code>$HOME/public_html/codebase</code>. 
+<p><em>Some Web servers allow accessing a user's public_html directory via an 
+HTTP URL constructed as "http://host/~username/". If your Web server 
+does not support this convention, you may use a file URL of the form 
+"file://home/username/public_html".
+</em><p><h2><a name="5284">
+Compile the Java Source Files 
+</a></h2>Make sure that the deployment directory <code>$HOME/public_html/codebase</code> 
+and the development directory <code>$HOME/jdk1.1/mysrc/examples/hello</code> are 
+each visible via the local <code>CLASSPATH</code> on the development machine.
+<p>To compile the Java source files, run the <code>javac</code> command as follows:
+<p><dl><a name="5286"><pre>javac -d $HOME/public_html/codebase
+	Hello.java HelloImpl.java HelloApplet.java
+</pre></a></dl>This command creates the directory <code>examples/hello</code> (if it does not already 
+exist) in the directory <code>$HOME/public_html/codebase</code>. The command then 
+writes to that directory the files <code>Hello.class</code>, <code>HelloImpl.class</code>, and 
+<code>HelloApplet.class</code>. These are the remote interface, the server, and the 
+applet respectively.
+<p><h2><a name="5287">
+ Generate Stubs and Skeletons
+</a></h2>To create stub and skeleton files, run the <code>rmic</code> compiler on the names of 
+compiled class files that contain remote object implementations. <code>rmic</code> takes 
+one or more class names as input and produces as output class files of the form 
+<code>myImpl</code><code>_Skel.class</code> and <code>myImpl</code><code>_Stub.class</code>.
+<p>For example, to create the stub and skeleton for the HelloImpl remote object 
+implementation, run <code>rmic</code> like this:
+<p><dl><a name="5292"><pre>rmic -d $HOME/public_html/codebase examples.hello.HelloImpl
+</pre></a></dl>The <code>-d</code> option indicates the root directory in which to place the compiled stub 
+and skeleton files. So the preceding command creates the following files in the 
+directory <code>$HOME/public_html/codebase/examples/hello</code>:
+<p><ul><li><code>HelloImpl_Stub.class
+</code><li><code>HelloImpl_Skel.class
+</code></ul>Note that the generated stub implements exactly the same set of remote 
+interfaces as the remote object itself. This means that a client can use the Java 
+language's built-in operators for casting and type checking. It also means that 
+Java remote objects support true object-oriented polymorphism.
+<p><h2><a name="5295">
+Move the HTML File to the Deployment Directory
+</a></h2>To make the web page that references the applet visible to clients, the 
+<code>index.html</code> file must be moved from the development directory to the 
+<code>codebase</code> directory. For example:
+<p><dl><a name="6899"><pre>mv $HOME/jdk1.1/mysrc/examples/hello/index.html
+	$HOME/public_html/codebase/examples/hello
+</pre></a></dl><h2><a name="6898">
+Set Paths for Runtime
+</a></h2>Make sure that the $<code>HOME/public_html/codebase</code> directory is available via 
+the server's local <code>CLASSPATH</code> when you run the HelloImpl server.
+<p><h1><a name="7445">
+Start the Remote Object Registry, Server, and Applet
+</a></h1><h2><a name="5522">
+Start the RMI Bootstrap Registry
+</a></h2>The RMI registry is a simple server-side bootstrap name server that allows 
+remote clients to get a reference to a remote object. It is typically used only to 
+locate the first remote object an application needs to talk to. That object in turn 
+will provide application specific support for finding other objects.
+<p>To start the registry on the server, execute the <code>rmiregistry</code> command. This 
+command produces no output and is typically run in the background. For 
+example, on Windows 95 or Windows NT:
+<p><dl><a name="7223"><pre>start rmiregistry
+</pre></a></dl>(Use <code>javaw</code> if start is not available.)
+<p>And on Solaris:
+<p><dl><a name="5312"><pre>rmiregistry &amp;
+</pre></a></dl>The registry by default runs on port 1099. To start the registry on a different 
+port, specify the port number in the command. For example, to start the 
+registry on port 2001 on Windows NT:
+<p><dl><a name="5314"><pre>start rmiregistry 2001
+</pre></a></dl>If the registry is running on a port other than the default, you need to specify 
+the port number in the URL-based methods of the <code>java.rmi.Naming</code> class 
+when making calls to the registry. For example, if the registry is running on 
+port 2001 in the Hello World example, here is the call required to bind the URL 
+of the HelloServer to the remote object reference:
+<p><dl><a name="5316"><pre>Naming.rebind("//myhost:2001/HelloServer", obj);
+</pre></a></dl>Similarly, the URL stored on the web page needs to specify the nondefault port 
+number, or else the applet's attempt to look up the server in the registry will 
+fail:
+<p><dl><a name="5318"><pre>&lt;PARAM name="url" value="//myhost:2001/HelloServer"&gt;
+</pre></a></dl><em>You must stop and restart the registry any time you modify a remote 
+interface or use modified/additional remote interfaces in a remote object 
+implementation. Otherwise, the class bound in the registry will not match the 
+modified class.
+</em><p><h2><a name="5321">
+Start the Server
+</a></h2>When starting the server, the <code>java.rmi.server.codebase</code> property must be 
+specified, so that references to the remote objects created by the server can 
+include the URL from which the stub class can be dynamically downloaded to 
+the client.
+<p>The following command shows how to start the HelloImpl server, specifying 
+this property:
+<p><dl><a name="7724"><pre>java -Djava.rmi.server.codebase=http://myhost/~myusrname/codebase/
+	examples.hello.HelloImpl &amp;
+</pre></a></dl><em>The trailing <code>/</code> in the <code>codebase</code> URL must be specified.
+</em><p>A stub class is dynamically loaded into a client's virtual machine only when 
+the class is not already available locally.
+<p><h2><a name="5326">
+Run the Applet
+</a></h2>Once the registry and server are running, the applet can be run. An applet is 
+run by loading its web page into a browser or appletviewer, as shown here:
+<p><dl><a name="5328"><pre>appletviewer
+	http://myhost/~myusrname/codebase/examples/hello/index.html &amp;
+</pre></a></dl>After running the appletviewer, you will see output similar to the following on 
+your display:
+<p><a name="7264">
+ <center><img src="getstart.doc.anc.gif"></center><p>
+</a>
+<p>
+<p>
+<hr><br>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email rmi-support@javasoft.com -->
+<!-- -->
+<!-- Last updated: 02/04/97 16:04:03 -->
+
+</body>
+</html>

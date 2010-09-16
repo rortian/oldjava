@@ -1,0 +1,130 @@
+<html><head><title>Client Interfaces
+</title></head>
+<body bgcolor=#ffffff>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-arch.doc.html">[Prev]</a> <a href="rmi-server.doc.html">[Next]</a>
+<hr><br>
+ 
+<a name="60">
+<h1>Client Interfaces
+</h1>
+</a>
+<hr><p><a name="64">
+
+<p>
+</a>When writing an applet or an application that uses remote objects, the 
+programmer needs to be aware of the RMI system's client visible interfaces. 
+<p><h3><a name="1591">
+Topics:
+</a></h3><ul><li><a href="rmi-client.doc.html#1174">The Remote Interface</a>
+<li><a href="rmi-client.doc.html#163">The RemoteException Class</a>
+<li><a href="rmi-client.doc.html#1620">The Naming Class</a>
+</ul><h1><a name="1174">
+The Remote Interface
+</a></h1><dl><a name="1175"><pre>package java.rmi;
+public interface Remote {}
+</pre></a></dl>The <code>java.rmi.Remote</code> interface serves to identify all remote objects, all 
+remote objects must directly or indirectly implement this interface. Note that 
+all remote interfaces must be declared <code>public</code>.
+<p><h1><a name="163">
+The RemoteException Class
+</a></h1>All remote exceptions are subclasses of <code>java.rmi.RemoteException</code>. This 
+allows interfaces to handle all types of remote exceptions and to distinguish 
+local exceptions, and exceptions specific to the method, from exceptions 
+thrown by the underlying distributed object mechanisms. 
+<p><dl><a name="1792"><pre>package java.rmi;
+public class RemoteException extends java.io.IOException
+{
+	// The actual exception or error that occurred.    
+	public Throwable detail;
+
+	// Create a remote exception.
+	public RemoteException();
+
+	// Create a remote exception with the specified string.
+	public RemoteException(String s);
+
+	// Create remote exception with specified string and exception.
+	public RemoteException(String s, Throwable ex);
+
+	// Produce message, including message from any nested exception.
+	public String getMessage();
+}
+</pre></a></dl>A <code>RemoteException</code> can be constructed with a nested exception (a 
+<code>Throwable</code>). Typically, the nested exception, ex, specified as a parameter in 
+the third form of the constructor, is the underlying I/O exception that occurred 
+during an RMI call.
+<p><h1><a name="1620">
+The Naming Class
+</a></h1>The <code>java.rmi.Naming</code> class allows remote objects to be retrieved and defined 
+using the familiar Uniform Resource Locator (URL) syntax. The URL consists 
+of protocol, host, port, and name fields. The <code>Registry</code> service on the specified 
+host and port is used to perform the specified operation. The protocol should 
+be specified as <code>rmi</code>, as in <code>rmi://java.sun.com:2001/root</code>.
+<p><dl><a name="1667"><pre>package java.rmi;
+public final class Naming {
+	public static Remote lookup(String url)
+		throws NotBoundException, java.net.MalformedURLException,
+		UnknownHostException, RemoteException;
+
+	public static void bind(String url, Remote obj)
+		throws AlreadyBoundException,
+		java.net.MalformedURLException, UnknownHostException,
+		RemoteException;
+	
+	public static void rebind(String url, Remote obj)
+		throws RemoteException, java.net.MalformedURLException,
+		UnknownHostException;
+
+	public static void unbind(String url)
+		throws RemoteException, NotBoundException,
+		java.net.MalformedURLException, UnknownHostException;
+
+	public static String[] list(String url)
+		throws RemoteException, java.net.MalformedURLException,
+		UnknownHostException;
+}
+</pre></a></dl>The <code>lookup</code> method returns the remote object associated with the file portion 
+of the name; so in the preceding example it would return the object named 
+<code>root</code>. The <code>NotBoundException</code> is thrown if the name has not been bound to 
+an object.
+<p>The <code>bind</code> method binds the specified name to the remote object. It throws the 
+<code>AlreadyBoundException</code> if the name is already bound to an object.
+<p>The <code>rebind</code> method always binds the name to the object even if the name is 
+already bound. The old binding is lost.
+<p>The <code>unbind</code> method removes the binding between the name and the remote 
+object. It will throw the <code>NotBoundException</code> if there was no binding.
+<p>The <code>list</code> method returns an array of <code>Strings</code> containing a snapshot of the 
+URLs bound in the registry. Only the host and port information of the URL is 
+needed to contact a registry for the list of its contents; thus, the "file" part of 
+the URL is ignored.
+<p><em>The <code>java.rmi.AccessException</code> may also be thrown as a result of 
+any of these methods. The <code>AccessException</code> indicates that the caller does 
+not have permission to execute the specific operation.  For example, only 
+clients that are local to the host on which the registry runs are permitted to 
+execute the operations, <code>bind</code>, <code>rebind</code>, and <code>unbind</code>. A <code>lookup</code> operation, 
+however can be invoked from any non-local client.
+</em><p>
+<hr><br>
+ 
+<a href="rmiTOC.doc.html">[TOC]</a> <a href="rmi-arch.doc.html">[Prev]</a> <a href="rmi-server.doc.html">[Next]</a>
+<hr><br>
+ 
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.  All rights
+reserved.</i>
+
+<!-- This file was created with Quadralay WebWorks Publisher 3.0.4 -->
+<!-- -->
+<!-- For more information on how this document, and how the rest of -->
+<!-- this server was created, email  -->
+<!-- -->
+<!-- Last updated: 03/18/97 12:59:57 -->
+
+</body>
+</html>

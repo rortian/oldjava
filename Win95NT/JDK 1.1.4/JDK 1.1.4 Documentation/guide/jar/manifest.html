@@ -1,0 +1,445 @@
+<html>
+<HEAD>
+<title>
+Manifest Format
+</title>
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+
+<body>
+<h1> Manifest Format </h1>
+<p>
+<h2> 0. Archive signing </h2>
+
+<p>This specification does not specify the format of the archive file.
+Any format supporting hierarchical paths is acceptable. Files added to
+the archive for this specification will be kept in a directory as ordinary
+files in the archive.
+
+<p>Any URL identifiers in a manifest file will conform to the URL
+syntax described in RFC 1738, "Uniform Resource Locators." 
+Additionally, hierarchical paths in a manifest will use '/' 
+(forward-slash) as the separator, for consistency with the URL syntax
+of RFC 1738."
+
+<p><h2>1. Reasons for this scheme. </h2>
+
+<p>
+<ul>
+<li> No modification to HTTP or HTTP servers is necessary.
+<li> Archive formats which are already widely deployed may be used. 
+<li>Users do not need to have cryptographic tools to use
+   files contained within these archives.
+<li> Multiple signers.
+<li> Multiple signing algorithms.
+<li>  Allows different portions of archives to be signed by 
+   different parties, as well as overlap, and unsigned files.
+<li>Supports needs for Java archives and installable 
+   software distributions.
+<li>Adheres as much as possible to existing standards 
+   (both file format and PKCS7 signing.)
+<li> One signature verification per archive per signer.
+<li> Progressive verification.
+</ul>
+<h2>2. Filenames in the archive</h2>
+
+<p>Archives are signed by creating a "META-INF/" directory at the top
+level of the path tree. A leading "/" is acceptable if other pathnames
+contain a leading "/" (ie, "/META-INF/").
+
+<p>There is exactly one manifest file in the archive, with pathname
+
+<pre>
+  META-INF/MANIFEST.MF
+</pre>
+
+<p>Signature files have pathnames of the form
+
+<pre>
+  META-INF/x.SF
+</pre>
+
+for some string x containing only the characterse A-Z 0-9 and
+dash or underscore. x must not be more than 8 characters.
+
+<p> The encoding of non-ASCII characters in filenames (if they are
+supported) is defined by the archive format or some other convention,
+not by this specification. But filenames in the META-INF directory are
+restricted as above.
+
+<p> The names "META-INF", "MANIFEST.MF", and the filetype ".SF" should
+be generated as uppercase, but recognized in any case.
+
+<p> <h2>3. Name-Value pairs and sections</h2>
+
+<p> In most cases, information contained within the manifest file or
+signature files is represented as so-called "name: value" pairs
+inspired by the RFC822 standard.
+
+<p> Groups of name-value pairs are known as a "section". Sections are
+separated from other sections by empty lines.
+
+<p> Binary data of any form is represented as base64. Continuations
+are required for binary data which causes line length to exceed 72
+bytes. Examples of binary data are digests and signatures.
+
+<p> Implementations shall support header values of up to 65535 bytes.
+
+<h4>Specification:</h4> <pre>
+  section: *header +newline
+  nonempty-section: +header +newline
+  newline: CR LF
+         | LF
+         | CR (not followed by LF)
+
+; That 'not followed by LF' probably requires some minor
+; ugliness in the parser. Sorry.
+
+  header: alphanum *headerchar ":" SPACE *otherchar newline
+          *continuation
+
+  continuation: SPACE *otherchar newline
+
+; RFC822 has +(SPACE | TAB), but this way continuation lines 
+; never get mangled.
+
+  alphanum: {"A"-"Z"} | {"a"-"z"} | {"0"-"9"}
+
+  headerchar: alphanum | "-" | "_"
+
+  otherchar: any Unicode character except NUL, CR and LF
+
+; Also: To prevent mangling of files sent via straight e-mail, no 
+; header will start with the four letters "From".
+
+; When version numbering is used:
+
+  number: {"0"-"9"}+
+
+; The number needn't be, e.g. 1.11 is considered to be later
+; than 1.9. Both major and minor versions must be 3 digits or less.
+</pre>
+<h2>4. Manifest file.</h2>
+
+The manifest file consists of a list of files present
+within the archive itself. Not all files in the archive need to be
+listed in the manifest, but all files which are to be signed
+must be listed. The manifest file itself must not be listed.
+
+<p> A preliminary section appears at the top of the file containing,
+at minimum, this standard's version number.  <pre>
+  Manifest-Version: 1.0
+</pre>
+Optionally, a version required for use may be specified:
+<pre>
+  Required-Version: 1.0
+</pre>
+If Version: is higher than Required-Version, extensions may
+be used. 
+
+<p> The manifest file consists of sections which are entries for
+various files in the archive.
+
+<p> Many of the headers themselves are not covered by this
+specification.  The following are required: <pre>
+  Name: dirpath/whatever.class
+  Digest-Algorithms: (list of algorithms)
+  (algorithm)-Digest: (base-64 representation of digest)
+
+</pre>
+
+The "Name:" header shall contain a relative path to the file being
+signed within the archive, OR an absolute URL referencing data outside
+the archive.
+
+<ul>
+<li>Multiple digest algorithms may be listed (and corresponding (*)-Digest: lines
+must exist for each one listed); at least one must be present.
+<li> Two entries for the same file may not appear in the manifest file.
+When duplicate entries do occur, only the first is recognized.
+<li> Headers which are not understood are ignored. Such headers may 
+include "policy": information used by applications.
+</ul>
+
+<h4>Example manifest file:</h4>
+<pre>
+  Manifest-Version: 1.0
+
+  Name: common/class1.class
+  Digest-Algorithms: MD5
+  MD5-Digest: (base64 representation of MD5 digest)
+
+  Name: common/class2.class
+  Digest-Algorithms: MD5, SHA
+  MD5-Digest: (base64 representation of MD5 digest)
+  SHA-Digest: (base64 representation of SHA digest)
+
+</pre>
+<h4>Specification:</h4>
+<pre>
+  manifest-file: "Manifest-Version: 1.0" newline
+                 manifest-start
+                 *manifest-entry
+
+  manifest-start: section
+
+  ; Optional header is
+  ;   Required-Version: number "." number
+  ;
+  ; Required-Version indicates that only tools of the given version
+  ; or later can be used to manipulate the file.
+
+; The value of Digest-Algorithms is a comma-separated-list:
+
+  comma-separated-list: +headerchar "," *whitespace comma-separated-list
+                      | +headerchar
+</pre>
+<h2>5. Signature instructions</h2>
+
+<p> Each signer is represented by a signature file.
+
+<p> A preliminary section appears at the top of the file containing,
+at minimum, this standard's version number.  <pre>
+  Signature-Version: 1.0
+</pre>
+Information supplied by the signer but not specific 
+to any particular pathname should be included in this 
+preliminary header.
+
+<p> The major part of the file is similar form to the manifest file.
+The purpose here is to allow "policy" to be embedded in headers
+supplied by the signer rather than the manifest owner (who is normally
+the person who generated the archive.)
+
+<p> Signature files consist of sections which are essentially lists of
+names, all of which must be present in the manifest file.  Extra
+headers may be included here. A digest is also present, but this is a
+digest of the entry in the manifest file.
+
+<p> Paths or URL's appearing in the manifest file but not in the
+signature file are not used in calculation. This allows subsets of the
+archive to be signed.
+
+<p> Only the Name: is required.
+
+<p> <h4>Validating a file:</h4>
+
+<p> The signature is first verified when the manifest is first
+parsed. This verification can be remembered, for efficiency. This only
+validates the signature directions themselves, not the actual archive
+files.
+
+<p> To validate a file, a digest value in the signature file is compared
+against a digest calculated against the corresponding entry in the
+manifest file. Then, a digest value in the manifest file is compared
+against a digest calculated against the actual data referenced in the
+"Name:" header -- relative path or URL.  <pre> Example signature file:
+
+  Signature-Version: 1.0
+
+  Name: common/class1.class
+  Digest-Algorithms: MD5
+  MD5-Digest: (base64 representation of MD5 digest)
+
+  Name: common/class2.class
+  Digest-Algorithms: MD5
+  MD5-Digest: (base64 representation of MD5 digest)
+</pre>
+<h4>Specification:</h4>
+<pre>
+  signature-file: "Signature-Version: 1.0" newline
+                  signature-start
+                  *signature-entry
+                  signature-end
+
+  signature-start: section
+
+; Optional header is
+;   Required-Version: number "." number
+; This has the same meaning as in manifest-start.
+; The only required header is Name. Its format is the same
+; as in a manifest-entry.
+</pre>
+
+<h4>The Magic Keyword</h4>
+
+<p>Another <b>requirement</b> to validate the signature on a given
+manifest entry is that the verifier understand the value or values of
+the <code>Magic</code> key-pair value in that entry's manifest
+entry. <p>The <code>Magic</code> key is <b>optional</b> but it is
+<b>required</b> that a parser understand the value of an entry's
+<code>Magic</code> key if it is verifying that entry's signature.
+
+<p>The value or values of the key <code>Magic</code> are a set of
+comma-separated context-specific strings. The spaces before and after
+the commas are ignored. Case is ignored. The exact meaning of the
+magic keywords is application specific. These keywords indicate how to
+compute the hash value contained in the manifest entry, and are
+therefore crucial to the proper verification of the signature. The
+keywords may be used for dynamic or embedded content, multiple hashes
+for multilingual documents, etc.
+
+<p>Here are two examples of the potential use of <code>Magic</code>:
+<pre>
+	Name: http://www.scripts.com/index#script1
+	Digest-Algorithms: SHA
+	SHA-Digest: (base64 representation of SHA hash)
+	Magic: JavaScript, Dynamic
+</pre>
+<pre>
+	Name: http://www.tourist.com/guide.html
+	Digest-Algorithms: SHA
+	SHA-Digest: (base64 representation of SHA hash)
+	SHA-Digest-French: (base64 representation of SHA hash)
+	SHA-Digest-German: (base64 representation of SHA hash)
+	Magic: Multilingual
+</pre>
+
+<p>In the first example, these <code>Magic</code> values may indicate
+that the result of an http query is the script embedded in the
+document, as opposed to the document itself, and also that the script
+is generated dynamically. These two pieces of information indicate how
+to compute the hash value against which to compare the Manifest's hash
+value, thus comparing a valid signature.
+
+<p>In the second example, the <code>Magic</code> value indicates that
+the document retrieved may have been content-negotiated for a specific
+language, and that the hash to verify against is dependent on which
+language the document retrieved is written in.
+
+
+<h2>6. Digital Signatures</h2>
+A digital signature in the specification is a signed version
+of the ".SF" (signature instructions) file. These are binary files
+not intended to be interpreted by humans.
+
+<p> Digital signature files have the same filename as the .SF file but
+different extension. The extension varies depending on the type of
+digital signature.  <pre>
+  .RSA      (PKCS7 signature, MD5 + RSA)
+  .DSA      (PKCS7 signature, DSA)
+  .PGP      (Pretty Good Privacy Signature)
+</pre>
+
+For those formats that do not support external signed data, the file
+shall consist of a signed copy of the .SF file. Thus some data may be
+duplicated and a verifier ought to compare the two files.
+
+<p> Formats that support external data either reference the ".SF"
+file, or perform calculations on it with implicit reference.
+
+<p> Each .SF file may have multiple digital signatures, but those
+signatures ought to be generated by the same legal entity.
+
+<p> Filetypes may be 1 to 3 "alphanum" characters. Filetypes
+unrecognized must obviously be ignored.
+
+<p> <h2>7. Notes</h2>
+
+<p>
+
+<h4>Before parsing:</h4>
+
+<ul>
+<li> if the last character of the file is an EOF character
+  (code 26), the EOF is treated as whitespace.
+<li> two newlines are appended (one for editors that don't
+  put a newline at the end of the last line, and one so that
+  the grammar doesn't have to special-case the last entry,
+  which may not have a blank line after it).
+</ul>
+<h4>Headers:</h4>
+<ul>
+<li> In all cases for all sections, headers which are not 
+  understood are ignored.
+<li> Header names are case insensitive. Programs which generate
+  manifest and signature files should use the cases shown in this 
+  specification however.
+<li> Header names cannot be repeated within a section.
+</ul>
+<h4>Versions:</h4>
+<ul>
+<li> Manifest-Version and Signature-Version must be
+  first, and in exactly that case (so that they can be
+  recognized easily as magic strings). Other than that, the
+  order of headers within a section is not significant.
+</ul>
+<h4>Ordering:</h4>
+<ul>
+<li> The order of manifest-entries is not significant.
+<li> The order of signature-entries is not significant, except that
+  the digests that get signed are in the that order.
+</ul>
+<h4>Line length:</h4>
+<ul>
+<li> No line may be longer than 72 bytes (not characters), in
+  its UTF8-encoded form. If a value would make the initial line
+  longer than this, it should be continued on extra lines (each
+  starting with a single SPACE).
+</ul>
+<h4>Errors:</h4>
+<ul>
+<li> If a file cannot be parsed according to this spec, a warning
+  should be output, and none of the signatures should be trusted.
+</ul>
+<h4>Limitations:</h4>
+<ul>
+<li> because header names cannot be continued, the maximum
+  length of a header name is 70 bytes (there must be a colon
+  and a SPACE after the name).
+<li> NUL, CR, and LF can't be embedded in header values, and NUL,
+  CR, LF and ":" can't be embedded in header names. We could
+  add quoting for these, but it probably isn't worth the
+  extra complication. Another possibility would be to require
+  them to be encoded using two bytes.
+<li> It's more difficult to test conformance to the spec without
+  limits on the complexity of a file. So, implementations
+  should support 65535-byte (not character) header values,
+  and 65535 headers per file. They might run out of memory,
+  but there should not be hard-coded limits below these
+  values.
+</ul>
+<h4>Signers: </h4>
+<ul>
+<li> It is technically possible that different entities may use 
+  different signing algorithms to share a single signature file. This 
+  violates the standard, and the extra signature may be ignored. 
+</ul>
+<h4>Algorithms:</h4>
+<ul>
+<li> No digest algorithm or signature algorithm is mandated by this
+  standard. However, the following is generally expected:
+<li>  Digest: At least one of MD5 and SHA
+<li>  Signature: PKCS7
+</ul>
+
+<p> <h2>7. Acknowledgements</h2>
+
+The authors of this specification are:
+
+<P>
+<pre>
+Thomas Dell (<I>tdell@netscape.com</I>)
+Netscape Corporation
+
+David Hopwood (<I>david.hopwood@lady-margaret-hall.oxford.ac.uk</I>)
+Oxford University
+
+Dave Brown (<I>brown@eng.sun.com</I>)
+Benjamin Renaud (<I>br@eng.sun.com</I>)
+David Connelly (<I>dac@eng.sun.com</I>)
+Sun Microsystems, Inc.
+</pre>
+
+<hr>
+<BR>Copyright &copy; 1996 Netscape Corporation All rights reserved.
+<BR>Copyright &copy; 1996 Sun Microsystems, Inc.
+<BR>Distribution: Unlimited.
+
+<address>
+<!--#flastmod file="manifest.html" -->
+<br>
+java-security@java.sun.com
+</address>
+</body>
+</html>

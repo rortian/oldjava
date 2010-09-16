@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="resultset.doc.html">Prev</a>  | <a href="callablestatement.doc.html">Next</a>
+</font></td><td align=right><i>JDBC<sup><font size=-2>TM</font></sup> Guide: Getting Started</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+<a name="999738"></a>
+<h1>6  - PreparedStatement</h1>
+<a name="999751"></a>
+This overview is excerpted from <em>JDBC<font size=-1><sup>TM</sup></font> Database Access from Java<font size=-1><sup>TM</sup></font>:  A 
+Tutorial and Annotated Reference,</em> currently in progress at JavaSoft.  This book, 
+both a tutorial and the definitive reference manual for JDBC, will be published in 
+the spring of 1997 by Addison-Wesley Publishing Company as part of the Java 
+series.
+<p><a name="999746"></a>
+
+<p>
+
+<a name="996870"></a>
+<h2>6.1	 &nbsp;&nbsp; Overview</h2>
+<a name="999753"></a>
+The <code>PreparedStatement</code> interface inherits from <code>Statement</code> and differs from it in 
+two ways:
+<p><ol>
+<a name="999754"></a>
+<li>Instances of <code>PreparedStatement</code> contain an SQL statement that has already 
+been compiled.  This is what makes a statement "prepared."
+
+
+<a name="999755"></a>
+<li>The SQL statement contained in a <code>PreparedStatement</code> object may have one or 
+more IN parameters.  An IN parameter is a parameter whose value is not specified when the SQL statement is created.  Instead the statement  has a question 
+mark ("?") as a placeholder for each IN parameter.  A value for each question 
+mark must be supplied by the appropriate <code>setXXX</code> method before the statement 
+is executed.   
+
+</ol>
+<a name="999756"></a>
+Because <code>PreparedStatement</code> objects are precompiled, their execution can be  faster 
+than that of <code>Statement</code> objects.  Consequently,  an SQL statement that is executed 
+many times is often created as a <code>PreparedStatement</code> object to increase efficiency.
+<p><a name="999757"></a>
+ Being a subclass of <code>Statement</code>, <code>PreparedStatement</code> inherits all the functionality of <code>Statement</code>.  In addition, it adds a whole set of  methods which are needed 
+for setting the values to be sent to the database in place of the placeholders for IN 
+parameters.  Also, the three methods <code>execute</code>, <code>executeQuery</code>, and <code>executeUpdate</code> 
+are modified so that they take no argument.  The <code>Statement</code> forms of these methods (the forms that take an SQL statement parameter) should never be used with a 
+<code>PreparedStatement</code> object.
+<p>
+
+<a name="999758"></a>
+<h3>6.1.1	 &nbsp; &nbsp; Creating PreparedStatement Objects</h3>
+<a name="999759"></a>
+The following code fragment, where <code>con</code> is a <code>Connection</code> object, creates a <code>PreparedStatement</code> object containing an SQL statement with two placeholders for IN 
+parameters:
+<p><pre><a name="999760"></a>    PreparedStatement pstmt = con.prepareStatement(
+<a name="999761"></a>        "UPDATE table4 SET m = ? WHERE x = ?");
+</pre><a name="999762"></a>
+The object <code>pstmt</code> now contains the statement <code>"UPDATE table4 SET m = ? 
+WHERE x = ?"</code>, which has already been sent to the DBMS and been prepared for 
+execution.
+<p>
+
+<a name="999763"></a>
+<h3>6.1.2	 &nbsp; &nbsp; Passing IN Parameters</h3>
+<a name="999764"></a>
+Before a <code>PreparedStatement</code> object is executed,  the value of each <code>?</code> parameter 
+must be set.  This is done by calling a <code>setXXX</code> method, where <code>XXX</code> is the appropriate type for the parameter.  For example, if the parameter has a Java type of  <code>long</code>,  
+the method to use is <code>setLong</code>.  The first argument to the <code>setXXX</code> methods is the 
+<em>ordinal position</em> of the parameter to be set, and the second argument is the <em>value</em> to 
+which the parameter is to be set.  For example, the following code sets the first 
+parameter to <code>123456789</code> and the second parameter to <code>100000000</code>:
+<p><pre><a name="999765"></a>    pstmt.setLong(1, 123456789);
+<a name="999766"></a>    pstmt.setLong(2, 100000000);
+</pre><a name="999767"></a>
+Once a parameter value has been set for a given statement, it can be used for 
+multiple executions of that statement  until it is cleared by a call to the method 
+<code>clearParameters</code>.
+<p>
+<a name="999768"></a>
+In the default mode for a connection (auto-commit enabled), each statement is 
+commited or rolled back automatically when it is completed. 
+<p>
+<a name="999769"></a>
+The same <code>PreparedStatement</code> object may be executed multiple times if the 
+underlying database and driver will keep statements open after they have been 
+committed.   Unless this is the case, however, there is no point in trying to improve 
+performance by using a <code>PreparedStatement</code> object in place of a <code>Statement</code> object.  
+<p>
+<a name="999770"></a>
+Using <code>pstmt</code>, the <code>PreparedStatement</code> object created above, the following code 
+illustrates setting values for the two parameter placeholders and executing <code>pstmt</code> 
+10 times.  As stated above, for this to work, the database must not close <code>pstmt</code>.  In 
+this example, the first parameter is set to <code>"Hi"</code> and remains constant.  The second 
+parameter is set to a different value each time around the <code>for</code> loop, starting with <code>0</code> 
+and ending with <code>9</code>.
+<p>
+<pre><a name="999771"></a>    pstmt.setString(1, "Hi");  
+<a name="999772"></a>    for (int i = 0; i &lt; 10; i++) {
+<a name="999773"></a>      pstmt.setInt(2, i);
+<a name="999774"></a>      int rowCount = pstmt.executeUpdate();
+<a name="999775"></a>    }
+</pre>
+<a name="999776"></a>
+<h3>6.1.3	 &nbsp; &nbsp; Data Type Conformance on IN Parameters</h3>
+<a name="999777"></a>
+The <code>XXX</code> in a <code>setXXX</code> method is a Java type.  It is implicitly a JDBC type (a generic 
+SQL type) because the driver will map the Java type to its corresponding JDBC type 
+(following the mapping specified in the table in Section <a href="mapping.doc.html#1004752">8.6.2</a> of "Mapping Java and 
+JDBC Types" in this <em>JDBC Guide</em>) and send that JDBC type to the database.  For 
+example, the following code fragment sets the second parameter of the <code>PreparedStatement</code> object <code>pstmt</code> to  <code>44</code>, with a Java type of <code>short</code>:
+<p><pre><a name="999781"></a>    pstmt.setShort(2, 44);
+</pre><a name="999782"></a>
+The driver will send 44 to the database as a JDBC <code>SMALLINT</code>, which is the standard 
+mapping from a Java <code>short</code>.
+<p><a name="999783"></a>
+It is the programmer's responsibility to make sure that the Java type of each 
+IN parameter maps to a JDBC type that is compatible with the JDBC data type 
+expected by the database.  Consider the case where the database expects a JDBC 
+<code>SMALLINT</code>.  If the method <code>setByte</code> is used, the driver will send a JDBC <code>TINYINT</code> to 
+the database.  This will probably work because many databases convert from one 
+related type to another, and generally a <code>TINYINT</code> can be used anywhere a <code>SMALLINT</code> 
+is used. However, for an application to work with the most databases possible,  it 
+is best to use Java types that correspond to the exact JDBC types expected by the 
+database.  If the expected JDBC type is  <code>SMALLINT</code>,  using <code>setShort</code> instead of <code>setByte</code> will make an application more portable.
+<p>
+
+<a name="999785"></a>
+<h3>6.1.4	 &nbsp; &nbsp; Using setObject</h3>
+<a name="999786"></a>
+A programmer can explicitly convert an input parameter to a particular JDBC 
+type by using the method <code>setObject</code>.  This method can take a third argument, 
+which specifies the target JDBC type.  The driver will convert the Java <code>Object</code> to 
+the specified JDBC type before sending it to the database.  
+<p>
+<a name="999787"></a>
+If no JDBC type is given, the driver will simply map the Java <code>Object</code> to its 
+default JDBC type (using the table in Section <a href="mapping.doc.html#1004830">8.6.4</a>) and then send it to the database.  This is similar to what happens with the regular <code>setXXX</code> methods; in both 
+cases, the driver maps the Java type of the value to the appropriate JDBC type 
+before sending it to the database.  The difference is that the <code>setXXX</code> methods use 
+the standard mapping from Java types to JDBC types (see the table in Section 
+<a href="mapping.doc.html#1004752">8.6.2</a>), whereas the <code>setObject</code> method uses the mapping from Java <code>Object</code> types 
+to JDBC types (see the table in Section <a href="mapping.doc.html#1004830">8.6.4</a>). 
+<p>
+<a name="999798"></a>
+The capability of the method <code>setObject</code> to accept any Java object allows an 
+application to be generic and accept input for a parameter at run time.  In this situation the type of the input is not  known when the application is compiled.  By 
+using <code>setObject</code>, the application can accept any Java object type as input and convert it to the JDBC type expected by the database. The table in Section <a href="mapping.doc.html#1004845">8.6.5</a> 
+shows  all the possible conversions that <code>setObject</code> can  perform.    
+<p>
+
+<a name="999802"></a>
+<h3>6.1.5	 &nbsp; &nbsp; Sending JDBC NULL as an IN parameter</h3>
+<a name="999803"></a>
+The <code>setNull</code> method allows a programmer to send a JDBC <code>NULL</code> value to the database as an IN parameter.  Note, however, that one must still specify the JDBC type 
+of the parameter.
+<p><a name="999804"></a>
+A JDBC <code>NULL</code> will also be sent to the database when a Java <code>null</code> value is 
+passed to a <code>setXXX</code> method (if it takes Java objects as arguments).  The method 
+<code>setObject</code>, however, can take a <code>null</code> value only if the JDBC type is specified.
+<p>
+
+<a name="999805"></a>
+<h3>6.1.6	 &nbsp; &nbsp; Sending Very Large IN Parameters</h3>
+<a name="999806"></a>
+The methods <code>setBytes</code> and <code>setString</code> are capable of sending unlimited amounts of 
+data.  Sometimes, however, programmers prefer to pass in large blobs of data in 
+smaller chunks.  This can be accomplished by setting an IN parameter to a Java 
+input stream.  When the statement is executed, the JDBC driver will make repeated 
+calls to this input stream, reading its contents and transmitting those contents as the 
+actual parameter data.
+<p><a name="999807"></a>
+JDBC provides three methods for setting IN parameters to input streams:  
+<code>setBinaryStream</code> for streams containing uninterpreted bytes, <code>setAsciiStream</code> for 
+streams containing ASCII characters, and <code>setUnicodeStream</code> for streams containing Unicode characters.  These methods take one more argument than the other 
+<code>setXXX</code> methods because the total length of the stream must be specified.  This is 
+necessary because some databases need to know the total transfer size before any 
+data is sent.
+<p>
+<a name="999808"></a>
+The following code illustrates using a stream to send the contents of a file as 
+an IN parameter:
+<p>
+<pre><a name="999809"></a>    java.io.File file = new java.io.File("/tmp/data");
+<a name="999810"></a>    int fileLength = file.length();
+<a name="999811"></a>    java.io.InputStream fin = new java.io.FileInputStream(file);
+<a name="999812"></a>    java.sql.PreparedStatement pstmt = con.prepareStatement(
+<a name="999813"></a>      "UPDATE Table5 SET stuff = ? WHERE index = 4");
+<a name="999814"></a>    pstmt.setBinaryStream (1, fin, fileLength);
+<a name="999815"></a>    pstmt.executeUpdate();
+</pre><a name="999816"></a>
+When the statement executes, the input stream <code>fin</code> will get called repeatedly 
+to deliver up its data.
+<p>
+<pre><a name="998420"></a>    
+</pre>
+
+<br>
+<hr>
+<font size=-1>
+<a href="introTOC.doc.html">Contents</a>  | <a href="resultset.doc.html">Prev</a>  | <a href="callablestatement.doc.html">Next</a>
+</font>
+<hr>
+
+
+<address>
+<a href="mailto:jdbc@wombat.eng.sun.com">jdbc@wombat.eng.sun.com</a>
+or
+<a href="mailto:jdbc-odbc@wombat.eng.sun.com">jdbc-odbc@wombat.eng.sun.com</a>
+</address>
+
+<a href="copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>

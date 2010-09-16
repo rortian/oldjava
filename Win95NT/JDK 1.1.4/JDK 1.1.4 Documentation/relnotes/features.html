@@ -1,0 +1,258 @@
+<html>
+<head>
+<title>JDK 1.1 Documentation</title>
+<!-- Created by: Doug Kramer, 19-Aug-1996 -->
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT=#000000 LINK=#0000ff VLINK=#000077 ALINK=#ff0000>
+<CENTER><P ALIGN=LEFT>
+<IMG SRC="../images/smi.logo.gif" ALT=" Sun Microsystems, Inc " BORDER=0>
+</P></CENTER>
+
+<font size=-1><a href="../index.html">JDK Contents</a></font>
+<HR SIZE=3 ALIGN=CENTER NOSHADE>
+<center>
+
+                          <h1>JDK 1.1.4  New Feature Summary</h1>
+</center>
+
+<blockquote>
+    <blockquote>
+<b>NOTE</b> - JDK 1.1.4  is a bug-fix release, with no new features over 
+earlier versions of JDK 1.1. In general, documentation that refers to 
+"JDK 1.1" applies equally well to "JDK 1.1.4 ". 
+    </blockquote>
+</blockquote>
+
+<p>These are the new features in version 1.1 of the JDK. All of the APIs listed here are part of the core Java API, which means they will be available on all platforms and operating systems where the Java 1.1 Virtual Machine is present.  
+
+
+<ol>
+<!--===================================================================-->
+<li><a href="../guide/intl/index.html"><b>Internationalization</b></a>
+
+        <br>Allows the development of localizable applets.  Enhancements include the display of UNICODE characters, a locale mechanism, localized message support, locale-sensitive date, time, time zone and number handling, collation services, character set converters, parameter formatting, and support for finding character/word/sentence boundaries.
+ 
+<br>
+<!--===================================================================-->
+<a name="security"></a>
+    <li><a href="../guide/security/index.html"><b>Security and Signed Applets</b></a><br>
+
+The Java Security API is designed to allow developers to incorporate both low-level 
+and high-level security functionality into their Java applications. The first 
+release of Java Security in JDK 1.1 contains a subset of this functionality, including APIs for
+digital signatures and message digests. In addition, there are abstract interfaces for key 
+management, certificate management and access control. Specific APIs to support X.509 v3 
+certificates and other certificate formats, and richer functionality in the
+area of access control, will follow in subsequent JDK releases. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JDK 1.1 also provides a tool that can sign Java ARchive (JAR) files, which can contain classes 
+and other data (such as images and sounds). The appletviewer allows any downloaded applets 
+in JAR files signed (using the tool) by a trusted entity to run with the same full rights 
+as local applications. That is, such applets are not subject to the "sandbox" restrictions 
+of the original Java security model. Later releases will provide more sophisticated security 
+policies, including greater granularity in the allowable trust levels. 
+ 
+<br>
+<!--===================================================================-->
+<a name="awt"></a>
+    <li><a href="../guide/awt/index.html"><b>AWT Enhancements</b></a><br>
+
+Enhancements are aimed at solving some major AWT (Abstract Window Toolkit) deficiencies
+with a strong focus on quality and performance.  The AWT enhancements 
+will include the beginnings of a richer infrastructure for larger-scale GUI
+development, including APIs for printing, easier/faster scrolling, popup
+menus, clipboard (copy/paste), cursors per component, a delegation-based
+event model, imaging and graphics enhancements, and more flexible font
+support for internationalization.  Additionally, the Windows (Win32) 
+version of AWT has been completely re-written for improved speed, quality, 
+and consistency with the other platforms.
+
+<br>
+<!--===================================================================--> 
+<a name="beans"></a> 
+    <li><a href="../guide/beans/index.html"><b>JavaBeans<font size=-1><sup>TM</sup></font></b></a><br> 
+ 
+The JavaBeans APIs define a software component model for Java allowing
+third party ISVs to create and ship Java components that can be composed 
+together into applications by end users. 
+ 
+<br>
+<!--===================================================================-->
+<a name="jar"></a>
+    <li><a href="../guide/jar/index.html"><b>JAR File Format</b></a><br>
+
+JAR (Java Archive) is a platform-independent file format that aggregates many files into one.  Multiple Java applets and their requisite components (<code>.class</code> files, images and sounds) can be bundled in a JAR file and subsequently downloaded to a browser in a single HTTP transaction, greatly improving the download speed. The JAR format also supports compression, which reduces the file size, further improving the download time. In addition, the applet author can digitally sign individual entries in a JAR file to authenticate their origin. It is fully backward-compatible with existing applet code and is fully extensible, being written in Java. 
+
+<br>
+<!--===================================================================-->
+<a name="networking"></a>
+    <li><b><a href="../guide/net/index.html">Networking enhancements</a></b><br>
+
+Support for selected BSD-style socket options in the <code>java.net</code>
+base classes.  With JDK 1.1, <code>Socket</code> and <code>ServerSocket</code> 
+are non-final, extendable classes.  New subclasses of <code>SocketException</code> 
+have been added for finer granularity in reporting and handling network errors.  The class <code>MulticastSocket</code> moves from <code>sun.net</code> to <code>java.net</code>.  Also includes general performance improvements and bug fixes.
+
+<br>
+<!--===================================================================-->
+<a name="io"></a>
+    <li><b><a href="../guide/io/index.html">IO Enhancements</a></b><br>
+
+The I/O package has been extended with character streams, which are like byte
+streams except that they contain 16-bit Unicode characters rather than
+eight-bit bytes. Character streams make it easy to write programs that are not
+dependent upon a specific character encoding, and are therefore easy to
+internationalize. Nearly all of the functionality available for byte streams
+is also available for character streams.
+
+
+<br>
+<!--===================================================================-->
+<a name="math"></a>
+   <li><b><a href="../guide/math/index.html">Math Package</a></b><br>
+
+The math package provides two new classes:  <code>BigInteger</code> and 
+<code>BigDecimal</code>.  
+<a href="../api/java.math.BigInteger.html"><code>BigInteger</code></a> 
+numbers are immutable arbitrary-precision integers, which provide 
+analogs to all of Java's primitive integer operators, and 
+all relevant static methods from <code>java.lang.Math</code>.  
+Additionally, <code>BigInteger</code> numbers provide operations 
+for modular arithmetic, GCD calculation, primality testing, 
+prime generation, single-bit manipulation, and a few other odds and ends.
+<br>
+<a href="../api/java.math.BigDecimal.html"><code>BigDecimal</code></a> 
+numbers are immutable, arbitrary-precision signed decimal 
+numbers, suitable for monetary calculations.  <code>BigDecimal</code> numbers 
+provide operations for basic arithmetic, scale manipulation, comparison, format 
+conversion and hashing. 
+
+
+<br>
+<!--===================================================================-->
+<a name="rmi"></a>
+    <li><a href="../guide/rmi/index.html"><b>Remote Method Invocation</b></a><br>
+
+RMI enables the programmer to create distributed Java-to-Java
+applications, in which the methods of remote Java objects can be
+invoked from other Java virtual machines, possibly on different hosts.
+A Java program can make a call on a remote object once it obtains a
+reference to the remote object, either by looking up the remote object
+in the bootstrap naming service provided by RMI or by receiving the
+reference as an argument or a return value. A client can call a remote
+object in a server, and that server can also be a client of other
+remote objects. RMI uses Object Serialization to marshal and unmarshal
+parameters and does not truncate types, supporting true object-oriented
+polymorphism.
+
+<br>
+<!--===================================================================-->
+<a name="serialization"></a>
+    <li><a href="../guide/serialization/index.html"><b>Object Serialization</b></a><br>
+
+Object Serialization extends the core Java Input/Output classes with
+support for objects. Object Serialization supports the encoding of
+objects and the objects reachable from them into a stream of bytes and
+the complementary reconstruction of the object graph from the stream.
+Serialization is used for lightweight persistence and for
+communication via sockets or Remote Method Invocation (RMI).  The
+default encoding of objects protects private and transient data, and
+supports the evolution of the classes. A class may implement its own
+external encoding and is then solely responsible for the external
+format.
+       
+<br>
+<!--===================================================================-->
+<a name="reflection"></a>
+    <li><a href="../guide/reflection/index.html"><b>Reflection</b></a><br>
+
+Enables Java code to discover information about the fields, methods and
+constructors of loaded classes, and to use reflected fields, methods, and
+constructors to operate on their underlying counterparts on objects, within
+security restrictions.  The API accommodates applications that need access to
+either the public members of a target object (based on its runtime class) or
+the members declared by a given class.
+
+<br>
+<!--===================================================================-->
+<a name="jdbc"></a>
+    <li><a href="../guide/jdbc/index.html"><b>JDBC<font size=-1><sup>TM</sup></font> - Java Database Connectivity</b></a><br>
+
+Java Database Connectivity is a standard SQL database access interface,
+providing uniform access to a wide range of relational databases. It also provides a common base on which higher level tools and interfaces can be built. This comes with an "ODBC Bridge" (except on Mac 68K).  The Bridge is a library which implements JDBC in terms of the ODBC standard C API.
+
+<br>
+<!--===================================================================-->
+<a name="innerclasses"></a>
+    <li><a href="../guide/innerclasses/index.html"><b>Inner Classes</b></a><br>
+Provides a simpler syntax for the creation of adapter classes. 
+An adapter class is a class that implements an interface (or class) required by 
+an API, and delegates the flow of control back to an enclosing "main" object. The
+new language features apply to Java the concepts of lexical scoping and
+block structure found in many languages. 
+
+<br>
+<!--===================================================================-->
+<a name="native"></a>
+    <li><a href="../guide/jni/index.html"><b>Java Native Interface</b></a><br>
+A standard programming interface for writing Java native methods
+and embedding the Java virtual machine into native applications.
+The primary goal is binary compatibility of native method
+libraries across all Java virtual machine implementations on a
+given platform.
+
+
+<br>
+<!--===================================================================-->
+<a name="performance"></a>
+   <li><a href="../guide/performance/performance.html"><b>Performance Enhancements</b></a>
+
+<ul>
+<li>Interpreter loop in assembly code on Win32 and Solaris/Sparc.
+
+<li>Non-contiguous heap support on Mac.
+
+<li>Monitor speed-ups.
+
+<li>Garbage collection of classes.
+
+<li>AWT peer class re-write for Win32.
+
+<li>JAR (Java Archive) bundling of resources for a single HTTP transaction
+</ul>
+
+<!--===================================================================-->
+<a name="misc"></a>
+   <li><a href="../guide/misc/index.html"><b>Miscellaneous</b></a>
+
+<ul>
+    <li><b><a href="../api/java.lang.Byte.html">Byte</a>, <a href="../api/java.lang.Short.html">Short</a> and <a href="../api/java.lang.Void.html">Void</a> Classes</b> - Bytes and shorts are accommodated as wrapped numbers by adding new classes <code>Byte</code> and <code>Short</code>.  The abstract class <code>Number</code> gets two new concrete methods: <code>byteValue</code> and <code>shortValue</code>; the default implementations of these use <code>intValue</code> method.  Also includes a new class <code>Void</code> that is an uninstantiable placeholder class.
+
+   <li><b><code><a href="../guide/misc/deprecation/deprecated.html"> The @deprecated tag</a></b></code> - Used in documentation comments for unambiguously marking classes, methods and fields that have been
+superseded by new APIs.  The compiler issues a warning when it processes source code that uses a deprecated API feature.
+
+   <LI><b><a href="../guide/misc/resources.html">Accessing Resource Files</a></b> - APIs that provide a mechanism for locating resource files in a way that is independent of the location of the resources.  For example, this mechanism can locate a resource file whether it is an applet loaded from the net using multiple HTTP connects, an applet loaded using JAR files, or a "library" installed in the CLASSPATH.
+
+   <LI><b><a href="../guide/misc/applet.html">Additions to APPLET Tag (HTML)</a></b> Enhancements of the &lt;APPLET&gt; tag used in HTML.
+</ul>
+
+
+</ol>
+<br>
+<!--===================================================================-->
+
+
+<p>
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+<HR SIZE=3 ALIGN=CENTER NOSHADE>
+
+
+<IMG SRC="../images/JAVA.85.GIF" ALIGN=RIGHT>
+
+<FONT SIZE=-2>
+<A HREF="SMICopyright.html">Copyright &#169;</A> 1996, 1997 Sun Microsystems, Inc., 2550 Garcia Ave., Mtn. View, CA 94043-1100 USA. All rights reserved.
+<br><br>
+
+</BODY>
+</HTML>

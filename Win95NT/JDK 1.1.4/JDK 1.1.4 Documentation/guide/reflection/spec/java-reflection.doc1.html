@@ -1,0 +1,593 @@
+<html>
+<head>
+<title></title>
+</head>
+<body bgcolor=#ffffff>
+
+<table width=600><tr>
+<td><font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc.html">Prev</a>  | <a href="java-reflection.doc2.html">Next</a>
+</font></td><td align=right><i>Java Core Reflection</i></td>
+</tr></table>
+<hr>
+<br>
+ 
+
+<a name="1776"></a>
+<h1>The class java.lang.Class
+ </h1><pre>    <a name="5736"></a><code>package java.lang;
+</code>
+    <a name="1779"></a><code>import java.lang.reflect.Field;
+</code>
+    <a name="1780"></a><code>import java.lang.reflect.Method;
+</code>
+    <a name="1781"></a><code>import java.lang.reflect.Constructor;
+</code>
+    <a name="1782"></a>public final class Class extends Object
+
+</pre><a name="1783"></a>
+Instances of the class <code>Class</code> represent Java types in a way that allows them to 
+be manipulated by a running Java program. Every array also belongs to a class 
+that is reflected as a <code>Class</code> object that is shared by all arrays with the same 
+element type and number of dimensions. Finally, the eight primitive Java types 
+and <code>void</code> are also represented by unique <code>Class</code> objects.
+<p><a name="1784"></a>
+There are no public constructors for class <code>Class</code>. The Java Virtual Machine 
+automatically constructs <code>Class</code> objects when new classes are loaded; such 
+objects cannot be created by user programs.
+<p><a name="1785"></a>
+While the class <code>Class</code> properly belongs in the <code>java.lang.reflect</code> package, it 
+remains in <code>java.lang</code> for backwards compatibility.
+<p>
+<hr>
+<a name="1786"></a>
+<h2>		 Methods
+</h2>
+<a name="1787"></a>
+The class <code>Class</code> is augmented with new methods to:
+<p>
+<ul><a name="1788"></a>
+<li>determine if a <code>Class</code> object represents an array type
+<br><br>
+<a name="1789"></a>
+<li>determine if a <code>Class</code> object represents a primitive type
+<br><br>
+<a name="1790"></a>
+<li>determine the Java language modifiers of the represented class type
+<br><br>
+<a name="1791"></a>
+<li>reflect the members and constructors of the represented type
+<br><br>
+<a name="1792"></a>
+<li>determine if an object is an instance of the represented class, or implements 
+the represented interface
+<br><br>
+<a name="1793"></a>
+<li>determine if a class or interface is a superclass or superinterface of a class or 
+interface
+<br><br>
+<a name="1794"></a>
+<li>get the component type for a represented array type
+<br><br>
+</ul><a name="1795"></a>
+The existing and new methods of class <code>Class</code> are described below.
+<p>
+<a name="1796"></a>
+<h3>		 toString
+</h3>
+<pre>    <a name="1797"></a><code>public String toString()
+</code>
+</pre><a name="3033"></a>
+Returns a <code>String</code> consisting of the word <code>class</code>, a space, and the fully-qualified 
+name of the class if this <code>Class</code> object represents a class (either a declared class 
+or an array class). If this <code>Class</code> object represents an interface, then this method 
+returns a <code>String</code> consisting of the word <code>interface</code>, followed by a space, 
+followed by the fully-qualified name of the interface. If this <code>Class</code> object 
+represents a primitive type, then this method returns the name of the primitive 
+type. If this <code>Class</code> object represents <code>void</code>, returns the String <code>"void"</code>.
+<p><a name="4800"></a>
+This method overrides the <code>toString</code> method of class <code>Object</code>.
+<p>
+<a name="1800"></a>
+<h3>		 forName
+</h3>
+<pre>    <a name="1801"></a><code>public static Class forName(String className) 
+</code>
+    <a name="1802"></a><code>    throws ClassNotFoundException
+</code>
+</pre><a name="1803"></a>
+Given the fully-qualified name for a class, this method attempts to locate, load, 
+and link the specified class. If it succeeds, returns the <code>Class</code> object representing 
+the class. If it fails, the method throws a <code>ClassNotFoundException</code>.
+<p><a name="4804"></a>
+<code>Class</code> objects for array types may be obtained via this method. These Class 
+objects are automatically constructed by the Java Virtual Machine.
+<p><a name="1804"></a>
+<code>Class</code> objects that represent the primitive Java types or <code>void</code> cannot be 
+obtained via this method.
+<p>
+<a name="1805"></a>
+<h3>		 newInstance
+</h3>
+<pre>    <a name="1806"></a><code>public Object newInstance()
+</code>
+    <a name="1807"></a><code>    throws InstantiationException, IllegalAccessException
+</code>
+</pre><a name="1808"></a>
+Creates and initializes a new instance of the class represented by this <code>Class</code> 
+object, provided it represents an instantiable class. This is done exactly as if by 
+an instance creation expression with an empty argument list. If evaluation of 
+such an instance creation expression would complete abruptly, then the 
+invocation of <code>newInstance</code> will complete abruptly for the same reason. 
+Otherwise, it returns the newly created and initialized instance.
+<p><a name="1809"></a>
+The method throws an <code>IllegalAccessException</code> if the class or initializer is 
+not accessible to the calling class. The method throws an 
+<code>InstantiationException</code> if it attempts to instantiate an abstract class or an 
+interface, or if it is invoked on a <code>Class</code> object that represents a primitive type 
+or <code>void</code>.
+<p>
+<a name="4835"></a>
+<h3>		 isInstance
+</h3>
+<pre>    <a name="4836"></a><code>public boolean isInstance(Object obj)
+</code>
+</pre><a name="4837"></a>
+This method is the dynamic equivalent of the Java language <code>instanceof</code> 
+operator.  The method returns <code>true</code> if the specified <code>Object</code> argument is non-
+<code>null</code> and can be cast to the reference type represented by this <code>Class</code> object 
+without raising a <code>ClassCastException</code>.  It returns <code>false</code> otherwise.
+<p><a name="5719"></a>
+If this <code>Class</code> object represents a primitive type or <code>void</code>, returns <code>false</code>.
+<p><a name="5722"></a>
+See <em>The Java Language Specification</em>, section 15.19.2.
+<p>
+<a name="4839"></a>
+<h3>		 isAssignableFrom
+</h3>
+<pre>    <a name="4840"></a><code>public boolean isAssignableFrom(Class fromClass)
+</code>
+</pre><a name="5692"></a>
+This method tests whether the type represented by the specified <code>Class</code> 
+parameter can be converted to the type represented by this <code>Class</code> object via an 
+identity conversion or via a widening reference conversion. It returns <code>true</code> if 
+so, <code>false</code> otherwise.
+<p><a name="4841"></a>
+If this <code>Class</code> object represents a primitive type, returns <code>true</code> if the specified 
+<code>Class</code> parameter is exactly this <code>Class</code> object, <code>false</code> otherwise.
+<p><a name="4842"></a>
+This method throws a <code>NullPointerException</code> if the specified <code>Class</code> parameter 
+is <code>null</code>.
+<p><a name="5700"></a>
+See <em>The Java Language Specification</em>, sections 5.1.1, 5.1.4 and 5.2.
+<p>
+<a name="4844"></a>
+<h3>		 isInterface
+</h3>
+<pre>    <a name="4845"></a><code>public boolean isInterface()
+</code>
+</pre><a name="4846"></a>
+If this <code>Class</code> object represents an interface type, returns <code>true</code>, otherwise 
+returns <code>false</code>.
+<p>
+<a name="4847"></a>
+<h3>		 isArray
+</h3>
+<pre>    <a name="4848"></a><code>public boolean isArray()
+</code>
+</pre><a name="4849"></a>
+If this <code>Class</code> object represents an array type, returns <code>true</code>; otherwise returns 
+<code>false</code>.
+<p>
+<a name="4850"></a>
+<h3>		 isPrimitive
+</h3>
+<pre>    <a name="4851"></a><code>public boolean isPrimitive()
+</code>
+</pre><a name="4852"></a>
+If this <code>Class</code> object represents a primitive Java type, returns <code>true</code>; otherwise 
+returns <code>false</code>.
+<p><a name="4853"></a>
+There are nine predefined <code>Class</code> objects that represent theprimitive Java types 
+and <code>void</code>. These are created by the Java Virtual Machine, and have the same 
+names as the primitive types that they represent.  These objects may only be 
+accessed via the following <code>public</code> <code>static</code> <code>final</code> variables:
+<p><pre>    <a name="4854"></a>
+
+    <a name="4855"></a>    java.lang.Boolean.TYPE
+
+    <a name="4856"></a>    java.lang.Character.TYPE
+
+    <a name="4857"></a>    java.lang.Byte.TYPE
+
+    <a name="4858"></a>    java.lang.Short.TYPE
+
+    <a name="4859"></a>    java.lang.Integer.TYPE
+
+    <a name="4860"></a>    java.lang.Long.TYPE
+
+    <a name="4861"></a>    java.lang.Float.TYPE
+
+    <a name="4862"></a>    java.lang.Double.TYPE
+
+    <a name="4863"></a>    java.lang.Void.TYPE
+
+</pre><a name="4864"></a>
+These are the only <code>Class</code> objects for which this method returns <code>true</code>.
+<p>
+<a name="4865"></a>
+<h3>		 getName
+</h3>
+<pre>    <a name="4866"></a><code>public String getName()
+</code>
+</pre><a name="4867"></a>
+Returns the fully-qualified name of the class (declared or array), interface, 
+primitive type or <code>void</code> represented by this <code>Class</code> object, as a <code>String</code>.
+<p>
+<a name="4868"></a>
+<h3>		 getModifiers
+</h3>
+<pre>    <a name="4869"></a><code>public int getModifiers()
+</code>
+</pre><a name="4870"></a>
+Returns the Java language modifiers for this class or interface, encoded in an 
+integer.  The modifiers consist of the Java Virtual Machine's constants for 
+<code>public</code>, <code>protected</code>, <code>private</code>, <code>final</code>, and <code>interface</code>; they should be decoded 
+using the methods of class <code>Modifier</code>.
+<p><a name="4871"></a>
+The modifier encodings are defined in <em>The Java Virtual Machine Specification</em>, 
+table 4.1.
+<p>
+<a name="4872"></a>
+<h3>		 getClassLoader
+</h3>
+<pre>    <a name="4873"></a><code>public ClassLoader getClassLoader()
+</code>
+</pre><a name="4874"></a>
+Returns the class loader object that loaded this <code>Class</code>.  Returns <code>null</code> if this 
+<code>Class</code> was not loaded by a class loader.
+<p>
+<a name="4875"></a>
+<h3>		 getSuperclass
+</h3>
+<pre>    <a name="4876"></a><code>public Class getSuperclass()
+</code>
+</pre><a name="4877"></a>
+If this <code>Class</code> object represents a class other than <code>Object</code>, returns the <code>Class</code> that 
+represents the superclass of the class.  Returns <code>null</code> if this <code>Class</code> represents the 
+class <code>Object</code>, or if it represents an interface type or a primitive type.
+<p>
+<a name="4878"></a>
+<h3>		 getInterfaces
+</h3>
+<pre>    <a name="4879"></a><code>public Class[] getInterfaces()
+</code>
+</pre><a name="4880"></a>
+Returns an array of <code>Class</code> objects representing the interfaces of the class or 
+interface represented by this <code>Class</code> object.  If this <code>Class</code> object represents a 
+class, returns an array containing objects representing the interfaces directly 
+implemented by the class.  If this <code>Class</code> object represents an interface, returns 
+an array containing objects representing the direct superinterfaces of the 
+interface.  Returns an array of length <code>0</code> if this <code>Class</code> implements no interfaces 
+or if it represents a primitive type.
+<p>
+<a name="4881"></a>
+<h3>		 getComponentType
+</h3>
+<pre>    <a name="4882"></a><code>public Class getComponentType()
+</code>
+</pre><a name="4883"></a>
+If this <code>Class</code> object represents an array type, returns the <code>Class</code> object 
+representing the component type of the array; otherwise returns <code>null</code>.
+<p>
+<a name="4884"></a>
+<h3>		 getDeclaringClass
+</h3>
+<pre>    <a name="4885"></a><code>public Class getDeclaringClass()
+</code>
+</pre><a name="4886"></a>
+If this class or interface is a member of another class, returns the <code>Class</code> object 
+representing the class of which it is a member (its <em>declaring class</em>).   Returns a 
+<code>null</code> reference if this class or interface is not a member of any other class.
+<p>
+<a name="4887"></a>
+<h3>		 getClasses
+</h3>
+<pre>    <a name="4888"></a><code>public Class[] getClasses()
+</code>
+</pre><a name="4889"></a>
+Returns an array containing <code>Class</code> objects representing all the <code>public</code> classes 
+and interfaces that are members of the class represented by this <code>Class</code> object.  
+This includes <code>public</code> class and interface members inherited from superclasses 
+and <code>public</code> class and interface members declared by the class. Returns an 
+array of length <code>0</code> if the class has no public member classes or interfaces, or if 
+this <code>Class</code> object represents a primitive type.
+<p>
+<a name="4890"></a>
+<h3>		 getFields
+</h3>
+<pre>    <a name="4891"></a><code>public Field[] getFields()
+</code>
+    <a name="4892"></a><code>    throws SecurityException
+</code>
+</pre><a name="4893"></a>
+Returns an array containing <code>Field</code> objects reflecting all the <code>public</code> <em>accessible</em> 
+fields of the class or interface represented by this <code>Class</code> object, including those 
+declared by the class or interface and those declared by superclasses and 
+superinterfaces. (Thus, the array includes the <code>public</code> <em>member</em> fields of the class 
+as well as any additional <code>public</code> <em>hidden</em> fields.) Returns an array of length <code>0</code> if 
+the class or interface has no <code>public</code> accessible fields.
+<p><a name="4894"></a>
+Note that the implicit <code>length</code> field for array types is not reflected by this 
+method.  User code should use the methods of class <code>Array</code> to manipulate 
+arrays.
+<p><a name="4895"></a>
+The method throws a <code>SecurityException</code> if access to this information is 
+denied.
+<p><a name="4896"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.3.
+<p>
+<a name="4897"></a>
+<h3>		 getMethods
+</h3>
+<pre>    <a name="4898"></a><code>public Method[] getMethods()
+</code>
+    <a name="4899"></a><code>    throws SecurityException
+</code>
+</pre><a name="4900"></a>
+Returns an array containing <code>Method</code> objects reflecting all the <code>public</code> <em>member</em> 
+methods of the class or interface represented by this <code>Class</code> object, including 
+those declared by the class or interface and and those inherited from 
+superclasses and superinterfaces.  Returns an array of length <code>0</code> if the class or 
+interface has no <code>public</code> member methods.
+<p><a name="4901"></a>
+The method throws a <code>SecurityException</code> if access to this information is 
+denied.
+<p><a name="4902"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.4.
+<p>
+<a name="4903"></a>
+<h3>		 getConstructors
+</h3>
+<pre>    <a name="4904"></a><code>public Constructor[] getConstructors()
+</code>
+    <a name="4905"></a><code>    throws SecurityException
+</code>
+</pre><a name="4906"></a>
+Returns an array containing <code>Constructor</code> objects that reflect all the <code>public</code> 
+constructors of the class represented by this <code>Class</code> object.  Returns an array of 
+length <code>0</code> if the class has no <code>public</code> constructors, or if this <code>Class</code> object 
+represents an interface or a primitive type.
+<p><a name="4907"></a>
+The method throws a <code>SecurityException</code> if access to this information is 
+denied.
+<p>
+<a name="4908"></a>
+<h3>		 getField
+</h3>
+<pre>    <a name="4909"></a><code>public Field getField(String name)
+</code>
+    <a name="4910"></a><code>    throws NoSuchFieldException, SecurityException
+</code>
+</pre><a name="4911"></a>
+Returns a <code>Field</code> object that reflects the specified <code>public</code> <em>accessible</em> field of the 
+class or interface represented by this <code>Class</code> object.   The <code>name</code> parameter is a 
+<code>String</code> specifying the simple name of the desired field.
+<p><a name="4912"></a>
+The field to be reflected is located by searching all the accessible fields of the 
+class or interface represented by this <code>Class</code> object for a <code>public</code> field with the 
+specified name.
+<p><a name="4913"></a>
+The method throws a <code>NoSuchFieldException</code> if a matching field is not found.
+<p><a name="4914"></a>
+The method throws a <code>SecurityException</code> if access to the underlying field is 
+denied.
+<p><a name="4915"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.3.
+<p>
+<a name="4916"></a>
+<h3>		 getMethod
+</h3>
+<pre>    <a name="4917"></a><code>public Method getMethod(String name, Class[] parameterTypes)
+</code>
+    <a name="4918"></a><code>    throws NoSuchMethodException, SecurityException
+</code>
+</pre><a name="4919"></a>
+Returns a <code>Method</code> object that reflects the specified public <em>member</em> method of the 
+class or interface represented by this <code>Class</code> object.   The <code>name</code> parameter is a 
+<code>String</code> specifying the simple name the desired method, and the 
+<code>parameterTypes</code> parameter is an array of <code>Class</code> objects that identify the 
+method's formal parameter types, in declared order.
+<p><a name="4920"></a>
+The method to reflect is located by searching all the member methods of the 
+class or interface represented by this <code>Class</code> object for a <code>public</code> method with 
+the specified name and exactly the same formal parameter types.
+<p><a name="4921"></a>
+The method throws a <code>NoSuchMethodException</code> a matching method is not 
+found.
+<p><a name="4922"></a>
+The method throws a <code>SecurityException</code> if access to the underlying method 
+is denied.
+<p><a name="4923"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.4.
+<p>
+<a name="4924"></a>
+<h3>		 getConstructor
+</h3>
+<pre>    <a name="4925"></a><code>public Constructor getConstructor(Class[] parameterTypes)
+</code>
+    <a name="4926"></a><code>    throws NoSuchMethodException, SecurityException
+</code>
+</pre><a name="4927"></a>
+Returns a <code>Constructor</code>  object that reflects the specified <code>public</code> constructor of 
+the class represented by this <code>Class</code> object.   The <code>parameterTypes</code> parameter is 
+an array of <code>Class</code> objects that identify the constructor's formal parameter 
+types, in declared order.
+<p><a name="4928"></a>
+The constructor to reflect is located by searching all the constructors of the 
+class represented by this <code>Class</code> object for a <code>public</code> constructor with the exactly 
+the same formal parameter types.
+<p><a name="4929"></a>
+The method throws a <code>NoSuchMethodException</code> if a matching constructor is not 
+found.
+<p><a name="4930"></a>
+The method throws a <code>SecurityException</code> if access to the underlying 
+constructor is denied.
+<p>
+<a name="4931"></a>
+<h3>		 getDeclaredClasses
+</h3>
+<pre>    <a name="4932"></a><code>public Class[] getDeclaredClasses()
+</code>
+    <a name="4933"></a><code>    throws SecurityException
+</code>
+</pre><a name="4934"></a>
+Returns an array of <code>Class</code> objects reflecting all the classes and interfaces 
+declared as members of the class represented by this <code>Class</code> object.  This 
+includes <code>public</code>, <code>protected</code>, default (package) access, and <code>private</code> classes and 
+interfaces declared by the class, but excludes inherited classes and interfaces.  
+Returns an array of length <code>0</code> if the class declares no classes or interfaces as 
+members, or if this <code>Class</code> object represents a primitive type.
+<p><a name="4935"></a>
+The method throws a <code>SecurityException</code> if access to this information is 
+denied.
+<p>
+<a name="4936"></a>
+<h3>		 getDeclaredFields
+</h3>
+<pre>    <a name="4937"></a><code>public Field[] getDeclaredFields()
+</code>
+    <a name="4938"></a><code>    throws SecurityException
+</code>
+</pre><a name="4939"></a>
+Returns an array of <code>Field</code> objects reflecting all the fields declared by the class 
+or interface represented by this <code>Class</code> object. This includes <code>public</code>, <code>protected</code>, 
+default (package) access, and <code>private</code> fields, but excludes inherited fields. 
+Returns an array of length <code>0</code> if the class or interface declares no fields, or if this 
+<code>Class</code> object represents a primitive type.
+<p><a name="4940"></a>
+The method throws a <code>SecurityException</code> if access to this information is 
+denied.
+<p><a name="4941"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.3.
+<p>
+<a name="4942"></a>
+<h3>		 getDeclaredMethods
+</h3>
+<pre>    <a name="4943"></a><code>public Method[] getDeclaredMethods()
+</code>
+    <a name="4944"></a><code>    throws SecurityException
+</code>
+</pre><a name="4945"></a>
+Returns an array of <code>Method</code> objects reflecting all the methods declared by the 
+class or interface represented by this <code>Class</code> object.  This includes <code>public</code>,      
+<code>protected</code>, default (package) access, and <code>private</code> methods, but excludes  
+inherited methods.  Returns an array of length <code>0</code> if the class or interface 
+declares no methods, or if this <code>Class</code> object represents a primitive type.
+<p><a name="4946"></a>
+The method throws a <code>SecurityException</code> if access to this information is 
+denied.
+<p><a name="4947"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.4.
+<p>
+<a name="4948"></a>
+<h3>		 getDeclaredConstructors
+</h3>
+<pre>    <a name="4949"></a><code>public Constructor[] getDeclaredConstructors()
+</code>
+    <a name="4950"></a><code>    throws SecurityException
+</code>
+</pre><a name="4951"></a>
+Returns an array of <code>Constructor</code> objects reflecting all the constructors declared 
+by the class represented by this <code>Class</code> object. These are <code>public</code>, <code>protected</code>, 
+default (package) access, and <code>private</code> constructors.  Returns an array of length 
+<code>0</code> if this <code>Class</code> object represents an interface or a primitive type.
+<p><a name="4952"></a>
+The method throws a <code>SecurityException</code> if access to this information is 
+denied.
+<p>
+<a name="4953"></a>
+<h3>		 getDeclaredField
+</h3>
+<pre>    <a name="4954"></a><code>public Field getDeclaredField(String name)
+</code>
+    <a name="4955"></a><code>    throws NoSuchFieldException, SecurityException
+</code>
+</pre><a name="4956"></a>
+Returns a <code>Field</code> object that reflects the specified declared field of the class or 
+interface represented by this <code>Class</code> object.   The <code>name</code> parameter is a <code>String</code> 
+that specifies the simple name of the desired field.
+<p><a name="4957"></a>
+The method throws a <code>NoSuchFieldException</code> if a field with the specified name 
+is not found.
+<p><a name="4958"></a>
+The method throws a <code>SecurityException</code> if access to the underlying field is 
+denied.
+<p><a name="4959"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.3.
+<p>
+<a name="4960"></a>
+<h3>		 getDeclaredMethod
+</h3>
+<pre>    <a name="4961"></a><code>public Method getDeclaredMethod(String name,
+</code>
+    <a name="4962"></a><code>                            Class[] parameterTypes)
+</code>
+    <a name="4963"></a><code>    throws NoSuchMethodException, SecurityException
+</code>
+</pre><a name="4964"></a>
+Returns a <code>Method</code> object that reflects the specified declared method of the class 
+or interface represented by this <code>Class</code> object.   The <code>name</code> parameter is a <code>String</code> 
+that specifies the simple name of the desired method, and the <code>parameterTypes</code> 
+parameter is an array of <code>Class</code> objects that identify the method's formal 
+parameter types, in declared order.
+<p><a name="4965"></a>
+The method throws a <code>NoSuchMethodException</code> if a matching method is not 
+found.
+<p><a name="4966"></a>
+The method throws a <code>SecurityException</code> if access to the underlying method 
+is denied.
+<p><a name="4967"></a>
+See <em>The Java Language Specification</em>, sections 8.2 and 8.4.
+<p>
+<a name="4968"></a>
+<h3>		 getDeclaredConstructor
+</h3>
+<pre>    <a name="4969"></a><code>public Constructor getDeclaredConstructor(Class[] parameterTypes)
+</code>
+    <a name="4970"></a><code>    throws NoSuchMethodException, SecurityException
+</code>
+</pre><a name="4971"></a>
+Returns a <code>Constructor</code>  object that reflects the specified constructor of the class 
+or interface represented by this <code>Class</code> object.   The <code>parameterTypes</code> parameter 
+is an array of <code>Class</code> objects that identify the constructor's formal parameter 
+types, in declared order.
+<p><a name="4972"></a>
+The method throws a <code>NoSuchMethodException</code> if a matching constructor is not 
+found.
+<p><a name="4973"></a>
+The method throws a <code>SecurityException</code> if access to the underlying 
+constructor is denied.
+<p>
+
+<br>
+<hr> 
+<font size=-1>
+<a href="java-reflectionTOC.doc.html">Contents</a>  | <a href="java-reflection.doc.html">Prev</a>  | <a href="java-reflection.doc2.html">Next</a>
+</font>
+<hr>
+
+
+
+<address>
+<a href="mailto:"></a>
+</address>
+
+<a href="java-reflection-copyright.doc.html">
+<font size=-1><i>Copyright &#169; 1996, 1997 Sun Microsystems, Inc.   All rights reserved.</i></font>
+</a>
+
+<!-- HTML generated by dkramer on March 14, 1997 -->
+
+</body>
+</html>
